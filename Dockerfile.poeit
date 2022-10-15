@@ -1,0 +1,19 @@
+# Dockerfind for multiple workspaces based on the following StackOverflow posts:
+# - https://stackoverflow.com/a/63142468
+# - https://stackoverflow.com/a/66137816
+FROM node:16 AS base
+
+WORKDIR /app/
+EXPOSE 8080/tcp
+EXPOSE 4200/tcp
+RUN --mount=type=bind,target=/docker-context \
+    cd /docker-context/; \
+    find . -path "./node_modules" -prune -o -name "package*.json" -mindepth 0 -maxdepth 4 -print -exec cp --parents "{}" /app/ \;
+
+FROM node:16 AS app
+WORKDIR /app/
+
+COPY --from=base /app .
+RUN npm ci
+COPY . .
+CMD ["npm", "run", "start"]

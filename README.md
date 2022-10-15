@@ -4,7 +4,7 @@ This repository holds our [CS4750 Database Systems](https://www.cs.virginia.edu/
 
 ## How to run
 
-There are two options to run the frontend and the backend concurrently in a Docker container by now. Either a local MySQL container can be used, for which the basic database schema and its values will be imported or a instance of the Google Cloud SQL service can be used. For this instead of a local MySQL container, the Google Cloud SQL Auth Proxy will be started in a Docker container. 
+There are two options to run the frontend and the backend concurrently in a Docker container by now. Either a local MySQL container can be used, for which the basic database schema and its values will be imported or an instance of the Google Cloud SQL service can be used. For this instead of a local MySQL container, the Google Cloud SQL Auth Proxy will be started in a Docker container. 
 
 - `docker-compose --profile local up -V --build` will run the app with the local SQL database.
 - `docker-compose --profile cloud up -V --build` will run the app with the Google Cloud SQL instance.

@@ -1,0 +1,32 @@
+{
+  "name": "@poe-it",
+  "version": "1.0.0",
+  "description": "Poe-it: The social network for poetry.",
+  "scripts": {
+    "start": "concurrently \"npm:dev*\"",
+    "dev:client": "npm run start -w @poe-it/ui",
+    "dev:server": "npm run serve -w @poe-it/api"
+  },
+  "author": "Poe-it Project Team",
+  "contributors": [
+    "Kai Helli <dpd3zd@virginia.edu>",
+    "Daniel Endean <dpe7pye@virginia.edu>",
+    "Cole Rogers <cbr9yef@virginia.edu>",
+    "Gideon French <grf3suu@virginia.edu>"
+  ],
+  "license": "UNLICENSED",
+  "private": true,
+  "workspaces": [
+    "client/*",
+    "server/*"
+  ],
+  "dependencies": {
+    "@poe-it/api": "*",
+    "concurrently": "^7.4.0",
+    "express-mysql-session": "^2.1.8",
+    "mysql2": "^2.3.3"
+  },
+  "engines": {
+    "node": ">= 16.0.0 <17.0.0"
+  }
+}

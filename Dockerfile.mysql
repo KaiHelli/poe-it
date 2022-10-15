@@ -1,0 +1,11 @@
+# Dockerfind for multiple workspaces based on the following StackOverflow posts:
+# - https://stackoverflow.com/a/63142468
+# - https://stackoverflow.com/a/66137816
+FROM mysql:8-debian AS base
+
+# Install envsubst
+RUN apt-get update && apt-get install -y gettext-base
+
+# Copy the sql files
+WORKDIR /docker-entrypoint-initdb.d/
+ADD sql .

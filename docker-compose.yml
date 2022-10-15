@@ -1,0 +1,75 @@
+version: '3'
+services:
+  # The cloudsql-proxy container which is used to access the Google Cloud SQL Instance.
+  # Will be started if the profile 'cloud' is selected.
+  cloudsql-proxy:
+    container_name: cloudsql-proxy
+    image: gcr.io/cloudsql-docker/gce-proxy:1.11
+    command: /cloud_sql_proxy --dir=/cloudsql -instances=cs4750db-362702:us-east4:db-demo=tcp:0.0.0.0:3306 -credential_file=/secrets/cloudsql/credentials.json
+    volumes: # Mount the credentials to access the Google Cloud SQL Instance
+      - ./credentials.json:/secrets/cloudsql/credentials.json
+    restart: always
+    networks: # Give this container the db hostname alias to which the application connects to.
+      dev-network:
+        aliases:
+          - db
+    ports:
+      - "3306:3306"
+    profiles: ['cloud']
+
+  # A local MySQL 8 container which is used for development purposes.
+  # Will be started if the profile 'local' is selected.
+  localsql:
+    container_name: localsql
+    command: --default-authentication-plugin=caching_sha2_password --character-set-server=utf8mb4 --collation-server=utf8mb4_0900_ai_ci
+    build:
+      context: .
+      dockerfile: Dockerfile.mysql
+    restart: always
+    env_file:
+      - ./secrets.env
+    environment:
+      - TZ=US/Eastern
+      - LANG=C.UTF-8
+    networks: # Give this container the db hostname alias to which the application connects to.
+      dev-network:
+        aliases:
+          - db
+    ports:
+      - "3306:3306"
+    profiles: ['local']
+
+  # The PoeIT application container. We have two of those containers listed here, one version that depends on the
+  # cloudsql container and a version that depends on the localsql container. Unfortunately we can't merge those, since
+  # the depends_on parameter requires that all listed container will actually start. But since the 'local' and 'cloud'
+  # profile are mutually exclusive, only one dependency will start.
+  # To prevent that we have to write the same parameters another time, we will save the following into an anchor and
+  # reload them with an alias in the other profile. We will then overwrite attributes that should differ.
+  # https://medium.com/@kinghuang/docker-compose-anchors-aliases-extensions-a1e4105d70bd
+  poeit-cloud: &poeit # The anchor.
+    container_name: poeit-cloud
+    build:
+      context: .
+      dockerfile: Dockerfile.poeit
+    depends_on:
+      - cloudsql-proxy
+    networks:
+      - dev-network
+    ports:
+      - "8080:8080"
+      - "4200:4200"
+    env_file: # Load the environment variables of this container from the secrets.env. This holds our passwords etc.
+      - ./secrets.env
+    restart: always
+    profiles: ['cloud']
+
+  poeit-local:
+    <<: *poeit # The alias. Loads the settings from above.
+    container_name: poeit-local
+    depends_on: # Overwrite the dependency. This version depends on the localsql container.
+      - localsql
+    profiles: ['local']
+
+# Some generic network, no further settings needed.
+networks:
+  dev-network:
