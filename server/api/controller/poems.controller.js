@@ -5,7 +5,7 @@
 'use strict';
 
 const sql = require('../middleware/database');
-const {body, validationResult} = require('express-validator');
+const {body, param, validationResult} = require('express-validator');
 
 /*
  * Retrieves all available poems.
@@ -21,7 +21,7 @@ exports.getUserPoems = async (req, res) => {
  * Retrieve a poem by its id.
  */
 exports.getUserPoemByID = [
-    body('poemID').isInt({min: 1}).withMessage('Invalid poemID.'),
+    param('id').isInt({min: 1}).withMessage('Invalid id.'),
     async (req, res) => {
         // If some fields were not present, return the corresponding errors.
         const errors = validationResult(req);
@@ -29,7 +29,7 @@ exports.getUserPoemByID = [
             return res.status(422).json({errors: errors.array()});
         }
 
-        let poemID = req.body.poemID;
+        let poemID = req.params.id;
 
         let rows = await sql.query('SELECT * FROM PrivatePoem WHERE poemID = ?', poemID);
 
@@ -37,5 +37,5 @@ exports.getUserPoemByID = [
             return res.status(403).send({error: `No poem with id ${poemID} found.`})
         }
 
-        return res.status(200).json(rows);
+        return res.status(200).json(rows[0]);
 }];

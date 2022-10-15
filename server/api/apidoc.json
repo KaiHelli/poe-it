@@ -2,10 +2,12 @@
     "title": "Poe-it API docs",
     "name": "Poe-it backend API documentation",
     "version": "1.0.0",
-    "description": "Documentation of the operations available in the Poe-it backend.",
+    "description": "Documentation of the operations available in the Poe-it backend API.",
     "url": "http://localhost:8080/v1/",
     "sampleUrl": false,
     "template": {
-        "forceLanguage": "en"
+        "forceLanguage": "en",
+        "showRequiredLabels": true,
+        "withCompare": false
     }
 }
