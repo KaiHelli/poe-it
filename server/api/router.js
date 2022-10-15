@@ -1,5 +1,5 @@
 /*
- * This file holds the router that will route the top level URIs under /api/*.
+ * This file holds the router that will route the top level URIs under /v1/*.
  * It will route the request to the subsequent router that handles the next layer.
  */
 'use strict';

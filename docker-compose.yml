@@ -39,7 +39,7 @@ services:
       - "3306:3306"
     profiles: ['local']
 
-  # The PoeIT application container. We have two of those containers listed here, one version that depends on the
+  # The Poe-it application container. We have two of those containers listed here, one version that depends on the
   # cloudsql container and a version that depends on the localsql container. Unfortunately we can't merge those, since
   # the depends_on parameter requires that all listed container will actually start. But since the 'local' and 'cloud'
   # profile are mutually exclusive, only one dependency will start.

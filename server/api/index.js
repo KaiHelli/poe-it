@@ -44,8 +44,11 @@ app.get('/', (req, res) => {
     res.json({ message: 'Welcome to the Poe-it API.' });
 });
 
-// Route all requests underneath the URI /api/* to the general router.
-app.use('/api', generalRouter)
+// Return the api documentation on the docs URI.
+app.use('/docs', express.static('docs'));
+
+// Route all requests underneath the URI /v1/* to the general router.
+app.use('/v1', generalRouter)
 
 // Start to listen for requests on the specified port.
 app.listen(port, () => {console.log(`Poe-it API listening on port ${port}!`);});
