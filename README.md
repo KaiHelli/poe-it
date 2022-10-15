@@ -4,7 +4,7 @@ This repository holds our [CS4750 Database Systems](https://www.cs.virginia.edu/
 
 ## How to run
 
-There are two options to run the frontend and the backend concurrently in a Docker container by now. 
+There are two options to run the frontend and the backend concurrently in a Docker container by now:
 
 - `docker-compose --profile local up -V --build` 
   - This will start a local MySQL container alongside the Poe-it application, for which the basic database schema and its values will be imported.
@@ -13,15 +13,15 @@ There are two options to run the frontend and the backend concurrently in a Dock
   - For this instead of a local MySQL container, the Google Cloud SQL Auth Proxy will be started in a Docker container alongside the Poe-it Application.
 
 
+The frontend will currently be served at [http://localhost:4200/](http://localhost:4200/) while the backend is available at [http://localhost:8080/](http://localhost:8080/).
+
 ## Dependencies
 
 ### Global dependencies
 
 Installed with `npm install -g <package>`
 
-- **`@angular/cli`** - Angular developer tools. **NOTE:** Node 18 not supported, since it is not an LTS version.  
-
-- **`apidoc`** - Used to document the RESTful backend api.
+- **`@angular/cli`** - Angular developer tools. **NOTE:** Node 18 not supported, since it is not an LTS version. 
 
 ### Project dependencies
 
@@ -45,7 +45,7 @@ Installed with `npm install -g <package>`
 
 ## Documentation:
 
-The documentation for the api is automatically generated from the comments in the source code using `apidoc`. It will be served at: [http://localhost:8080/docs](http://localhost:8080/docs)
+The documentation for the api is automatically generated from the comments in the source code using `apidoc`. They will be served at: [http://localhost:8080/docs](http://localhost:8080/docs)
 
 ## Known issues:
 
@@ -55,7 +55,7 @@ The documentation for the api is automatically generated from the comments in th
 
   Run `docker volume prune` to reclaim disk space.
 
-## Authors:
+## Authors:	
 
 - Kai Helli \<[dpd3zd@virginia.edu](mailto:dpd3zd@virginia.edu)\>
 - Daniel Endean \<[dpe7pye@virginia.edu](mailto:dpe7pye@virginia.edu)\>
