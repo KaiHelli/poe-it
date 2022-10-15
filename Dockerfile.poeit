@@ -1,4 +1,4 @@
-# Dockerfind for multiple workspaces based on the following StackOverflow posts:
+# Dockerfile for multiple workspaces based on the following StackOverflow posts:
 # - https://stackoverflow.com/a/63142468
 # - https://stackoverflow.com/a/66137816
 FROM node:16 AS base

@@ -1,6 +1,3 @@
-# Dockerfind for multiple workspaces based on the following StackOverflow posts:
-# - https://stackoverflow.com/a/63142468
-# - https://stackoverflow.com/a/66137816
 FROM mysql:8-debian AS base
 
 # Install envsubst
