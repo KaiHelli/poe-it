@@ -16,9 +16,9 @@ exports.signup =
     [
         // Validate the username attribute that was given in the request.
         body('username')
-        .trim().isLength({min: 3, max: 20}).withMessage('Username should have 3 to 20 characters.')
+        .trim().isLength({min: 1, max: 20}).withMessage('Username should have 1 to 20 characters.')
         .custom(async username => {
-            let rows = await sql.query('SELECT COUNT(username) AS num FROM User WHERE User.username = ?', username.toLowerCase());
+            let rows = await sql.query('SELECT COUNT(username) AS num FROM User WHERE User.username = ?', username.normalize().toLowerCase());
             if (rows[0].num > 0) return Promise.reject('Username already in use.');
         }),
         // Validate the password attribute that was given in the request.
@@ -26,7 +26,7 @@ exports.signup =
         .isStrongPassword({minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 0, minSymbols: 1})
         .withMessage('The password must have at least 8 character, 1 symbol, 1 uppercase and 1 lowercase character.')
         .custom(async (password, {req}) => {
-            if (password.toLowerCase() === req.body.username.toLowerCase()) return Promise.reject('The password can\'t be your username.');
+            if (password.normalize().toLowerCase() === req.body.username.normalize().toLowerCase()) return Promise.reject('The password can\'t be your username.');
         }),
         // Handle the request itself.
         async (req, res) => {
@@ -37,9 +37,9 @@ exports.signup =
             return res.status(422).json({errors: errors.array()});
         }
 
-        // Normalize the username to lowercase.
-        let username = req.body.username.toLowerCase();
-        let password = req.body.password;
+        // Normalize the username to lowercase and normalize the unicode characters.
+        let username = req.body.username.normalize().toLowerCase();
+        let password = req.body.password.normalize();
 
         // Generate the argon2 hash using a password specific salt and an application-wide pepper.
         let passwordHash = await argon2.hash(password, {type: argon2.argon2id, secret: authConfig.passwordPepper});
@@ -72,8 +72,8 @@ exports.signin =
             }
 
             // Normalize the username to lowercase.
-            let username = req.body.username.toLowerCase();
-            let password = req.body.password;
+            let username = req.body.username.normalize().toLowerCase();
+            let password = req.body.password.normalize();
 
             // Get the userID and password corresponding to this username.
             let rows = await sql.query('SELECT userID, password FROM User WHERE username = ?', username);
