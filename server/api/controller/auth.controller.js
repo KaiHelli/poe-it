@@ -113,3 +113,15 @@ exports.signout =
             return res.status(200).send({message: 'Logout successful.'})
         });
     };
+
+/*
+ * Handles the change password route.
+ */
+
+// TODO
+
+/*
+ * Handles the change username route.
+ */
+
+// TODO
