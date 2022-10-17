@@ -5,7 +5,7 @@ USE PoeItDB;
 CREATE TABLE IF NOT EXISTS PublicPoem (
   poemID SERIAL,                      -- consecutively enumerated in dataset
   poemTitle VARCHAR(256) NOT NULL,    -- max. length in dataset: 245 char
-  poemText VARCHAR(5120) NOT NULL,   -- max. length in dataset: 88699 char -> deleted all longer than the 0.95 quantile now -> max. length: 4177
+  poemText VARCHAR(5120) NOT NULL,    -- max. length in dataset: 88699 char -> deleted all longer than the 0.95 quantile now -> max. length: 4177
   poetName VARCHAR(64) NOT NULL,      -- max. length in dataset: 57 char
   PRIMARY KEY(poemID)
 );
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS PrivatePoemRating(
   userID BIGINT UNSIGNED NOT NULL,                                  -- userID is of type SERIAL
   rating TINYINT(1) NOT NULL,                                       -- allows [-128, 127], only {-1, 1} will be used
   CONSTRAINT c1_rating CHECK(rating = -1 OR rating = 1) ENFORCED,   -- only allow -1 or 1 for the rating
-  PRIMARY KEY(poemID, userID),                                      -- was missing in our schema statements, but is necessary
+  PRIMARY KEY(poemID, userID),
   FOREIGN KEY(poemID) REFERENCES PrivatePoem(poemID),
   FOREIGN KEY(userID) REFERENCES User(userID)
 );

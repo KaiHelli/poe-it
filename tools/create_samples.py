@@ -34,7 +34,7 @@ registration_dates = sorted([fake.date_time_between_dates(reg_start, reg_end) fo
 
 # Create the SQL statements for these.
 insert_users = f"INSERT INTO User(userID, username, password, roleID, registrationDate) VALUES\n"
-insert_users += ",\n".join([f"({id}, '{unicodedata.normalize('NFC', name)}', '$APP_ADMIN_HASH', 1, '{registration_dates[id - user_begin_id].strftime('%Y-%m-%d %H:%M:%S')}')" for id, name in names])
+insert_users += ",\n".join([f"({id}, '{unicodedata.normalize('NFC', name)}', '$APP_ADMIN_HASH', 2, '{registration_dates[id - user_begin_id].strftime('%Y-%m-%d %H:%M:%S')}')" for id, name in names])
 insert_users += ";"
 
 #print(insert_users)
