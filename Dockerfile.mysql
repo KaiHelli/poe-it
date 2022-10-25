@@ -5,4 +5,4 @@ RUN apt-get update && apt-get install -y gettext-base
 
 # Copy the sql files
 WORKDIR /docker-entrypoint-initdb.d/
-ADD sql .
+ADD --chown=999:999 --chmod=740 sql .
