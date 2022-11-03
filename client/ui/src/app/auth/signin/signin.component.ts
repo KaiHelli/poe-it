@@ -22,18 +22,14 @@ export class SigninComponent implements OnInit {
     private router: Router,
     private authService: AuthService
   ) {
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+    //this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+    this.returnUrl = '/dashboard';
   }
 
   public ngOnInit(): void {
-    this.authService.isSignedIn().subscribe({
-      next: data => {
-        if (data.message === true) {
-          this.loginValid = true;
-          this.router.navigateByUrl(this.returnUrl).then(() => {
-            window.location.reload();
-          });
-        }
+    this.authService.isSignedIn().subscribe(value => {
+      if (value) {
+        this.router.navigateByUrl(this.returnUrl);
       }
     });
   }
@@ -44,12 +40,10 @@ export class SigninComponent implements OnInit {
     this.authService.signin(this.username, this.password).subscribe({
       next: _ => {
         this.loginValid = true;
-        this.router.navigateByUrl(this.returnUrl).then(() => {
-          window.location.reload();
-        });
+        this.router.navigateByUrl(this.returnUrl);
       },
       error: err => {
-        this.errorMessage = err.error.message;
+        this.errorMessage = err.message ;
         this.loginValid = false;
       }
     });

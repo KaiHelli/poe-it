@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { AuthService } from "./services/auth.service";
+import { MessageService } from "./services/message.service";
 
 @Component({
   selector: 'app-root',
@@ -11,24 +13,20 @@ export class AppComponent {
   title = 'Poe-it';
   isSignedIn = false;
 
-  constructor(private authService: AuthService) {
+  constructor(private router: Router, private authService: AuthService, private messageService: MessageService) {
+    this.authService.isSignedIn().subscribe((value: boolean) => {
+      this.isSignedIn = value
+    })
+
+    this.messageService.UserAuthChangedEvent.subscribe(value => {
+      this.isSignedIn = value;
+    })
   }
 
   ngOnInit(): void {
-    this.authService.isSignedIn().subscribe({
-      next: data => {
-        if (data.message === true) {
-          this.isSignedIn = true;
-        }
-      }
-    });
   }
 
   onSignOut(): void {
-    this.authService.signout().subscribe({
-      next: _ => {
-        window.location.reload();
-      }
-    });
+    this.authService.signout().subscribe();
   }
 }
