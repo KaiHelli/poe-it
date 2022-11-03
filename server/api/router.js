@@ -18,6 +18,10 @@
  * @apiDefine user
  * All authorized users can use this request.
  */
+/**
+ * @apiDefine unrestricted
+ * Everyone can use this request.
+ */
 
 const generalRouter = require('express').Router();
 const authRouter = require('./routes/auth.route');

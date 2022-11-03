@@ -51,4 +51,16 @@ authRouter.post('/signup', authorize.notSignedIn, authController.signup);
  */
 authRouter.post('/signout', authorize.isSignedIn, authController.signout);
 
+/**
+ * @api {get} auth/signedin Get the current status, whether a user is currently signed in or not.
+ * @apiGroup Authentication
+ * @apiPermission unrestricted
+ * @apiHeader {Cookie}      [connect.sid]    Users unique session cookie.
+ * @apiSuccess {Bool}       message          Whether the user is currently signed in or not.
+ * @apiSuccessExample {json} Success-Response:
+ * HTTP/1.1 200 OK
+ * {"message": True}
+ */
+authRouter.get('/signedin', authController.signedin);
+
 module.exports = authRouter;

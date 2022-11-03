@@ -115,6 +115,18 @@ exports.signout =
     };
 
 /*
+ * Handles the check whether a user is signed in or not for the auth route.
+ */
+exports.signedin =
+    async (req, res) => {
+        if(req.session && req.session.userID) {
+            return res.status(200).send({message: true})
+        } else {
+            return res.status(200).send({message: false})
+        }
+    };
+
+/*
  * Handles the change password route.
  */
 
