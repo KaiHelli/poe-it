@@ -1,7 +1,7 @@
 <mat-card>
   <mat-card-content>
     <form #loginForm="ngForm" (ngSubmit)="onSubmit()">
-      <h2>Log In</h2>
+      <h2>Sign In</h2>
       <mat-error *ngIf="!loginValid">
         {{errorMessage}}
       </mat-error>
@@ -19,5 +19,7 @@
       </mat-form-field>
       <button mat-raised-button color="primary" [disabled]="!loginForm.form.valid">Login</button>
     </form>
+    <br>
+    <span>No account? <a [routerLink]="'/auth/signup'" mat-menu-item>Register</a></span>
   </mat-card-content>
 </mat-card>

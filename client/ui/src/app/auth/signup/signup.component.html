@@ -1,1 +1,29 @@
-<p>signup works!</p>
+<mat-card>
+  <mat-card-content>
+    <form #signupForm="ngForm" (ngSubmit)="onSubmit()">
+      <h2>Sign Up</h2>
+      <mat-error *ngIf="!signupValid">
+        {{errorMessage}}
+      </mat-error>
+      <mat-form-field>
+        <input matInput placeholder="Username" [(ngModel)]="username" name="username" required minlength="1" maxlength="20">
+        <mat-error>
+          Please provide a valid username
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput type="password" placeholder="Password" [(ngModel)]="password" name="password" required minlength="6">
+        <mat-error>
+          Please provide a valid password
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput type="password" placeholder="Confirm Password" [(ngModel)]="passwordConfirm" name="passwordConfirm" required>
+        <mat-error>
+          Please confirm your password
+        </mat-error>
+      </mat-form-field>
+      <button mat-raised-button color="primary" [disabled]="!signupForm.form.valid">Register</button>
+    </form>
+  </mat-card-content>
+</mat-card>
