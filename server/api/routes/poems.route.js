@@ -64,7 +64,24 @@ authRouter.get('/private/:id', authorize.isSignedIn, poemsController.getUserPoem
 
 // authRouter.delete('/private/:id', authorize.isSignedIn, poemsController.deleteUserPoemByID);
 
-// authRouter.get('/public/', poemsController.getPublicPoems);
+/**
+ * @api {get} poems/public Get one random public poem.
+ * @apiGroup PublicPoems
+ * @apiPermission unrestricted
+ * @apiSuccess {Number}     poemID        The id of the poem.
+ * @apiSuccess {String}     poemTitle     The title of the poem.
+ * @apiSuccess {String}     poemText      The text of the poem.
+ * @apiSuccess {String}     poetName      The author of the poem.
+ * @apiSuccessExample {json} Success-Response:
+ * HTTP/1.1 200 OK
+ *   {
+ *   "poemID": 10444,
+ *   "poemTitle": "Blank",
+ *   "poemText": "When I came to my mother’s house the day after she had died it was already a museum of her unfinished gestures. The mysteries from the public library, duein two weeks. The half-eaten square of lasagna in the fridge.The half-burned wreckage of her last cigarette, and one red swallow of wine in a lipsticked glass beside her chair.Finally, a blue Bic on a couple of downs and acrosses left blank in the Sunday crossword, which actually had the audacity to look a little smug at having, for once, won.",
+ *   "poetName": "George Bilgere"
+ *   }
+ */
+authRouter.get('/public', poemsController.getPublicPoem);
 
 // authRouter.get('/public/:id', poemsController.getPublicPoemByID);
 

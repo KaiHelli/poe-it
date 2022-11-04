@@ -45,3 +45,13 @@ exports.getUserPoemByID = [
 
         return res.status(200).json(rows[0]);
 }];
+
+
+exports.getPublicPoem = async (req, res) => {
+    let rows = await sql.query('SELECT poemID, poemTitle, poemText, poetName ' +
+                                        'FROM PublicPoem NATURAL JOIN PublicPoemTags ' +
+                                        'ORDER BY RAND() ' +
+                                        'LIMIT 1;');
+
+    return res.status(200).json(rows[0]);
+};
