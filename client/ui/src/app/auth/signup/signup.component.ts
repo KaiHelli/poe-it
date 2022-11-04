@@ -17,6 +17,7 @@ export class SignupComponent implements OnInit {
   public username = '';
   public password = '';
   public passwordConfirm = '';
+
   // TODO: minLowercase: 1, minUppercase: 1, minNumbers: 0, minSymbols: 1, not same as username
   // TODO: Display errors and maybe verify input (will be done by backend aswell though).
   public errorMessage = '';

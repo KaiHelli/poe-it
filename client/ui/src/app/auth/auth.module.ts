@@ -5,6 +5,8 @@ import { AuthRoutingModule } from './auth-routing.module';
 import { SigninComponent } from './signin/signin.component';
 import { SignupComponent } from './signup/signup.component';
 
+import { ValidateEqualModule } from  'ng-validate-equal';
+
 import { MaterialModule } from '../helper/material.module';
 import { FormsModule } from '@angular/forms';
 
@@ -17,7 +19,8 @@ import { FormsModule } from '@angular/forms';
     CommonModule,
     AuthRoutingModule,
     MaterialModule,
-    FormsModule
+    FormsModule,
+    ValidateEqualModule
   ]
 })
 export class AuthModule { }

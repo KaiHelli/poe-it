@@ -18,7 +18,7 @@
         </mat-error>
       </mat-form-field>
       <mat-form-field>
-        <input matInput type="password" placeholder="Confirm Password" [(ngModel)]="passwordConfirm" name="passwordConfirm" required>
+        <input matInput type="password" placeholder="Confirm Password" [(ngModel)]="passwordConfirm" name="passwordConfirm" required ngValidateEqual="password">
         <mat-error>
           Please confirm your password
         </mat-error>

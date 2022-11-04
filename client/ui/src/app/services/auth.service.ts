@@ -83,7 +83,7 @@ export class AuthService implements CanActivate {
       msg = error.error.message;
     } else {
       // handle server-side error
-      msg = `Error Code: ${error.status}\nMessage: ${error.message}`;
+      msg = `Error Code: ${error.status}\nMessage: ${JSON.stringify(error.error)}`;
     }
     return throwError(() => new Error(msg));
   }
