@@ -11,6 +11,12 @@ const {body, param, validationResult} = require('express-validator');
  * Retrieves all available poems.
  * TODO: Implement paging?
  */
+exports.getDailyPoem = async (req, res) => {
+    let rows = await sql.query('SELECT poemTitle, poemText, poetName  FROM table_name ORDER BY RAND() LIMIT 1;');
+    return res.status(200).json(rows);
+};
+
+
 exports.getUserPoems = async (req, res) => {
     let rows = await sql.query('SELECT * FROM PrivatePoem');
 
