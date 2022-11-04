@@ -26,7 +26,7 @@ Installed with `npm install -g <package>`
 ### Project dependencies
 
 - **`@poe-it`** - The overall project.
-  - `concurrently` - Used to run the frontend and backend concurrently during development.
+  - `npm-run-all` - Used to run the frontend and backend concurrently during development.
 - **`@poe-it/ui`** - The frontend ui-code of the project. Currently a template Angular application created through `ng new`. No changes have been made.
 - **`@poe-it/api`** - The backend api-code of the project based on `node.js`.
   - `express.js` - Used to ease the development in `node.js`.
@@ -37,6 +37,7 @@ Installed with `npm install -g <package>`
   - `mysql2-promise` - Used for the interaction with the MySQL database.
   - `argon2` - Used for secure hashing of passwords with salt and pepper.
   - `apidoc` - Used to document the features of the api.
+  - `nodemon` - Used to automatically restart the node server on file change.
 
 ### Installing new dependencies:
 

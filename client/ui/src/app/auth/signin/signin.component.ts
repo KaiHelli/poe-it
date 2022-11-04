@@ -2,6 +2,11 @@ import {Component, OnInit} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from "../../services/auth.service";
 
+/*type User = {
+  username: string;
+  roles: string[];
+};*/
+
 @Component({
   selector: 'app-login',
   templateUrl: './signin.component.html',
@@ -10,6 +15,7 @@ import { AuthService } from "../../services/auth.service";
 export class SigninComponent implements OnInit {
 
   public loginValid = true;
+  //public user: User = {username: '', roles: []};
   public username = '';
   public password = '';
   // TODO: Display errors and maybe verify input (will be done by backend aswell though).

@@ -58,6 +58,11 @@ services:
     ports:
       - "8080:8080"
       - "4200:4200"
+    volumes: # Mount the credentials to access the Google Cloud SQL Instance
+      - .:/app
+      - /app/node_modules
+      - /app/client/ui/node_modules
+      - /app/server/api/node_modules
     env_file: # Load the environment variables of this container from the secrets.env. This holds our passwords etc.
       - ./secrets.env
     restart: always
