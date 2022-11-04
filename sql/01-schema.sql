@@ -112,3 +112,33 @@ INSERT INTO Role(roleID, roleName) VALUES
 -- Initialize administrative user
 INSERT INTO User(userID, username, password, roleID) VALUES
 (1, 'admin', '$APP_ADMIN_HASH', 1);
+
+-- Create role for SELECT privileges.
+CREATE ROLE 'db_read';
+
+-- Create role for INSERT, UPDATE, DELETE privileges.
+CREATE ROLE 'db_write';
+
+-- Grant the the SELECT privileges to its role.
+GRANT SELECT
+    ON PoeItDB.*
+    TO 'db_read';
+
+-- Grant the the INSERT, UPDATE, DELETE privileges to its role.
+GRANT INSERT, UPDATE, DELETE
+    ON PoeItDB.*
+    TO 'db_write';
+
+-- Initialize database backend user that can read and write on all tables.
+CREATE USER 'api'@'%' IDENTIFIED BY '$MYSQL_API_PASSWORD';
+
+-- Assign the roles to the backend user.
+GRANT 'db_read', 'db_write'
+    TO 'api'@'%';
+
+-- Apply all roles by default to the user.
+SET DEFAULT ROLE ALL TO
+  'api'@'%';
+
+-- Flush privileges so that they are in effect.
+FLUSH PRIVILEGES;
