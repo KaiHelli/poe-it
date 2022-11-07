@@ -12,7 +12,7 @@ RUN --mount=type=bind,target=/docker-context \
 
 FROM node:16 AS app
 WORKDIR /app/
-
+RUN npm config set cache /app/ --global
 COPY --from=base /app .
 RUN npm ci
 CMD ["npm", "run", "start"]
