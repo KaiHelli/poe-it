@@ -35,7 +35,7 @@ exports.getUserPoemByID = [
         let rows = await sql.query('SELECT * FROM PrivatePoem WHERE poemID = ?', poemID);
 
         if (rows.length !== 1) {
-            return res.status(403).send({error: `No poem with id ${poemID} found.`})
+            return res.status(403).send({errors: [`No poem with id ${poemID} found.`]})
         }
 
         return res.status(200).json(rows[0]);

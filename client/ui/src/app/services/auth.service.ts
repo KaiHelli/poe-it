@@ -21,13 +21,15 @@ export class AuthService implements CanActivate {
   constructor(private http: HttpClient, private router: Router, private messageService: MessageService) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-    this.isSignedIn().subscribe(value => {
-      if (!value) {
-        this.router.navigateByUrl('auth/signin')
+    return this.isSignedIn().pipe(map(value => {
+        if (value === true) {
+          return true;
+        } else {
+          this.router.navigateByUrl('auth/signin');
+          return false;
+        }
       }
-    });
-
-    return true;
+    ))
   }
 
   public signin(username: string, password: string): Observable<any> {
@@ -80,10 +82,11 @@ export class AuthService implements CanActivate {
     let msg = '';
     if (error.error instanceof ErrorEvent) {
       // handle client-side error
-      msg = error.error.message;
+      msg = `Error: ${error.error.message}`;
     } else {
       // handle server-side error
-      msg = `Error Code: ${error.status}\nMessage: ${JSON.stringify(error.error)}`;
+      msg = `Error ${error.status}:\n ${error.error["errors"].join("\n")}`;
+      console.log(error.error);
     }
     return throwError(() => new Error(msg));
   }

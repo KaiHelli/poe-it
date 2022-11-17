@@ -3,7 +3,8 @@
     <form #loginForm="ngForm" (ngSubmit)="onSubmit()">
       <h2>Sign In</h2>
       <mat-error *ngIf="!loginValid">
-        {{errorMessage}}
+        <div style="white-space: pre-line">{{errorMessage}}</div>
+        <br>
       </mat-error>
       <mat-form-field>
         <input matInput placeholder="Username" [(ngModel)]="username" name="username" required minlength="1" maxlength="20">
@@ -12,7 +13,7 @@
         </mat-error>
       </mat-form-field>
       <mat-form-field>
-        <input matInput type="password" placeholder="Password" [(ngModel)]="password" name="password" required minlength="6">
+        <input matInput type="password" placeholder="Password" [(ngModel)]="password" name="password" required minlength="8" unicodePattern="^(?=.*[^\p{L}\p{N}])(?=.*\p{Lu})(?=.*\p{Ll}).*$">
         <mat-error>
           Please provide a valid password
         </mat-error>

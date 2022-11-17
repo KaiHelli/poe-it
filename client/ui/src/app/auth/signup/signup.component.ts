@@ -10,7 +10,7 @@ import { AuthService } from "../../services/auth.service";
 @Component({
   selector: 'app-login',
   templateUrl: './signup.component.html',
-  styleUrls: ['./signup.component.scss']
+  styleUrls: ['./signup.component.scss', '../../app.component.scss']
 })
 export class SignupComponent implements OnInit {
   public signupValid = true;
@@ -19,7 +19,6 @@ export class SignupComponent implements OnInit {
   public passwordConfirm = '';
 
   // TODO: minLowercase: 1, minUppercase: 1, minNumbers: 0, minSymbols: 1, not same as username
-  // TODO: Display errors and maybe verify input (will be done by backend aswell though).
   public errorMessage = '';
 
   private readonly returnUrl: string;

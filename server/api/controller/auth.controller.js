@@ -9,6 +9,12 @@ const sql = require('../middleware/database');
 const {body, validationResult} = require('express-validator');
 const authConfig = require('../configs/auth.config');
 
+const msgOnlyValidationResult = validationResult.withDefaults({
+    formatter: error => {
+        return error.msg;
+    }
+});
+
 /*
  * Handles the signup for the auth route.
  */
@@ -32,7 +38,7 @@ exports.signup =
         async (req, res) => {
 
         // If some validation failed, return the errors that occurred.
-        const errors = validationResult(req);
+        const errors = msgOnlyValidationResult(req);
         if (!errors.isEmpty()) {
             return res.status(422).json({errors: errors.array()});
         }
@@ -66,7 +72,7 @@ exports.signin =
         // Handle the request itself.
         async (req, res) => {
             // If some fields were not present, return the corresponding errors.
-            const errors = validationResult(req);
+            const errors = msgOnlyValidationResult(req);
             if (!errors.isEmpty()) {
                 return res.status(422).json({errors: errors.array()});
             }
@@ -80,7 +86,7 @@ exports.signin =
 
             // If no match was found, return an error.
             if (rows.length !== 1) {
-                return res.status(403).send({error: 'Username/password combination was not found.'})
+                return res.status(403).send({errors: ['Username/password combination was not found.']})
             }
 
             // Assign the results to variables.
@@ -92,7 +98,7 @@ exports.signin =
 
             // If the password does not match, return an error.
             if (!match) {
-                return res.status(403).send({error: 'Username/password combination was not found.'})
+                return res.status(403).send({errors: ['Username/password combination was not found.']})
             }
 
             // Create a session cookie for this user, insert the session to the database and return the cookie.
