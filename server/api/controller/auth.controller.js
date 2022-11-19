@@ -30,10 +30,7 @@ exports.signup =
         // Validate the password attribute that was given in the request.
         body('password')
         .isStrongPassword({minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 0, minSymbols: 1})
-        .withMessage('The password must have at least 8 character, 1 symbol, 1 uppercase and 1 lowercase character.')
-        .custom(async (password, {req}) => {
-            if (password.normalize().toLowerCase() === req.body.username.normalize().toLowerCase()) return Promise.reject('The password can\'t be your username.');
-        }),
+        .withMessage('The password must have at least 8 character, 1 symbol, 1 uppercase and 1 lowercase character.'),
         // Handle the request itself.
         async (req, res) => {
 
@@ -44,21 +41,25 @@ exports.signup =
         }
 
         // Normalize the username to lowercase and normalize the unicode characters.
-        let username = req.body.username.normalize().toLowerCase();
+        let displayname = req.body.username.normalize();
+        let username = displayname.toLowerCase();
         let password = req.body.password.normalize();
 
         // Generate the argon2 hash using a password specific salt and an application-wide pepper.
         let passwordHash = await argon2.hash(password, {type: argon2.argon2id, secret: authConfig.passwordPepper});
 
         // Insert the new user into the database. The roleID defaults to the 'General Poet' one.
-        await sql.query('INSERT INTO User(username, password, roleID) VALUES (?, ?, 2)', [username, passwordHash]);
+        await sql.query('INSERT INTO User(username, displayname, password, roleID) VALUES (?, ?, ?, 2)', [username, displayname, passwordHash]);
 
         // Get the userID of the created user.
         let rows = await sql.query('SELECT userID FROM User WHERE username = ?', username);
 
+        // Assign the results to variables.
+        let userID = rows[0].userID;
+
         // Create a session cookie for this user, insert the session to the database and return the cookie.
-        req.session.userID = rows[0].userID;
-        return res.status(201).json({message: 'User created successfully.'});
+        req.session.userID = userID;
+        return res.status(201).json({message: 'User created successfully.', user: {id: userID, username: username, displayname: displayname}});
     }];
 
 /*
@@ -82,7 +83,7 @@ exports.signin =
             let password = req.body.password.normalize();
 
             // Get the userID and password corresponding to this username.
-            let rows = await sql.query('SELECT userID, password FROM User WHERE username = ?', username);
+            let rows = await sql.query('SELECT userID, displayname, password FROM User WHERE username = ?', username);
 
             // If no match was found, return an error.
             if (rows.length !== 1) {
@@ -91,6 +92,7 @@ exports.signin =
 
             // Assign the results to variables.
             let userID = rows[0].userID;
+            let displayname = rows[0].displayname;
             let dbPassword = rows[0].password;
 
             // Verify with argon2, whether the password evaluates to the same hash stored in the database.
@@ -103,7 +105,7 @@ exports.signin =
 
             // Create a session cookie for this user, insert the session to the database and return the cookie.
             req.session.userID = userID;
-            return res.status(200).send({message: 'Login successful.'})
+            return res.status(200).send({message: 'Login successful.', user: {id: userID, username: username, displayname: displayname}})
     }];
 
 /*
@@ -126,9 +128,17 @@ exports.signout =
 exports.signedin =
     async (req, res) => {
         if(req.session && req.session.userID) {
-            return res.status(200).send({message: true})
+            // Get the username corresponding to this userID.
+            let rows = await sql.query('SELECT username, displayname FROM User WHERE userID = ?', req.session.userID);
+
+            // If no match was found, return an error.
+            if (rows.length !== 1) {
+                return res.status(200).send({signedIn: false})
+            }
+
+            return res.status(200).send({signedIn: true , user: {id: req.session.userID, username: rows[0].username, displayname: rows[0].displayname}})
         } else {
-            return res.status(200).send({message: false})
+            return res.status(200).send({signedIn: false})
         }
     };
 
@@ -136,10 +146,80 @@ exports.signedin =
  * Handles the change password route.
  */
 
-// TODO
+exports.changePassword =
+    [
+        body('curPassword').not().isEmpty().withMessage('Current password is missing.'),
+        // Validate the new password attribute that was given in the request.
+        body('newPassword')
+            .isStrongPassword({minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 0, minSymbols: 1})
+            .withMessage('The new password must have at least 8 character, 1 symbol, 1 uppercase and 1 lowercase character.'),
+        // Handle the request itself.
+        async (req, res) => {
+            // If some validation failed, return the errors that occurred.
+            const errors = msgOnlyValidationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(422).json({errors: errors.array()});
+            }
+
+            // Normalize the unicode characters.
+            let curPassword = req.body.curPassword.normalize();
+            let newPassword = req.body.newPassword.normalize();
+
+            // Get the password corresponding to this userID.
+            let rows = await sql.query('SELECT password FROM User WHERE userID = ?', req.session.userID);
+
+            // If no match was found, return an error.
+            if (rows.length !== 1) {
+                return res.status(403).send({errors: ['UserID/password combination was not found']})
+            }
+
+            // Assign the results to variables.
+            let dbPassword = rows[0].password;
+
+            // Verify with argon2, whether the password evaluates to the same hash stored in the database.
+            const match = await argon2.verify(dbPassword, curPassword, {secret: authConfig.passwordPepper});
+
+            // If the password does not match, return an error.
+            if (!match) {
+                return res.status(403).send({errors: ['UserID/password combination was not found.']})
+            }
+
+            // Generate the argon2 hash using a password specific salt and an application-wide pepper.
+            let passwordHash = await argon2.hash(newPassword, {type: argon2.argon2id, secret: authConfig.passwordPepper});
+
+            // Update the password in the database.
+            await sql.query('UPDATE User SET password = ? WHERE userID = ?', [passwordHash, req.session.userID]);
+
+            return res.status(201).json({message: 'Password changed successfully.'});
+        }];
 
 /*
  * Handles the change username route.
  */
 
-// TODO
+exports.changeUsername =
+    [
+        // Validate the new username attribute that was given in the request.
+        body('newUsername').trim().isLength({min: 1, max: 20}).withMessage('Username should have 1 to 20 characters.')
+        .custom(async username => {
+            let rows = await sql.query('SELECT COUNT(username) AS num FROM User WHERE User.username = ?', username.normalize().toLowerCase());
+            if (rows[0].num > 0) return Promise.reject('Username already in use.');
+        }),
+        // Handle the request itself.
+        async (req, res) => {
+            // If some validation failed, return the errors that occurred.
+            const errors = msgOnlyValidationResult(req);
+
+            if (!errors.isEmpty()) {
+                return res.status(422).json({errors: errors.array()});
+            }
+
+            // Normalize the unicode characters.
+            let newDisplayname = req.body.newUsername.normalize();
+            let newUsername = newDisplayname.toLowerCase();
+
+            // Update the username in the database.
+            await sql.query('UPDATE User SET username = ?, displayname = ? WHERE userID = ?', [newUsername, newDisplayname, req.session.userID]);
+
+            return res.status(200).json({message: 'Username changed successfully.', user: {id: req.session.userID, username: newUsername, displayname: newDisplayname}});
+        }];

@@ -18,7 +18,6 @@ export class SignupComponent implements OnInit {
   public password = '';
   public passwordConfirm = '';
 
-  // TODO: minLowercase: 1, minUppercase: 1, minNumbers: 0, minSymbols: 1, not same as username
   public errorMessage = '';
 
   private readonly returnUrl: string;

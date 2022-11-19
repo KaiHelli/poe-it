@@ -10,12 +10,14 @@ import { ValidateEqualModule } from  'ng-validate-equal';
 import { MaterialModule } from '../helper/material.module';
 import { FormsModule } from '@angular/forms';
 import { UnicodePatternDirective } from "../validators/unicode-pattern.directive";
+import { AccountComponent } from './account/account.component';
 
 @NgModule({
   declarations: [
     SigninComponent,
     SignupComponent,
-    UnicodePatternDirective
+    UnicodePatternDirective,
+    AccountComponent
   ],
   imports: [
     CommonModule,

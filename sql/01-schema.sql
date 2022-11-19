@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS Role(
 
 CREATE TABLE IF NOT EXISTS User(
   userID SERIAL,
+  displayname VARCHAR(20) NOT NULL UNIQUE,
   username VARCHAR(20) NOT NULL UNIQUE,                         -- 20 characters sufficient?
   password CHAR(96) NOT NULL,                                   -- argon2di produces 96 char output
   registrationDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- automatically adds the current datetime on insert
@@ -110,8 +111,8 @@ INSERT INTO Role(roleID, roleName) VALUES
 (2, 'General Poet');
 
 -- Initialize administrative user
-INSERT INTO User(userID, username, password, roleID) VALUES
-(1, 'admin', '$APP_ADMIN_HASH', 1);
+INSERT INTO User(userID, username, displayname, password, roleID) VALUES
+(1, 'admin', 'admin', '$APP_ADMIN_HASH', 1);
 
 -- Create role for SELECT privileges.
 CREATE ROLE 'db_read';

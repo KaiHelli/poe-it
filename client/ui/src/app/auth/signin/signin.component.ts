@@ -1,6 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from "../../services/auth.service";
+import { MatSnackBar, MatSnackBarConfig } from "@angular/material/snack-bar";
+import {MessageService} from "../../services/message.service";
 
 /*type User = {
   username: string;
@@ -18,7 +20,6 @@ export class SigninComponent implements OnInit {
   //public user: User = {username: '', roles: []};
   public username = '';
   public password = '';
-  // TODO: Display errors and maybe verify input (will be done by backend aswell though).
   public errorMessage = '';
 
   private readonly returnUrl: string;
@@ -26,9 +27,9 @@ export class SigninComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private snackBar: MatSnackBar
   ) {
-    //this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
     this.returnUrl = '/dashboard';
   }
 
@@ -47,6 +48,12 @@ export class SigninComponent implements OnInit {
       next: _ => {
         this.loginValid = true;
         this.router.navigateByUrl(this.returnUrl);
+
+        this.snackBar.open('Signed in successfully!', 'Close', {
+          horizontalPosition: 'right',
+          verticalPosition: 'bottom',
+          duration: 3000
+        });
       },
       error: err => {
         this.errorMessage = err.message ;

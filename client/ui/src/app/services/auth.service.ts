@@ -18,7 +18,15 @@ const httpOptions = {
 })
 
 export class AuthService implements CanActivate {
-  constructor(private http: HttpClient, private router: Router, private messageService: MessageService) {}
+  constructor(private http: HttpClient, private router: Router, private messageService: MessageService) {
+    // Create an initial UserAuthChangedEvent once the AuthService is started.
+    // This makes sure that all services are initialized with the correct state ones the website is opened up.
+    this.isSignedIn().subscribe(_ => {
+      this.messageService.UserAuthChangedEvent.next(this.user);
+    });
+  }
+
+  public user: User | null = null;
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
     return this.isSignedIn().pipe(map(value => {
@@ -38,7 +46,8 @@ export class AuthService implements CanActivate {
       password
     }, httpOptions).pipe(
       tap((data: any) => {
-        this.messageService.UserAuthChangedEvent.next(true);
+        this.user = data.user;
+        this.messageService.UserAuthChangedEvent.next(this.user);
       }),
       catchError(this.handleError),
     );
@@ -50,18 +59,40 @@ export class AuthService implements CanActivate {
       password
     }, httpOptions).pipe(
       tap((data: any) => {
-        this.messageService.UserAuthChangedEvent.next(true);
+        this.user = data.user;
+        this.messageService.UserAuthChangedEvent.next(this.user);
       }),
       catchError(this.handleError),
     );
-    ;
+  }
+
+  public changePassword(curPassword: string, newPassword: string): Observable<any> {
+    return this.http.post(AUTH_API + 'changePassword', {
+      curPassword,
+      newPassword
+    }, httpOptions).pipe(
+      catchError(this.handleError),
+    );
+  }
+
+  public changeUsername(newUsername: string): Observable<any> {
+    return this.http.post(AUTH_API + 'changeUsername', {
+      newUsername
+    }, httpOptions).pipe(
+      tap((data: any) => {
+        this.user = data.user;
+        this.messageService.UserAuthChangedEvent.next(this.user);
+      }),
+      catchError(this.handleError),
+    );
   }
 
   public signout(): Observable<any> {
     return this.http.post(AUTH_API + 'signout', {
     }, httpOptions).pipe(
-      tap((data: any) => {
-        this.messageService.UserAuthChangedEvent.next(false);
+      tap(_ => {
+        this.user = null;
+        this.messageService.UserAuthChangedEvent.next(null);
       }),
       catchError(this.handleError),
     );
@@ -70,7 +101,8 @@ export class AuthService implements CanActivate {
   public isSignedIn(): Observable<boolean> {
     return this.http.get(AUTH_API + 'signedin', httpOptions).pipe(map(
       (data: any) => {
-        if (data.message === true) {
+        if (data.signedIn === true) {
+          this.user = data.user;
           return true;
         }
         return false;
@@ -86,7 +118,6 @@ export class AuthService implements CanActivate {
     } else {
       // handle server-side error
       msg = `Error ${error.status}:\n ${error.error["errors"].join("\n")}`;
-      console.log(error.error);
     }
     return throwError(() => new Error(msg));
   }

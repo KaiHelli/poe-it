@@ -7,11 +7,16 @@
   <button mat-icon-button [routerLink]="'/auth/signin'" *ngIf="!isSignedIn" matTooltip="Login">
     <mat-icon>login</mat-icon>
   </button>
-  <button mat-icon-button [routerLink]="'/auth/signin'" *ngIf="isSignedIn" matTooltip="Account">
+  <button mat-button [routerLink]="'/auth/account'" *ngIf="isSignedIn" matTooltip="Account">
     <mat-icon>account_circle</mat-icon>
+    {{displayname}}
   </button>
   <button mat-icon-button *ngIf="isSignedIn" (click)="onSignOut()" matTooltip="Logout">
     <mat-icon>logout</mat-icon>
   </button>
+  <mat-divider [vertical]="true"></mat-divider>
+  <mat-icon class="mr-8">brightness_5</mat-icon>
+  <mat-slide-toggle matTooltip="Toggle Dark Mode" class="mr-8" [formControl]="toggleControl"></mat-slide-toggle>
+  <mat-icon>bedtime</mat-icon>
 </mat-toolbar>
 <router-outlet></router-outlet>

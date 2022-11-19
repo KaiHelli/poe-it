@@ -17,7 +17,7 @@ user_begin_id = 2
 # Create some fake users with names from different locales
 fake = Faker(['it_IT', 'en', 'ja_JP', 'de', 'ru_RU', 'fr_FR', 'ko_KR', 'sv_SE', 'es', 'da_DK', 'no_NO', 'fi_FI'])
 
-names = [(user_begin_id + i, fake.unique.first_name().lower()) for i in range(num_users)]
+names = [(user_begin_id + i, fake.unique.first_name()) for i in range(num_users)]
 
 assert(len(names) == len(set(names)))
 
@@ -33,8 +33,8 @@ reg_end = datetime.fromisoformat('2022-10-01 23:59:59')
 registration_dates = sorted([fake.date_time_between_dates(reg_start, reg_end) for _ in range(num_users)])
 
 # Create the SQL statements for these.
-insert_users = f"INSERT INTO User(userID, username, password, roleID, registrationDate) VALUES\n"
-insert_users += ",\n".join([f"({id}, '{unicodedata.normalize('NFC', name)}', '$APP_ADMIN_HASH', 2, '{registration_dates[id - user_begin_id].strftime('%Y-%m-%d %H:%M:%S')}')" for id, name in names])
+insert_users = f"INSERT INTO User(userID, username, displayname, password, roleID, registrationDate) VALUES\n"
+insert_users += ",\n".join([f"({id}, '{unicodedata.normalize('NFC', name).lower()}', '{unicodedata.normalize('NFC', name)}', '$APP_ADMIN_HASH', 2, '{registration_dates[id - user_begin_id].strftime('%Y-%m-%d %H:%M:%S')}')" for id, name in names])
 insert_users += ";"
 
 #print(insert_users)

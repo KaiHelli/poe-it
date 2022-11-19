@@ -1,7 +1,14 @@
 <mat-card>
+  <mat-card-header>
+    <mat-card-title>
+      Sign Up
+    </mat-card-title>
+    <mat-card-subtitle>
+      Register a new user account.
+    </mat-card-subtitle>
+  </mat-card-header>
   <mat-card-content>
     <form #signupForm="ngForm" (ngSubmit)="onSubmit()">
-      <h2>Sign Up</h2>
       <mat-error *ngIf="!signupValid">
         <div style="white-space: pre-line">{{errorMessage}}</div>
         <br>
@@ -18,7 +25,7 @@
           Please provide a valid password
         </mat-error>
         <mat-error *ngIf="passwordInput.errors?.['minlength']">
-          Password needs to have at least 6 characters
+          Password needs to have at least 8 characters
         </mat-error>
         <mat-error *ngIf="passwordInput.errors?.['unicodePattern']">
           Password needs to have at least 1 uppercase, 1 lowercase and 1 special character

@@ -5,6 +5,9 @@
 mat-card {
   max-width: 400px;
   margin: 2em auto;
+}
+
+mat-card-content {
   text-align: center;
 }
 
@@ -20,4 +23,16 @@ mat-form-field {
   mat-error:first-child {
     display: block !important;
   }
+}
+
+mat-toolbar {
+  mat-divider {
+    height: 60%;
+    margin-left: 6px;
+    margin-right: 6px;
+  }
+}
+
+.mr-8 {
+  margin-right: 8px;
 }

@@ -1,7 +1,14 @@
 <mat-card>
+  <mat-card-header>
+    <mat-card-title>
+      Sign In
+    </mat-card-title>
+    <mat-card-subtitle>
+      Enter your user login information.
+    </mat-card-subtitle>
+  </mat-card-header>
   <mat-card-content>
     <form #loginForm="ngForm" (ngSubmit)="onSubmit()">
-      <h2>Sign In</h2>
       <mat-error *ngIf="!loginValid">
         <div style="white-space: pre-line">{{errorMessage}}</div>
         <br>

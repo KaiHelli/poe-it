@@ -1,0 +1,98 @@
+<mat-card>
+  <mat-card-header class="center">
+    <mat-card-title>
+      Account Information
+    </mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-list>
+      <div mat-subheader>User Information</div>
+      <mat-list-item>
+        <mat-icon mat-list-icon>arrow_right</mat-icon>
+        Username: {{displayname}}
+      </mat-list-item>
+      <mat-list-item>
+        <mat-icon mat-list-icon>arrow_right</mat-icon>
+        User ID: {{userID}}
+      </mat-list-item>
+      <mat-divider></mat-divider>
+      <div mat-subheader>Statistics</div>
+      <mat-list-item>
+        <mat-icon mat-list-icon>arrow_right</mat-icon>
+        x points
+      </mat-list-item>
+      <mat-list-item>
+        <mat-icon mat-list-icon>arrow_right</mat-icon>
+        y poes
+      </mat-list-item>
+    </mat-list>
+  </mat-card-content>
+</mat-card>
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>
+      Change Username
+    </mat-card-title>
+    <mat-card-subtitle>
+      Enter your new username.
+    </mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <form #changeUsernameForm="ngForm" (ngSubmit)="onChangeUsernameSubmit()">
+      <mat-error *ngIf="!changeUsernameValid">
+        <div style="white-space: pre-line">{{changeUsernameErrorMessage}}</div>
+        <br>
+      </mat-error>
+      <mat-form-field>
+        <input matInput placeholder="New Username" [(ngModel)]="newUsername" name="newUsername" required minlength="1" maxlength="20">
+        <mat-error>
+          Please provide a valid username
+        </mat-error>
+      </mat-form-field>
+      <button mat-raised-button color="primary" [disabled]="!changeUsernameForm.form.valid">Submit</button>
+    </form>
+  </mat-card-content>
+</mat-card>
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>
+      Change Password
+    </mat-card-title>
+    <mat-card-subtitle>
+      Enter your current and new password.
+    </mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <form #changePasswordForm="ngForm" (ngSubmit)="onChangePasswordSubmit()">
+      <mat-error *ngIf="!changePasswordValid">
+        <div style="white-space: pre-line">{{changePasswordErrorMessage}}</div>
+        <br>
+      </mat-error>
+      <mat-form-field>
+        <input matInput type="password" placeholder="Current Password" [(ngModel)]="curPassword" name="curPassword" required minlength="8" unicodePattern="^(?=.*[^\p{L}\p{N}])(?=.*\p{Lu})(?=.*\p{Ll}).*$">
+        <mat-error>
+          Please provide your current password
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput type="password" placeholder="New Password" [(ngModel)]="newPassword" #newPasswordInput="ngModel" name="newPassword" required minlength="8" unicodePattern="^(?=.*[^\p{L}\p{N}])(?=.*\p{Lu})(?=.*\p{Ll}).*$">
+        <mat-error *ngIf="newPasswordInput.errors?.['required']">
+          Please provide a valid password
+        </mat-error>
+        <mat-error *ngIf="newPasswordInput.errors?.['minlength']">
+          Password needs to have at least 8 characters
+        </mat-error>
+        <mat-error *ngIf="newPasswordInput.errors?.['unicodePattern']">
+          Password needs to have at least 1 uppercase, 1 lowercase and 1 special character
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput type="password" placeholder="Confirm New Password" [(ngModel)]="newPasswordConfirm" name="newPasswordConfirm" required ngValidateEqual="newPassword">
+        <mat-error>
+          Please confirm your password
+        </mat-error>
+      </mat-form-field>
+      <button mat-raised-button color="primary" [disabled]="!changePasswordForm.form.valid">Submit</button>
+    </form>
+  </mat-card-content>
+</mat-card>

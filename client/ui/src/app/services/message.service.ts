@@ -5,7 +5,7 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root'
 })
 export class MessageService {
-  public UserAuthChangedEvent : BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public UserAuthChangedEvent : BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
 
   constructor() { }
 }
