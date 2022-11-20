@@ -7,8 +7,19 @@ mat-card {
   margin: 2em auto;
 }
 
-mat-card-content {
-  text-align: center;
+mat-icon[mat-card-avatar] {
+  width: 35px;
+  height: 35px;
+  font-size: 35px;
+  border-radius: 0%;
+}
+
+mat-icon[matlistitemicon] {
+  margin-right: 5px !important;
+}
+
+mat-card-content button {
+  text-align: right;
 }
 
 mat-form-field {
@@ -27,7 +38,7 @@ mat-form-field {
 
 mat-toolbar {
   mat-divider {
-    height: 60%;
+    height: 70%;
     margin-left: 6px;
     margin-right: 6px;
   }

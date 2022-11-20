@@ -1,5 +1,8 @@
 <mat-card>
   <mat-card-header class="center">
+    <mat-icon mat-card-avatar>
+      badge
+    </mat-icon>
     <mat-card-title>
       Account Information
     </mat-card-title>
@@ -8,22 +11,24 @@
     <mat-list>
       <div mat-subheader>User Information</div>
       <mat-list-item>
-        <mat-icon mat-list-icon>arrow_right</mat-icon>
-        Username: {{displayname}}
+        <mat-icon matListItemIcon>arrow_right</mat-icon>
+        <div matListItemTitle>Username</div>
+        <div matListItemLine>{{displayname}}</div>
       </mat-list-item>
       <mat-list-item>
-        <mat-icon mat-list-icon>arrow_right</mat-icon>
-        User ID: {{userID}}
+        <mat-icon matListItemIcon>arrow_right</mat-icon>
+        <div matListItemTitle>User ID</div>
+        <div matListItemLine>{{userID}}</div>
       </mat-list-item>
       <mat-divider></mat-divider>
       <div mat-subheader>Statistics</div>
       <mat-list-item>
-        <mat-icon mat-list-icon>arrow_right</mat-icon>
-        x points
+        <mat-icon matListItemIcon>scoreboard</mat-icon>
+        <div matListItemTitle>999 points</div>
       </mat-list-item>
       <mat-list-item>
-        <mat-icon mat-list-icon>arrow_right</mat-icon>
-        y poes
+        <mat-icon matListItemIcon>feed</mat-icon>
+        <div matListItemTitle>42 poes</div>
       </mat-list-item>
     </mat-list>
   </mat-card-content>
