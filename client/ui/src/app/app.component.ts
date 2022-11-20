@@ -28,7 +28,11 @@ export class AppComponent {
 
     // Set the preferred theme.
     this.toggleControl = new FormControl(prefersDarkMode);
-    this.document.body.classList.add(prefersDarkMode ? 'dark' : 'light');
+
+    if (prefersDarkMode) {
+      this.document.body.classList.add('dark');
+    }
+
   }
 
   public ngOnInit(): void {
@@ -42,9 +46,9 @@ export class AppComponent {
     // Update the preferred
     this.toggleControl.valueChanges.subscribe((darkMode) => {
       if (darkMode) {
-        this.document.body.classList.replace('light', 'dark');
+        this.document.body.classList.add('dark');
       } else {
-        this.document.body.classList.replace('dark', 'light');
+        this.document.body.classList.remove('dark');
       }
     });
   }

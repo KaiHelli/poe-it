@@ -1,13 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from "../../services/auth.service";
-import { MatSnackBar, MatSnackBarConfig } from "@angular/material/snack-bar";
-import {MessageService} from "../../services/message.service";
-
-/*type User = {
-  username: string;
-  roles: string[];
-};*/
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Component({
   selector: 'app-login',

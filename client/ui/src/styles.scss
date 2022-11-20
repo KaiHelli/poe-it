@@ -3,6 +3,7 @@
 @import "@angular/material/theming";
 
 @include mat.core();
+@include mat.all-component-typographies();
 
 $angular-light-primary: mat.define-palette(mat.$indigo-palette);
 $angular-light-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
@@ -18,10 +19,7 @@ $angular-light-theme: mat.define-light-theme((
       density: 0,
     ));
 
-.light {
-  @include mat.all-component-themes($angular-light-theme);
-  @include mat.typography-hierarchy($angular-light-theme);
-}
+@include mat.all-component-themes($angular-light-theme);
 
 $angular-dark-primary: mat.define-palette(mat.$purple-palette);
 $angular-dark-accent: mat.define-palette(mat.$green-palette, A200, A100, A400);
@@ -32,14 +30,10 @@ $angular-dark-theme: mat.define-dark-theme((
         primary: $angular-dark-primary,
         accent: $angular-dark-accent,
         warn: $angular-dark-warn,
-      ),
-      typography: mat.define-typography-config(),
-      density: 0,
-    ));
+      )));
 
 .dark {
   @include mat.all-component-colors($angular-dark-theme);
-  @include mat.typography-hierarchy($angular-light-theme);
 }
 
 /* You can add global styles to this file, and also import other style files */
