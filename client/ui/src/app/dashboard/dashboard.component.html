@@ -1,1 +1,57 @@
-<p>Dashboard works!</p>
+<mat-card>
+  <mat-card-header class="center">
+    <mat-icon mat-card-avatar>
+      feed
+    </mat-icon>
+    <mat-card-title>
+      Pete
+    </mat-card-title>
+    <mat-card-subtitle>
+      09:28 pm, 9/7/2022
+    </mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="button-container">
+      <div class="button-text">
+        <p>
+          Ay, workman, make me a dream,<br>
+          A dream for my love.<br>
+          Cunningly weave sunlight,<br>
+          Breezes, and flowers.<br>
+          Let it be of the cloth of meadows.<br>
+          And -- good workman --<br>
+          And let there be a man walking thereon.
+        </p>
+      </div>
+      <div class="button-group">
+        <button mat-icon-button>
+          <mat-icon>arrow_drop_up</mat-icon>
+        </button>
+        <div class="al-center">
+          1
+        </div>
+        <button mat-icon-button>
+          <mat-icon>arrow_drop_down</mat-icon>
+        </button>
+      </div>
+    </div>
+    <mat-divider></mat-divider>
+  </mat-card-content>
+  <mat-card-actions>
+    <button mat-icon-button matTooltip="Follow poet">
+      <mat-icon>person_add</mat-icon>
+    </button>
+    <button mat-icon-button matTooltip="Add to favorites">
+      <mat-icon>favorite</mat-icon>
+    </button>
+    <span class="spacer"></span>
+    <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="More actions">
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu" xPosition="after">
+      <button mat-menu-item>Edit</button>
+      <button mat-menu-item>Delete</button>
+      <button mat-menu-item>Report</button>
+    </mat-menu>
+  </mat-card-actions>
+</mat-card>

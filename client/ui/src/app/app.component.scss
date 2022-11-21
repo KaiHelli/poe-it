@@ -5,6 +5,10 @@
 mat-card {
   max-width: 400px;
   margin: 2em auto;
+
+  mat-card-actions {
+    padding: 8px 16px;
+  }
 }
 
 mat-icon[mat-card-avatar] {
@@ -18,15 +22,17 @@ mat-icon[matlistitemicon] {
   margin-right: 5px !important;
 }
 
-mat-card-content button {
-  text-align: right;
+div[mat-subheader] {
+  margin-bottom: 0;
+}
+
+mat-card-header {
+  padding-bottom: 8px;
 }
 
 mat-form-field {
   display: block;
-}
 
-mat-form-field {
   mat-error {
     display: none !important;
   }
@@ -42,6 +48,14 @@ mat-toolbar {
     margin-left: 6px;
     margin-right: 6px;
   }
+}
+
+.al-center {
+  text-align: center;
+}
+
+.al-right {
+  text-align: right;
 }
 
 .mr-8 {

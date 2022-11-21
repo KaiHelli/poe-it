@@ -28,6 +28,8 @@
       <button mat-raised-button color="primary" [disabled]="!loginForm.form.valid">Login</button>
     </form>
     <br>
-    <span>No account? <a [routerLink]="'/auth/signup'" mat-menu-item>Register</a></span>
+    <div class="al-center">
+      No account? <a [routerLink]="'/auth/signup'">Register</a>
+    </div>
   </mat-card-content>
 </mat-card>
