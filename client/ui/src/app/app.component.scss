@@ -9,25 +9,26 @@ mat-card {
   mat-card-actions {
     padding: 8px 16px;
   }
-}
 
-mat-icon[mat-card-avatar] {
-  width: 35px;
-  height: 35px;
-  font-size: 35px;
-  border-radius: 0%;
+  mat-card-header {
+    padding-bottom: 8px;
+  }
+
+  mat-icon[mat-card-avatar] {
+    width: 35px;
+    height: 35px;
+    font-size: 35px;
+    border-radius: 0%;
+  }
+
+  div[mat-subheader] {
+    margin-top: 8px;
+    margin-bottom: 0;
+  }
 }
 
 mat-icon[matlistitemicon] {
   margin-right: 5px !important;
-}
-
-div[mat-subheader] {
-  margin-bottom: 0;
-}
-
-mat-card-header {
-  padding-bottom: 8px;
 }
 
 mat-form-field {
