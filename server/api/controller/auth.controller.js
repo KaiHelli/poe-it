@@ -8,6 +8,7 @@ const argon2 = require('argon2');
 const sql = require('../middleware/database');
 const {body, validationResult} = require('express-validator');
 const authConfig = require('../configs/auth.config');
+const rolesConfig = require('../configs/roles.config')
 
 const msgOnlyValidationResult = validationResult.withDefaults({
     formatter: error => {
@@ -49,7 +50,7 @@ exports.signup =
         let passwordHash = await argon2.hash(password, {type: argon2.argon2id, secret: authConfig.passwordPepper});
 
         // Insert the new user into the database. The roleID defaults to the 'General Poet' one.
-        await sql.query('INSERT INTO User(username, displayname, password, roleID) VALUES (?, ?, ?, 2)', [username, displayname, passwordHash]);
+        await sql.query('INSERT INTO User(username, displayname, password, roleID) VALUES (?, ?, ?, ?)', [username, displayname, passwordHash, rolesConfig.generalPoet]);
 
         // Get the userID of the created user.
         let rows = await sql.query('SELECT userID FROM User WHERE username = ?', username);
