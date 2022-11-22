@@ -41,6 +41,24 @@ mat-form-field {
   mat-error:first-child {
     display: block !important;
   }
+
+  button[mat-icon-button] {
+    margin-right: 8px;
+  }
+
+  .mat-mdc-form-field-icon-suffix {
+    padding-bottom: 8px;
+    align-self: end;
+  }
+}
+
+mat-chip-listbox {
+  margin-left: 8px;
+  mat-label {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+  }
 }
 
 mat-toolbar {

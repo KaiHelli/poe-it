@@ -7,9 +7,19 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DashboardComponent implements OnInit {
 
+  keywordValid = true;
+  keywordErrorMessage = '';
+  keyword = '';
+
   constructor() { }
 
   ngOnInit(): void {
+  }
+
+  onPublishPoem(): void {
+  }
+
+  onUpdatePost(): void {
   }
 
 }

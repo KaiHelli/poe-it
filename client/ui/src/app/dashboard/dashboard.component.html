@@ -1,6 +1,62 @@
 <mat-card>
   <mat-card-header class="center">
     <mat-icon mat-card-avatar>
+      create
+    </mat-icon>
+    <mat-card-title>
+      New Poem
+    </mat-card-title>
+    <mat-card-subtitle>
+      Your chance to be the real Poe(t).
+    </mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <form #createPoemForm="ngForm" (ngSubmit)="onPublishPoem()">
+      <mat-form-field class="example-full-width">
+        <mat-label>Write your poem</mat-label>
+        <textarea matInput placeholder="Ex. so much depends..." maxlength="256"></textarea>
+      </mat-form-field>
+      <button mat-raised-button color="primary" [disabled]="!createPoemForm.form.valid">Publish</button>
+    </form>
+  </mat-card-content>
+</mat-card>
+
+<mat-card>
+  <mat-card-content>
+    <form #filterForm="ngForm">
+      <mat-error *ngIf="!keywordValid">
+        <div style="white-space: pre-line">{{keywordErrorMessage}}</div>
+        <br>
+      </mat-error>
+      <!-- TODO -->
+      <mat-form-field>
+        <input matInput placeholder="Enter a search term or keyword" [(ngModel)]="keyword" name="keyword">
+        <button mat-icon-button matSuffix matTooltip="Filter" [disabled]="!filterForm.form.valid">
+          <mat-icon>search</mat-icon>
+        </button>
+      </mat-form-field>
+      <mat-chip-listbox>
+        <mat-label>Sort by:</mat-label>
+        <mat-chip-option color="primary" selected>
+          <mat-icon matChipAvatar>calendar_month</mat-icon>
+          Date
+        </mat-chip-option>
+        <mat-chip-option color="warn">
+          <mat-icon matChipAvatar>local_fire_department</mat-icon>
+          Hot
+        </mat-chip-option>
+        <mat-chip-option color="accent">
+          <mat-icon matChipAvatar>trending_up</mat-icon>
+          Rating
+        </mat-chip-option>
+      </mat-chip-listbox>
+    </form>
+  </mat-card-content>
+</mat-card>
+
+<mat-card *ngFor="let number of [0,1,2,3,4]">
+  <mat-card-header class="center">
+    <mat-icon mat-card-avatar>
       feed
     </mat-icon>
     <mat-card-title>
@@ -28,7 +84,7 @@
   <mat-card-content>
     <div class="button-container">
       <div class="button-text">
-        <p>
+        <p *ngIf="true">
           Ay, workman, make me a dream,<br>
           A dream for my love.<br>
           Cunningly weave sunlight,<br>
@@ -37,6 +93,27 @@
           And -- good workman --<br>
           And let there be a man walking thereon.
         </p>
+        <form #updatePostForm="ngForm" (ngSubmit)="onUpdatePost()" *ngIf="true">
+          <mat-form-field class="example-full-width">
+            <mat-label>Edit your poem</mat-label>
+            <textarea matInput placeholder="Ex. so much depends..." maxlength="256" cdkTextareaAutosize cdkAutosizeMinRows="7">
+Ay, workman, make me a dream,
+A dream for my love.
+Cunningly weave sunlight,
+Breezes, and flowers.
+Let it be of the cloth of meadows.
+And -- good workman --
+And let there be a man walking thereon.</textarea>
+            <div matSuffix class="textarea-suffix-button-group">
+              <button mat-icon-button matTooltip="Cancel" [disabled]="!filterForm.form.valid">
+                <mat-icon>close</mat-icon>
+              </button>
+              <button mat-icon-button matSuffix matTooltip="Save" [disabled]="!filterForm.form.valid">
+                <mat-icon>send</mat-icon>
+              </button>
+            </div>
+          </mat-form-field>
+        </form>
       </div>
       <div class="button-group">
         <button mat-icon-button>
