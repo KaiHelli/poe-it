@@ -14,9 +14,13 @@
     <form #createPoemForm="ngForm" (ngSubmit)="onPublishPoem()">
       <mat-form-field class="example-full-width">
         <mat-label>Write your poem</mat-label>
-        <textarea matInput placeholder="Ex. so much depends..." maxlength="256"></textarea>
+        <textarea matInput placeholder="Ex. so much depends..." maxlength="256" cdkTextareaAutosize></textarea>
+        <div matSuffix class="input-suffix-button-group-bottom">
+          <button mat-icon-button matSuffix matTooltip="Publish" type="submit" [disabled]="!createPoemForm.form.valid">
+            <mat-icon>send</mat-icon>
+          </button>
+        </div>
       </mat-form-field>
-      <button mat-raised-button color="primary" [disabled]="!createPoemForm.form.valid">Publish</button>
     </form>
   </mat-card-content>
 </mat-card>
@@ -31,9 +35,11 @@
       <!-- TODO -->
       <mat-form-field>
         <input matInput placeholder="Enter a search term or keyword" [(ngModel)]="keyword" name="keyword">
-        <button mat-icon-button matSuffix matTooltip="Filter" [disabled]="!filterForm.form.valid">
-          <mat-icon>search</mat-icon>
-        </button>
+        <div matSuffix class="input-suffix-button-group-center">
+          <button mat-icon-button matTooltip="Filter" [disabled]="!filterForm.form.valid">
+            <mat-icon>search</mat-icon>
+          </button>
+        </div>
       </mat-form-field>
       <mat-chip-listbox>
         <mat-label>Sort by:</mat-label>
@@ -50,82 +56,37 @@
           Rating
         </mat-chip-option>
       </mat-chip-listbox>
+      <mat-chip-listbox multiple>
+        <mat-label>Filter by:</mat-label>
+        <mat-chip-option color="primary">
+          <mat-icon matChipAvatar>favorite</mat-icon>
+          Favorite
+        </mat-chip-option>
+        <mat-chip-option color="warn">
+          <mat-icon matChipAvatar>person_alt</mat-icon>
+          Followed
+        </mat-chip-option>
+        <mat-chip-option color="accent">
+          <mat-icon matChipAvatar>edit_note</mat-icon>
+          Personal
+        </mat-chip-option>
+      </mat-chip-listbox>
     </form>
   </mat-card-content>
 </mat-card>
 
-<mat-card *ngFor="let number of [0,1,2,3,4]">
-  <mat-card-header class="center">
-    <mat-icon mat-card-avatar>
-      feed
-    </mat-icon>
-    <mat-card-title>
-      Pete
-    </mat-card-title>
-    <mat-card-subtitle>
-      09:28 pm, 9/7/2022
-    </mat-card-subtitle>
-    <span class="spacer"></span>
-    <button mat-icon-button matTooltip="Follow poet">
-      <mat-icon>person_add_alt</mat-icon>
-    </button>
-    <button mat-icon-button matTooltip="Add to favorites">
-      <mat-icon>favorite_border</mat-icon>
-    </button>
-    <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="More actions">
-      <mat-icon>more_horiz</mat-icon>
-    </button>
-    <mat-menu #menu="matMenu" xPosition="after">
-      <button mat-menu-item>Edit</button>
-      <button mat-menu-item>Delete</button>
-      <button mat-menu-item>Report</button>
-    </mat-menu>
-  </mat-card-header>
-  <mat-card-content>
-    <div class="button-container">
-      <div class="button-text">
-        <p *ngIf="true">
-          Ay, workman, make me a dream,<br>
-          A dream for my love.<br>
-          Cunningly weave sunlight,<br>
-          Breezes, and flowers.<br>
-          Let it be of the cloth of meadows.<br>
-          And -- good workman --<br>
-          And let there be a man walking thereon.
-        </p>
-        <form #updatePostForm="ngForm" (ngSubmit)="onUpdatePost()" *ngIf="true">
-          <mat-form-field class="example-full-width">
-            <mat-label>Edit your poem</mat-label>
-            <textarea matInput placeholder="Ex. so much depends..." maxlength="256" cdkTextareaAutosize cdkAutosizeMinRows="7">
-Ay, workman, make me a dream,
+<app-poem-card *ngFor="let number of [0,1,2,3,4]" displayname="Pete" date="09:28 pm, 9/7/2022" poemText="Ay, workman, make me a dream,
 A dream for my love.
 Cunningly weave sunlight,
 Breezes, and flowers.
 Let it be of the cloth of meadows.
 And -- good workman --
-And let there be a man walking thereon.</textarea>
-            <div matSuffix class="textarea-suffix-button-group">
-              <button mat-icon-button matTooltip="Cancel" [disabled]="!filterForm.form.valid">
-                <mat-icon>close</mat-icon>
-              </button>
-              <button mat-icon-button matSuffix matTooltip="Save" [disabled]="!filterForm.form.valid">
-                <mat-icon>send</mat-icon>
-              </button>
-            </div>
-          </mat-form-field>
-        </form>
-      </div>
-      <div class="button-group">
-        <button mat-icon-button>
-          <mat-icon>arrow_drop_up</mat-icon>
-        </button>
-        <div class="al-center">
-          1
-        </div>
-        <button mat-icon-button>
-          <mat-icon>arrow_drop_down</mat-icon>
-        </button>
-      </div>
-    </div>
-  </mat-card-content>
-</mat-card>
+And let there be a man walking thereon."  [poemID]="1" [rating]="10" [userID]="1" [favorite]="true" [followed]="true"></app-poem-card>
+
+<app-poem-card *ngFor="let number of [0,1,2,3,4]" displayname="Pete" date="09:28 pm, 9/7/2022" poemText="Ay, workman, make me a dream,
+A dream for my love.
+Cunningly weave sunlight,
+Breezes, and flowers.
+Let it be of the cloth of meadows.
+And -- good workman --
+And let there be a man walking thereon."  [poemID]="2" [rating]="10" [userID]="2" [favorite]="false" [followed]="false"></app-poem-card>

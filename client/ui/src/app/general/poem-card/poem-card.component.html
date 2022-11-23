@@ -1,0 +1,64 @@
+<mat-card>
+  <mat-card-header class="center">
+    <mat-icon mat-card-avatar>
+      feed
+    </mat-icon>
+    <mat-card-title>
+      {{displayname}}
+    </mat-card-title>
+    <mat-card-subtitle>
+      {{date}}
+    </mat-card-subtitle>
+    <span class="spacer"></span>
+    <button mat-icon-button *ngIf="isAdmin || isAuthor" [matTooltip]="isEditing ? 'End editing' : 'Edit your poem'" (click)="onToggleEdit()">
+      <mat-icon>edit</mat-icon>
+    </button>
+    <button mat-icon-button *ngIf="!isAuthor" [matTooltip]="followed ? 'Unfollow poet' : 'Follow poet'" (click)="onToggleFollow()">
+      <mat-icon *ngIf="!followed">person_add_alt</mat-icon>
+      <mat-icon *ngIf="followed" color="primary">person_alt</mat-icon>
+    </button>
+    <button mat-icon-button [matTooltip]="favorite ? 'Remove from favorites' : 'Add to favorites'" (click)="onToggleFavorite()">
+      <mat-icon *ngIf="!favorite">favorite_border</mat-icon>
+      <mat-icon *ngIf="favorite" color="warn">favorite</mat-icon>
+    </button>
+    <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="More actions">
+      <mat-icon>more_horiz</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu" xPosition="after">
+      <button mat-menu-item *ngIf="isAdmin || isAuthor">Delete</button>
+      <button mat-menu-item>Report</button>
+    </mat-menu>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="button-container">
+      <div class="button-text">
+        <div style="white-space: pre-line" *ngIf="!isEditing">{{poemText}}</div>
+        <form #updatePostForm="ngForm" (ngSubmit)="onUpdatePost()" *ngIf="isEditing">
+          <mat-form-field class="example-full-width">
+            <mat-label>Edit your poem</mat-label>
+            <textarea matInput placeholder="Ex. so much depends..." maxlength="256" cdkTextareaAutosize cdkAutosizeMinRows="7" value="{{editPoemText}}"></textarea>
+            <div matSuffix class="input-suffix-button-group-stretch">
+              <button mat-icon-button matTooltip="Cancel" type="button" [disabled]="!updatePostForm.form.valid" (click)="onToggleEdit()">
+                <mat-icon>close</mat-icon>
+              </button>
+              <button mat-icon-button matSuffix matTooltip="Save" type="submit" [disabled]="!updatePostForm.form.valid">
+                <mat-icon>send</mat-icon>
+              </button>
+            </div>
+          </mat-form-field>
+        </form>
+      </div>
+      <div class="button-group">
+        <button mat-icon-button [class]="rated == 1 ? 'selected' : null" [disabled]="rated !== null" (click)=onUpvote()>
+          <mat-icon>arrow_drop_up</mat-icon>
+        </button>
+        <div class="al-center">
+          {{rating}}
+        </div>
+        <button mat-icon-button [class]="rated == -1 ? 'selected' : null" [disabled]="rated !== null" (click)=onDownvote()>
+          <mat-icon>arrow_drop_down</mat-icon>
+        </button>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

@@ -1,5 +1,6 @@
 declare type User = {
-  id: number
+  userID: number
   username: string
   displayname: string
+  role: Role
 }

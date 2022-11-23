@@ -5,17 +5,19 @@ import { DashboardRoutingModule } from './dashboard-routing.module';
 import { DashboardComponent } from './dashboard.component';
 
 import { MaterialModule } from '../helper/material.module';
-import {FormsModule} from "@angular/forms";
+import { FormsModule } from "@angular/forms";
+import { PoemCardComponent } from "../general/poem-card/poem-card.component";
 
 @NgModule({
   declarations: [
-    DashboardComponent
+    DashboardComponent,
+    PoemCardComponent
   ],
   imports: [
     CommonModule,
     DashboardRoutingModule,
     MaterialModule,
-    FormsModule
+    FormsModule,
   ]
 })
 export class DashboardModule { }

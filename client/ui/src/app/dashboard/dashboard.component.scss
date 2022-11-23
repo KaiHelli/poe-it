@@ -1,35 +1,3 @@
-.button-container {
-  display: flex;
-
-  .button-text {
-    flex-grow: 1;
-  }
-
-  .button-group {
-    margin-left: 8px;
-    display: flex;
-    flex-direction: column;
-    align-content: space-between;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-}
-
-.textarea-suffix-button-group {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 8px 0;
-}
-
-mat-form-field {
-  ::ng-deep .mat-mdc-form-field-icon-suffix {
-    align-self: stretch !important;
-    align-items: stretch;
-    display: flex;
-  }
-}
-
-mat-card {
+::ng-deep mat-card {
   max-width: 750px !important;
 }

@@ -18,8 +18,4 @@ export class DashboardComponent implements OnInit {
 
   onPublishPoem(): void {
   }
-
-  onUpdatePost(): void {
-  }
-
 }

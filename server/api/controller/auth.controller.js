@@ -52,15 +52,17 @@ exports.signup =
         // Insert the new user into the database. The roleID defaults to the 'General Poet' one.
         await sql.query('INSERT INTO User(username, displayname, password, roleID) VALUES (?, ?, ?, ?)', [username, displayname, passwordHash, rolesConfig.generalPoet]);
 
-        // Get the userID of the created user.
-        let rows = await sql.query('SELECT userID FROM User WHERE username = ?', username);
+        // Get the userID and role of the created user.
+        let rows = await sql.query('SELECT userID, roleID, roleName FROM User NATURAL JOIN Role WHERE username = ?', username);
 
         // Assign the results to variables.
         let userID = rows[0].userID;
+        let roleID = rows[0].roleID;
+        let roleName = rows[0].roleName;
 
         // Create a session cookie for this user, insert the session to the database and return the cookie.
         req.session.userID = userID;
-        return res.status(201).json({message: 'User created successfully.', user: {id: userID, username: username, displayname: displayname}});
+        return res.status(201).json({message: 'User created successfully.', user: {userID: userID, username: username, displayname: displayname, role: {roleID: roleID, roleName: roleName}}});
     }];
 
 /*
@@ -83,8 +85,8 @@ exports.signin =
             let username = req.body.username.normalize().toLowerCase();
             let password = req.body.password.normalize();
 
-            // Get the userID and password corresponding to this username.
-            let rows = await sql.query('SELECT userID, displayname, password FROM User WHERE username = ?', username);
+            // Get the userID, password and role corresponding to this username.
+            let rows = await sql.query('SELECT userID, displayname, password, roleID, roleName FROM User NATURAL JOIN Role WHERE username = ?', username);
 
             // If no match was found, return an error.
             if (rows.length !== 1) {
@@ -95,6 +97,8 @@ exports.signin =
             let userID = rows[0].userID;
             let displayname = rows[0].displayname;
             let dbPassword = rows[0].password;
+            let roleID = rows[0].roleID;
+            let roleName = rows[0].roleName;
 
             // Verify with argon2, whether the password evaluates to the same hash stored in the database.
             const match = await argon2.verify(dbPassword, password, {secret: authConfig.passwordPepper});
@@ -106,7 +110,7 @@ exports.signin =
 
             // Create a session cookie for this user, insert the session to the database and return the cookie.
             req.session.userID = userID;
-            return res.status(200).send({message: 'Login successful.', user: {id: userID, username: username, displayname: displayname}})
+            return res.status(200).send({message: 'Login successful.', user: {userID: userID, username: username, displayname: displayname, role: {roleID: roleID, roleName: roleName}}})
     }];
 
 /*
@@ -129,15 +133,15 @@ exports.signout =
 exports.signedin =
     async (req, res) => {
         if(req.session && req.session.userID) {
-            // Get the username corresponding to this userID.
-            let rows = await sql.query('SELECT username, displayname FROM User WHERE userID = ?', req.session.userID);
+            // Get the username and role corresponding to this userID.
+            let rows = await sql.query('SELECT username, displayname, roleID, roleName FROM User NATURAL JOIN Role WHERE userID = ?', req.session.userID);
 
             // If no match was found, return an error.
             if (rows.length !== 1) {
                 return res.status(200).send({signedIn: false})
             }
 
-            return res.status(200).send({signedIn: true , user: {id: req.session.userID, username: rows[0].username, displayname: rows[0].displayname}})
+            return res.status(200).send({signedIn: true , user: {userID: req.session.userID, username: rows[0].username, displayname: rows[0].displayname, role: {roleID: rows[0].roleID, roleName: rows[0].roleName}}})
         } else {
             return res.status(200).send({signedIn: false})
         }
@@ -222,5 +226,5 @@ exports.changeUsername =
             // Update the username in the database.
             await sql.query('UPDATE User SET username = ?, displayname = ? WHERE userID = ?', [newUsername, newDisplayname, req.session.userID]);
 
-            return res.status(200).json({message: 'Username changed successfully.', user: {id: req.session.userID, username: newUsername, displayname: newDisplayname}});
+            return res.status(200).json({message: 'Username changed successfully.', user: {userID: req.session.userID, username: newUsername, displayname: newDisplayname}});
         }];

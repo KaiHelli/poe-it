@@ -31,11 +31,11 @@ export class AccountComponent implements OnInit {
 
   public ngOnInit(): void {
     this.displayname = this.authService.user!.displayname;
-    this.userID = this.authService.user!.id.toString();
+    this.userID = this.authService.user!.userID.toString();
 
     this.messageService.UserAuthChangedEvent.subscribe((value: User | null) => {
       this.displayname = value !== null ? value.displayname : '';
-      this.userID = value !== null ? value.id.toString() : '';
+      this.userID = value !== null ? value.userID.toString() : '';
     });
   }
 

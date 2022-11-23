@@ -21,6 +21,9 @@ const authorize = require('../middleware/authorize')
  * @apiSuccess {Number}     user.id             The id of the user.
  * @apiSuccess {String}     user.username       The username of the user.
  * @apiSuccess {String}     user.displayname    The displayname of the user.
+ * @apiSuccess {Object}     user.role           The role of the user.
+ * @apiSuccess {Number}     user.role.roleID    The roleID of the role.
+ * @apiSuccess {String}     user.role.roleName  The roleName of the role.
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
  * Set-Cookie: connect.sid=s%3ArRnSKPxuWWTylVL5WxDZ46qcP-Nm6smT.4ec2DGasFmk6i80%2B04M7b03i%2FCuu%2B6KniO8W6l%2Fk8zw; Path=/; HttpOnly
@@ -41,6 +44,9 @@ authRouter.post('/signin', authorize.notSignedIn, authController.signin);
  * @apiSuccess {Number}     user.id             The id of the user.
  * @apiSuccess {String}     user.username       The username of the user.
  * @apiSuccess {String}     user.displayname    The displayname of the user.
+ * @apiSuccess {Object}     user.role           The role of the user.
+ * @apiSuccess {Number}     user.role.roleID    The roleID of the role.
+ * @apiSuccess {String}     user.role.roleName  The roleName of the role.
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 201 Created
  * Set-Cookie: connect.sid=s%3APcuQ2J5NPmZBc0ee2croDCzK1KsJW6T8.Xdph8MiOFptIhDjNUK0rabId53aCGvvbZsfJ0eqgKpQ; Path=/; HttpOnly
@@ -72,6 +78,9 @@ authRouter.post('/signout', authorize.isSignedIn, authController.signout);
  * @apiSuccess {Number}     user.id             The id of the user.
  * @apiSuccess {String}     user.username       The username of the user.
  * @apiSuccess {String}     user.displayname    The displayname of the user.
+ * @apiSuccess {Object}     user.role           The role of the user.
+ * @apiSuccess {Number}     user.role.roleID    The roleID of the role.
+ * @apiSuccess {String}     user.role.roleName  The roleName of the role.
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
  * {"signedIn":true,"user":{"id":1,"username":"administrator","displayname":"Administrator"}}

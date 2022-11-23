@@ -3,8 +3,9 @@ import { HttpClient, HttpHeaders , HttpErrorResponse } from '@angular/common/htt
 import { Observable, catchError, throwError, tap, map } from 'rxjs';
 import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot, Router } from "@angular/router";
 import { MessageService } from "./message.service";
+import { AppConfig } from "../config/app.config";
 
-const AUTH_API = 'http://localhost:8080/v1/auth/';
+const AUTH_API = AppConfig.API_URL + 'auth/';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
@@ -80,7 +81,7 @@ export class AuthService implements CanActivate {
       newUsername
     }, httpOptions).pipe(
       tap((data: any) => {
-        this.user = data.user;
+        this.user = {...data.user, role: this.user!.role};
         this.messageService.UserAuthChangedEvent.next(this.user);
       }),
       catchError(this.handleError),
@@ -108,6 +109,10 @@ export class AuthService implements CanActivate {
         return false;
       }
     ));
+  }
+
+  public isAdmin(): boolean {
+    return this.user !== null && this.user.role.roleID === AppConfig.ADMIN_ROLE_ID;
   }
 
   private handleError(error: HttpErrorResponse) {

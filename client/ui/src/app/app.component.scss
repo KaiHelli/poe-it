@@ -69,6 +69,35 @@ mat-toolbar {
   }
 }
 
+.input-suffix-button-group-bottom {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 0;
+  align-self: end;
+}
+
+.input-suffix-button-group-center {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 0;
+  align-self: center;
+}
+
+.input-suffix-button-group-stretch {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+
+mat-form-field {
+  ::ng-deep .mat-mdc-form-field-icon-suffix {
+    align-self: stretch !important;
+    align-items: stretch;
+    display: flex;
+  }
+}
+
 .al-center {
   text-align: center;
 }
