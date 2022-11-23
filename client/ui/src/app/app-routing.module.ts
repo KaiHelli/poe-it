@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { AuthService } from "./services/auth.service";
 
 const routes: Routes = [
+  {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
   {path: 'auth', loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule)},
   {path: 'dashboard', loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule), canActivate: [AuthService]},
 ];
