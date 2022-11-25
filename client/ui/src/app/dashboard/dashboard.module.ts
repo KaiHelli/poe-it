@@ -7,11 +7,13 @@ import { DashboardComponent } from './dashboard.component';
 import { MaterialModule } from '../helper/material.module';
 import { FormsModule } from "@angular/forms";
 import { PoemCardComponent } from "../general/poem-card/poem-card.component";
+import { FilterBarComponent } from '../general/filter-bar/filter-bar.component';
 
 @NgModule({
   declarations: [
     DashboardComponent,
-    PoemCardComponent
+    PoemCardComponent,
+    FilterBarComponent
   ],
   imports: [
     CommonModule,

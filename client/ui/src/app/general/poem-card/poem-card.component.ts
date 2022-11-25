@@ -1,5 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { AuthService } from "../../services/auth.service";
+import { MessageService } from "../../services/message.service";
+import {filter} from "rxjs";
 
 @Component({
   selector: 'app-poem-card',
@@ -23,11 +25,16 @@ export class PoemCardComponent {
   isAuthor: boolean;
 
   constructor(
-    private authService: AuthService
+    private authService: AuthService,
+    private messageService: MessageService
   ) {
     this.editPoemText = this.poemText;
     this.isAuthor = authService.user!.userID === this.userID;
     this.isAdmin = authService.isAdmin();
+
+    messageService.UserFollowChangedEvent.pipe(filter(value => value.userID === this.userID && value.emittedPoemID !== this.poemID)).subscribe(value => {
+      this.followed = value.followed;
+    })
   }
 
   onToggleEdit(): void {
@@ -41,6 +48,7 @@ export class PoemCardComponent {
 
   onToggleFollow(): void {
     this.followed = !this.followed;
+    this.messageService.UserFollowChangedEvent.next({userID: this.userID, emittedPoemID: this.poemID, followed: this.followed});
   }
 
   onUpdatePost(): void {

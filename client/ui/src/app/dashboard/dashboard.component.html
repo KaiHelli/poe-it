@@ -25,57 +25,9 @@
   </mat-card-content>
 </mat-card>
 
-<mat-card>
-  <mat-card-content>
-    <form #filterForm="ngForm">
-      <mat-error *ngIf="!keywordValid">
-        <div style="white-space: pre-line">{{keywordErrorMessage}}</div>
-        <br>
-      </mat-error>
-      <!-- TODO -->
-      <mat-form-field>
-        <input matInput placeholder="Enter a search term or keyword" [(ngModel)]="keyword" name="keyword">
-        <div matSuffix class="input-suffix-button-group-center">
-          <button mat-icon-button matTooltip="Filter" [disabled]="!filterForm.form.valid">
-            <mat-icon>search</mat-icon>
-          </button>
-        </div>
-      </mat-form-field>
-      <mat-chip-listbox>
-        <mat-label>Sort by:</mat-label>
-        <mat-chip-option color="primary" selected>
-          <mat-icon matChipAvatar>calendar_month</mat-icon>
-          Date
-        </mat-chip-option>
-        <mat-chip-option color="warn">
-          <mat-icon matChipAvatar>local_fire_department</mat-icon>
-          Hot
-        </mat-chip-option>
-        <mat-chip-option color="accent">
-          <mat-icon matChipAvatar>trending_up</mat-icon>
-          Rating
-        </mat-chip-option>
-      </mat-chip-listbox>
-      <mat-chip-listbox multiple>
-        <mat-label>Filter by:</mat-label>
-        <mat-chip-option color="primary">
-          <mat-icon matChipAvatar>favorite</mat-icon>
-          Favorite
-        </mat-chip-option>
-        <mat-chip-option color="warn">
-          <mat-icon matChipAvatar>person_alt</mat-icon>
-          Followed
-        </mat-chip-option>
-        <mat-chip-option color="accent">
-          <mat-icon matChipAvatar>edit_note</mat-icon>
-          Personal
-        </mat-chip-option>
-      </mat-chip-listbox>
-    </form>
-  </mat-card-content>
-</mat-card>
+<app-filter-bar></app-filter-bar>
 
-<app-poem-card *ngFor="let number of [0,1,2,3,4]" displayname="Pete" date="09:28 pm, 9/7/2022" poemText="Ay, workman, make me a dream,
+<app-poem-card displayname="Pete" date="09:28 pm, 9/7/2022" poemText="Ay, workman, make me a dream,
 A dream for my love.
 Cunningly weave sunlight,
 Breezes, and flowers.
@@ -83,10 +35,18 @@ Let it be of the cloth of meadows.
 And -- good workman --
 And let there be a man walking thereon."  [poemID]="1" [rating]="10" [userID]="1" [favorite]="true" [followed]="true"></app-poem-card>
 
-<app-poem-card *ngFor="let number of [0,1,2,3,4]" displayname="Pete" date="09:28 pm, 9/7/2022" poemText="Ay, workman, make me a dream,
+<app-poem-card displayname="Pete" date="09:28 pm, 9/7/2022" poemText="Ay, workman, make me a dream,
 A dream for my love.
 Cunningly weave sunlight,
 Breezes, and flowers.
 Let it be of the cloth of meadows.
 And -- good workman --
-And let there be a man walking thereon."  [poemID]="2" [rating]="10" [userID]="2" [favorite]="false" [followed]="false"></app-poem-card>
+And let there be a man walking thereon."  [poemID]="2" [rating]="10" [userID]="1" [favorite]="true" [followed]="true"></app-poem-card>
+
+<app-poem-card  displayname="Steve" date="09:28 pm, 9/7/2023" poemText="Ay, workman, make me a dream,
+A dream for my love.
+Cunningly weave sunlight,
+Breezes, and flowers.
+Let it be of the cloth of meadows.
+And -- good workman --
+And let there be a man walking thereon."  [poemID]="3" [rating]="10" [userID]="2" [favorite]="false" [followed]="false"></app-poem-card>
