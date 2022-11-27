@@ -1,23 +1,18 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders , HttpErrorResponse } from '@angular/common/http';
+import { HttpClient , HttpErrorResponse } from '@angular/common/http';
 import { Observable, catchError, throwError, tap, map } from 'rxjs';
 import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot, Router } from "@angular/router";
 import { MessageService } from "./message.service";
 import { AppConfig } from "../config/app.config";
+import { ErrorModule } from "../helper/error.module";
 
 const AUTH_API = AppConfig.API_URL + 'auth/';
 
-const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
-  observe: 'body' as const,
-  responseType: 'json' as const,
-  withCredentials: true
-};
+const httpOptions = AppConfig.HTTP_OPTIONS;
 
 @Injectable({
   providedIn: 'root'
 })
-
 export class AuthService implements CanActivate {
   constructor(private http: HttpClient, private router: Router, private messageService: MessageService) {
     // Create an initial UserAuthChangedEvent once the AuthService is started.
@@ -50,7 +45,7 @@ export class AuthService implements CanActivate {
         this.user = data.user;
         this.messageService.UserAuthChangedEvent.next(this.user);
       }),
-      catchError(this.handleError),
+      catchError(ErrorModule.handleError),
     );
   }
 
@@ -63,7 +58,7 @@ export class AuthService implements CanActivate {
         this.user = data.user;
         this.messageService.UserAuthChangedEvent.next(this.user);
       }),
-      catchError(this.handleError),
+      catchError(ErrorModule.handleError),
     );
   }
 
@@ -72,7 +67,7 @@ export class AuthService implements CanActivate {
       curPassword,
       newPassword
     }, httpOptions).pipe(
-      catchError(this.handleError),
+      catchError(ErrorModule.handleError),
     );
   }
 
@@ -84,7 +79,7 @@ export class AuthService implements CanActivate {
         this.user = {...data.user, role: this.user!.role};
         this.messageService.UserAuthChangedEvent.next(this.user);
       }),
-      catchError(this.handleError),
+      catchError(ErrorModule.handleError),
     );
   }
 
@@ -95,7 +90,7 @@ export class AuthService implements CanActivate {
         this.user = null;
         this.messageService.UserAuthChangedEvent.next(null);
       }),
-      catchError(this.handleError),
+      catchError(ErrorModule.handleError),
     );
   }
 
@@ -113,17 +108,5 @@ export class AuthService implements CanActivate {
 
   public isAdmin(): boolean {
     return this.user !== null && this.user.role.roleID === AppConfig.ADMIN_ROLE_ID;
-  }
-
-  private handleError(error: HttpErrorResponse) {
-    let msg = '';
-    if (error.error instanceof ErrorEvent) {
-      // handle client-side error
-      msg = `Error: ${error.error.message}`;
-    } else {
-      // handle server-side error
-      msg = `Error ${error.status}:\n ${error.error["errors"].join("\n")}`;
-    }
-    return throwError(() => new Error(msg));
   }
 }
