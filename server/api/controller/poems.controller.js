@@ -13,8 +13,18 @@ const {body, param, validationResult} = require('express-validator');
  */
 
 exports.getUserPoems = async (req, res) => {
-    let rows = await sql.query('SELECT * FROM PrivatePoem');
+    let rows = await sql.query('SELECT *  FROM PrivatePoem;');
 
+    return res.status(200).json(rows);
+};
+
+
+/*
+ * Retrieves top 50 available poems ordered by date.
+ * TODO: 
+ */
+exports.getTopUserPoems = async (req, res) => {
+    let rows = await sql.query('SELECT *  FROM PrivatePoem ORDER BY timestamp limit 50;');
     return res.status(200).json(rows);
 };
 
