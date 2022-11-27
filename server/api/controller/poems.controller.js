@@ -24,7 +24,11 @@ exports.getUserPoems = async (req, res) => {
  * TODO: 
  */
 exports.getTopUserPoems = async (req, res) => {
-    let rows = await sql.query('SELECT * FROM PrivatePoem ORDER BY timestamp limit 50;');
+    let rows = await sql.query(' select p.poemID, p.poemText, p.userID, p.timestamp, rating, u.username\
+    from (SELECT a.poemID, a.poemText,a.userID, a.timestamp, sum(rating) as rating\
+            FROM PrivatePoem a JOIN PrivatePoemRating b on a.poemID = b.poemID\
+            GROUP BY a.poemID ORDER BY timestamp limit 50)\
+        p left join User u on p.userID = u.userID;'); 
     return res.status(200).json(rows);
 };
 
