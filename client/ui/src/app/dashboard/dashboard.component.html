@@ -1,4 +1,15 @@
 <app-public-card></app-public-card>
+<p>&&&& </p>
+<div *ngFor="let poem of topList">
+  {{poem.poemID}}
+
+  <app-poem-card displayname="Pete" date="09:28 pm, 9/7/2022" poemText= {{poem.poemText}} 
+  [rating]="10" [userID]="1" [favorite]="true" [followed]="true"></app-poem-card>
+  
+  
+
+
+</div>
 
 <mat-card>
   <mat-card-header class="center">
@@ -31,15 +42,6 @@
 <app-filter-bar></app-filter-bar>
 
 
-
-<app-poem-card displayname="Pete" date="09:28 pm, 9/7/2022" poemText="Ay, workman, make me a dream,
-A dream for my love.
-Cunningly weave sunlight,
-Breezes, and flowers.
-Let it be of the cloth of meadows.
-And -- good workman --
-And let there be a man walking thereon."  [poemID]="1" [rating]="10" [userID]="1" [favorite]="true" [followed]="true"></app-poem-card>
-
 <app-poem-card displayname="Pete" date="09:28 pm, 9/7/2022" poemText="Ay, workman, make me a dream,
 A dream for my love.
 Cunningly weave sunlight,
@@ -48,10 +50,3 @@ Let it be of the cloth of meadows.
 And -- good workman --
 And let there be a man walking thereon."  [poemID]="2" [rating]="10" [userID]="1" [favorite]="true" [followed]="true"></app-poem-card>
 
-<app-poem-card  displayname="Steve" date="09:28 pm, 9/7/2023" poemText="Ay, workman, make me a dream,
-A dream for my love.
-Cunningly weave sunlight,
-Breezes, and flowers.
-Let it be of the cloth of meadows.
-And -- good workman --
-And let there be a man walking thereon."  [poemID]="3" [rating]="10" [userID]="2" [favorite]="false" [followed]="false"></app-poem-card>

@@ -24,7 +24,7 @@ exports.getUserPoems = async (req, res) => {
  * TODO: 
  */
 exports.getTopUserPoems = async (req, res) => {
-    let rows = await sql.query('SELECT *  FROM PrivatePoem ORDER BY timestamp limit 50;');
+    let rows = await sql.query('SELECT * FROM PrivatePoem ORDER BY timestamp limit 50;');
     return res.status(200).json(rows);
 };
 

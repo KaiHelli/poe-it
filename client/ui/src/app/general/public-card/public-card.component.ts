@@ -18,10 +18,8 @@ class PublicPoem {
 
 export class PublicCardComponent  {
   public  publicPoem:any = {};
-  public keys:string = "";
   constructor(private http:HttpClient) { } 
   ngOnInit(){
-    console.log("Hello world!"); 
     this.http.get("http://localhost:8080/v1/poems/public").subscribe((res)=>{
       this.publicPoem = res
       //console.log(this.publicPoem)

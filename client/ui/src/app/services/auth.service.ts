@@ -7,7 +7,7 @@ import { AppConfig } from "../config/app.config";
 
 const AUTH_API = AppConfig.API_URL + 'auth/';
 
-const httpOptions = {
+export const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
   observe: 'body' as const,
   responseType: 'json' as const,
