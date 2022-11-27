@@ -7,12 +7,10 @@ import { MaterialModule } from './helper/material.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { PublicCardComponent } from './public-card/public-card.component';
 
 @NgModule({
     declarations: [
-        AppComponent,
-        PublicCardComponent,
+        AppComponent
     ],
     imports: [
         BrowserModule,

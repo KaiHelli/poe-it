@@ -45,7 +45,7 @@ import {MatTreeModule} from '@angular/material/tree';
 import {OverlayModule} from '@angular/cdk/overlay';
 import {CdkMenuModule} from '@angular/cdk/menu';
 import {DialogModule} from '@angular/cdk/dialog';
-
+import { HttpClientModule } from "@angular/common/http";
 @NgModule({
   exports: [
     A11yModule,
