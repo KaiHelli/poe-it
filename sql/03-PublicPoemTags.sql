@@ -154,5 +154,4 @@ VALUES
 (95, 'Youth'),
 (96, 'The Body'),
 (97, 'Realistic & Complicated'),
-(97, 'Stars, Planets, Heavens'),
-
+(97, 'Stars, Planets, Heavens');
