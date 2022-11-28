@@ -37,6 +37,7 @@ const authorize = require('../middleware/authorize')
  * ]
  */
 authRouter.get('/private', authorize.isSignedIn, poemsController.getUserPoems);
+authRouter.get('/private_top', authorize.isSignedIn, poemsController.getTopUserPoems);
 
 // TODO: Add additional features.
 // authRouter.post('/private/', authorize.isSignedIn, poemsController.insertUserPoem);
