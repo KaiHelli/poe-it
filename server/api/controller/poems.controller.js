@@ -19,6 +19,8 @@ exports.getUserPoems = async (req, res) => {
 };
 
 
+
+
 /*
  * Retrieves top 50 available poems ordered by date.
  * TODO: 
@@ -55,7 +57,9 @@ exports.getUserPoemByID = [
         return res.status(200).json(rows[0]);
 }];
 
-
+/* 
+* Get a random public poem
+*/
 exports.getPublicPoem = async (req, res) => {
     let rows = await sql.query('SELECT poemID, poemTitle, poemText, poetName ' +
                                         'FROM PublicPoem NATURAL JOIN PublicPoemTags ' +
@@ -63,4 +67,10 @@ exports.getPublicPoem = async (req, res) => {
                                         'LIMIT 1;');
 
     return res.status(200).json(rows[0]);
+};
+
+
+exports.getRatingsDump = async (req, res) => {
+    let rows = await sql.query('SELECT *  FROM PrivatePoemRating;');
+    return res.status(200).json(rows);
 };
