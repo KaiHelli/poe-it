@@ -2,9 +2,11 @@ import { Injectable } from '@angular/core';
 import {AppConfig} from "../config/app.config";
 import {HttpClient} from "@angular/common/http";
 import {MessageService} from "./message.service";
-import {Observable} from "rxjs";
+import {catchError, Observable, tap} from "rxjs";
+import {ErrorModule} from "../helper/error.module";
 
 const POEM_API = AppConfig.API_URL + 'poems/';
+
 
 const httpOptions = AppConfig.HTTP_OPTIONS;
 
@@ -17,7 +19,9 @@ export class FeedService {
   }
 
   public getPoems(): Observable<any> {
-    return new Observable<any>();
+    return this.http.get(POEM_API + "private/", httpOptions).pipe(
+      catchError(ErrorModule.handleError),
+    );
   }
 
   public createPoem(poemText: string): Observable<any> {

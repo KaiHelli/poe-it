@@ -13,26 +13,48 @@ const authorize = require('../middleware/authorize')
  * @api {get} poems/private Get a list of private poems.
  * @apiGroup PrivatePoems
  * @apiPermission user
- * @apiHeader  {Cookie}     connect.sid         Users unique session cookie.
- * @apiSuccess {Object[]}   poems               The list of poems.
- * @apiSuccess {Number}     poems.poemID        The id of the poem.
- * @apiSuccess {String}     poems.poemText      The text of the poem.
- * @apiSuccess {Number}     poems.userID        The user id of the user that posted the poem.
- * @apiSuccess {Date}       poems.timestamp     When this poem was posted.
+ * @apiHeader  {Cookie}         connect.sid         Users unique session cookie.
+ * @apiQuery   {Number}         numPoems            The number of poems that should be returned.
+ * @apiQuery   {Number}         offset              The offset from which the poems should be returned.
+ * @apiQuery   {String}         orderBy             The order of the poems.
+ * @apiQuery   {Object[String]} keywords            The keywords that should be searched.
+ * @apiSuccess {Object[]}       poems               The list of poems.
+ * @apiSuccess {Number}         poems.poemID        The id of the poem.
+ * @apiSuccess {String}         poems.poemText      The text of the poem.
+ * @apiSuccess {Date}           poems.timestamp     When this poem was posted.
+ * @apiSuccess {Number}         poems.userID        The user id of the user that posted the poem.
+ * @apiSuccess {String}         poems.username      The username of the user that posted the poem.
+ * @apiSuccess {String}         poems.displayname   The displayname of the user that posted the poem.
+ * @apiSuccess {Number}         poems.rating        The rating of the poem.
+ * @apiSuccess {Number | null}  poems.rated         The rating that the user made on the poem.
+ * @apiSuccess {boolean}        poems.isFavorite    Whether the user has marked this poem as favorite or not.
+ * @apiSuccess {boolean}        poems.isFollowing   Whether the user is following the poet of this poem or not.
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
  * [
  *   {
  *     "poemID": 1,
- *     "poemText": "I wandered lonely as a cloud\nThat floats on high o’er vales and hills\nWhen all at once I saw a crowd\nA host, of golden daffodils",
- *     "userID": 2,
- *     "timestamp": "2022-10-03T17:25:36.000Z"
+ *     "poemText": "Ay, workman, make me a dream,\nA dream for my love.\nCunningly weave sunlight,\nBreezes, and flowers.\nLet it be of the cloth of meadows.\nAnd -- good workman --\nAnd let there be a man walking thereon.",
+ *     "timestamp": "2022-08-06T10:58:56.000Z",
+ *     "userID": 5,
+ *     "username": "lara",
+ *     "displayname": "Lara",
+ *     "rating": "2",
+ *     "rated": null,
+ *     "isFavorite": 0,
+ *     "isFollowing": 0
  *   },
  *   {
  *     "poemID": 2,
- *     "poemText": "Shall I compare thee to a summer’s day?\nThou art more lovely and more temperate:\nRough winds do shake the darling buds of May,\nAnd summer’s lease hath all too short a date;",
+ *     "poemText": "Great cities seldom rest; if there be none\nT' invade from far, they'll find worse foes at home.",
+ *     "timestamp": "2022-08-10T04:14:28.000Z",
  *     "userID": 4,
- *     "timestamp": "2022-10-03T17:26:47.000Z"
+ *     "username": "maria",
+ *     "displayname": "Maria",
+ *     "rating": "0",
+ *     "rated": null,
+ *     "isFavorite": 0,
+ *     "isFollowing": 0
  *   }
  * ]
  */

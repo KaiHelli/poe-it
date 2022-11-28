@@ -5,18 +5,83 @@
 'use strict';
 
 const sql = require('../middleware/database');
-const {body, param, validationResult} = require('express-validator');
+const {body, param, query, validationResult} = require('express-validator');
+
+const msgOnlyValidationResult = validationResult.withDefaults({
+    formatter: error => {
+        return error.msg;
+    }
+});
 
 /*
  * Retrieves all available poems.
- * TODO: Implement paging?
  */
+exports.getUserPoems = [
+    // Check whether the necessary fields are present.
+    query('numPoems').optional().isInt().custom(async num => {return num > 0}).withMessage('The numPoems parameter is not a positive integer value.'),
+    query('offset').optional().isInt().custom(async num => {return num >= 0}).withMessage('The offset parameter is not a positive integer value.'),
+    query('orderBy').optional().custom(async orderBy => {return orderBy === 'date' || orderBy === 'rating'}).withMessage('The orderBy parameter is not a valid value.'),
+    query('keywords.*').optional().isString().withMessage('The keywords parameter is not an array of string values.'),
+    async (req, res) => {
+    // If some validation failed, return the errors that occurred.
+    const errors = msgOnlyValidationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({errors: errors.array()});
+    }
 
-exports.getUserPoems = async (req, res) => {
-    let rows = await sql.query('SELECT *  FROM PrivatePoem;');
+    let userID = req.session.userID;
+    let keywords = req.query.keywords || [];
+
+    if (!Array.isArray(keywords)) {
+        keywords = [keywords];
+    }
+
+    let orderBy = req.query.orderBy || 'date';
+    let numPoems = parseInt(req.query.numPoems) || 20;
+    let offset = parseInt(req.query.offset) || 0;
+
+    for (let i = 0; i < keywords.length; i++) {
+        keywords[i] = '%' + keywords[i] + '%';
+    }
+
+    let statement = 'SELECT PP.poemID, PP.poemText, PP.timestamp, PP.userID, U.username, U.displayname, ' +
+                   'SUM(IFNULL(TPPR.rating,0)) AS rating, ' +
+                   'PPPR.rating AS rated,  ' +
+                   'IF(PP.poemID IN (SELECT poemID ' +
+                                    'FROM PrivatePoemFavorites ' +
+                                    'WHERE userID = ?), 1, 0) AS isFavorite, ' +
+                   'IF(PP.userID IN (SELECT followedUserID ' +
+                                    'FROM UserFollowing ' +
+                                    'WHERE userID = ?), 1, 0) AS isFollowing ' +
+            'FROM PrivatePoem PP ' +
+            'NATURAL JOIN User U ' +
+            'LEFT OUTER JOIN PrivatePoemRating TPPR ON TPPR.poemID = PP.poemID ' +
+            'LEFT OUTER JOIN PrivatePoemRating PPPR ON PPPR.poemID = PP.poemID AND PPPR.userID = ? ';
+
+        for (let i = 0; i < keywords.length; i++) {
+            if (i === 0) {
+                statement += 'WHERE PP.poemText LIKE ? ';
+            } else {
+                statement += 'AND PP.poemText LIKE ? ';
+            }
+        }
+
+        statement +=  'GROUP BY PP.poemID, PP.timestamp, PP.userID, U.username, U.displayname, rated, isFavorite, isFollowing ';
+
+        switch(orderBy) {
+            case 'date':
+                statement += 'ORDER BY PP.timestamp ';
+                break;
+            case 'rating':
+                statement += 'ORDER BY rating ';
+        }
+
+        statement += 'LIMIT ?, ?;';
+
+    let rows = await sql.query(statement, [userID, userID, userID, ...keywords, offset, numPoems]);
 
     return res.status(200).json(rows);
-};
+}];
 
 
 

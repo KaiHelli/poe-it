@@ -4,22 +4,22 @@
       feed
     </mat-icon>
     <mat-card-title>
-      {{displayname}}
+      {{poem.displayname}}
     </mat-card-title>
     <mat-card-subtitle>
-      {{date}}
+      {{formattedDate}}
     </mat-card-subtitle>
     <span class="spacer"></span>
     <button mat-icon-button *ngIf="isAdmin || isAuthor" [matTooltip]="isEditing ? 'End editing' : 'Edit your poem'" (click)="onToggleEdit()">
       <mat-icon>edit</mat-icon>
     </button>
-    <button mat-icon-button *ngIf="!isAuthor" [matTooltip]="followed ? 'Unfollow poet' : 'Follow poet'" (click)="onToggleFollow()">
-      <mat-icon *ngIf="!followed">person_add_alt</mat-icon>
-      <mat-icon *ngIf="followed" color="primary">person_alt</mat-icon>
+    <button mat-icon-button *ngIf="!isAuthor" [matTooltip]="poem.isFollowing ? 'Unfollow poet' : 'Follow poet'" (click)="onToggleFollow()">
+      <mat-icon *ngIf="!poem.isFollowing">person_add_alt</mat-icon>
+      <mat-icon *ngIf="poem.isFollowing" color="primary">person_alt</mat-icon>
     </button>
-    <button mat-icon-button [matTooltip]="favorite ? 'Remove from favorites' : 'Add to favorites'" (click)="onToggleFavorite()">
-      <mat-icon *ngIf="!favorite">favorite_border</mat-icon>
-      <mat-icon *ngIf="favorite" color="warn">favorite</mat-icon>
+    <button mat-icon-button [matTooltip]="poem.isFavorite ? 'Remove from favorites' : 'Add to favorites'" (click)="onToggleFavorite()">
+      <mat-icon *ngIf="!poem.isFavorite">favorite_border</mat-icon>
+      <mat-icon *ngIf="poem.isFavorite" color="warn">favorite</mat-icon>
     </button>
     <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="More actions">
       <mat-icon>more_horiz</mat-icon>
@@ -32,7 +32,7 @@
   <mat-card-content>
     <div class="button-container">
       <div class="button-text">
-        <div style="white-space: pre-line" *ngIf="!isEditing">{{poemText}}</div>
+        <div style="white-space: pre-line" *ngIf="!isEditing">{{poem.poemText}}</div>
         <form #updatePostForm="ngForm" (ngSubmit)="onUpdatePost()" *ngIf="isEditing">
           <mat-form-field class="example-full-width">
             <mat-label>Edit your poem</mat-label>
@@ -49,13 +49,13 @@
         </form>
       </div>
       <div class="button-group">
-        <button mat-icon-button [class]="rated == 1 ? 'selected' : null" [disabled]="rated !== null" (click)=onUpvote()>
+        <button mat-icon-button [class]="poem.rated == 1 ? 'selected' : null" [disabled]="poem.rated !== null" (click)=onUpvote()>
           <mat-icon>arrow_drop_up</mat-icon>
         </button>
         <div class="al-center">
-          {{rating}}
+          {{poem.rating}}
         </div>
-        <button mat-icon-button [class]="rated == -1 ? 'selected' : null" [disabled]="rated !== null" (click)=onDownvote()>
+        <button mat-icon-button [class]="poem.rated == -1 ? 'selected' : null" [disabled]="poem.rated !== null" (click)=onDownvote()>
           <mat-icon>arrow_drop_down</mat-icon>
         </button>
       </div>
