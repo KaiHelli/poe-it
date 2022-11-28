@@ -60,3 +60,8 @@ exports.getPublicPoem = async (req, res) => {
 
     return res.status(200).json(rows[0]);
 };
+
+exports.publishPublicPoem = async(req, res) => {
+    await sql.query('INSERT INTO PrivatePoem SET poemID = ?, poemText = ? WHERE userID = ?', [req.body.poemID, req.body.poemText, req.session.userID]);
+    return res.status(200).json({message: 'Poem published successfully.'});
+};
