@@ -117,8 +117,8 @@ authRouter.get('/private/:id', authorize.isSignedIn, poemsController.getUserPoem
 authRouter.get('/ratings', authorize.isSignedIn, poemsController.getRatingsDump);
 
 /**
- * @api {get} view current user id
- * @apiDescription For confirming your backend/login works
+ * @api {get} View current user id DEBUGGING ONLY
+ * @apiDescription Get user ID
  * @apiGroup Debug
  * @apiPermission user
  * @apiHeader  {Cookie}     connect.sid     Users unique session cookie.
@@ -153,7 +153,7 @@ authRouter.get('/getUserID', authorize.isSignedIn, poemsController.getUserID);
 authRouter.get('/public', poemsController.getPublicPoem);
 
 /**
- * @api {post} rate a specific poem with valid values being: -1, 0, 1
+ * @api {post} rate a specific poem with valid values being: -1, 1
  * @apiParam {id} id: The id of the poem to be rated.
  * @apiGroup Ratings
  * @apiPermission user
@@ -164,8 +164,12 @@ authRouter.get('/public', poemsController.getPublicPoem);
  * HTTP/1.1 200 
  * {Message : OK}
 */
-
 authRouter.post('/vote/:id/:vote', authorize.isSignedIn, poemsController.postUpdateRatings)
+
+
+authRouter.post('/delete/:id', authorize.isSignedIn, poemsController.postDeletePoem)
+
+
 // authRouter.get('/public/:id', poemsController.getPublicPoemByID);
 
 module.exports = authRouter;

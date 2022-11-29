@@ -167,3 +167,25 @@ exports.postUpdateRatings = [
             return res.status(418).send({error: 'Im a teapot; also you tried to vote 0'});
         }
 }];
+
+
+exports.postDeletePoem = [
+    param('id').isInt({min: 1, allow_leading_zeroes: false}).withMessage('Error: invalid Poem ID'),
+    async (req, res) => {
+        // If some fields were not present, return the corresponding errors.
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({errors: errors.array()});
+        }
+        let poemID = req.params.id.toString()
+        let userID = req.session.userID.toString();
+        
+        let toBeDeleted = await sql.query('SELECT * FROM PrivatePoem WHERE poemID = ? AND userID = ?', [poemID, userID]);
+
+        if (toBeDeleted.length !== 1) {
+            return res.status(403).send({ errors: [`ERROR: No poem by user ${userID} with id ${poemID} found. Invalid PoemID or User not Author`], deleteList: JSON.stringify(toBeDeleted) })
+        }
+        await sql.query("DELETE FROM PrivatePoem where poemID = ? AND userID = ?", [poemID, userID])
+        return res.status(200).send({status: "OK" , poem_removed : toBeDeleted})
+    }
+];
