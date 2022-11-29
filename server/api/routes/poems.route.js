@@ -87,25 +87,17 @@ authRouter.get('/public', poemsController.getPublicPoem);
 // authRouter.get('/public/:id', poemsController.getPublicPoemByID);
 
 /**
- * @api {get} poems/public Publish user poem
+ * @api {post} Publish user poem
+ * @apiParam {Number}       poemID      The ID of the poem.
+ * @apiParam {String}       poemText    The text of the poem.
+ * @apiParam {Number}       userID      The ID of the user who published.
  * @apiGroup PrivatePoems
  * @apiPermission user
- * @apiSuccess {Number}     poemID        The id of the poem.
- * @apiSuccess {String}     poemTitle     The title of the poem.
- * @apiSuccess {String}     poemText      The text of the poem.
- * @apiSuccess {String}     poetName      The author of the poem.
  * @apiSuccessExample {json} Success-Response:
- * HTTP/1.1 200 OK
- *   {
- *   "poemID": 10444,
- *   "poemTitle": "Blank",
- *   "poemText": "When I came to my mother’s house the day after she had died it was already a museum of her unfinished gestures. The mysteries from the public library, duein two weeks. The half-eaten square of lasagna in the fridge.The half-burned wreckage of her last cigarette, and one red swallow of wine in a lipsticked glass beside her chair.Finally, a blue Bic on a couple of downs and acrosses left blank in the Sunday crossword, which actually had the audacity to look a little smug at having, for once, won.",
- *   "poetName": "George Bilgere"
- *   }
+ * HTTP/1.1 200
+ *   {Message : OK}
  */
- authRouter.get('/private/publish', poemsController.getPublicPoem);
-
- // authRouter.get('/public/:id', poemsController.getPublicPoemByID);
+ authRouter.post('/private/publish', poemsController.getPublicPoem);
  
 
 module.exports = authRouter;

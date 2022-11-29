@@ -19,9 +19,9 @@ export class PoemService {
 
   public publish(userID: string, poemText: string, poemID: number): Observable<any> {
     return this.http.post(AUTH_API + 'publishPoem', {
-      userID,
+      poemID,
       poemText,
-      poemID
+      userID
     }
     )
   }
