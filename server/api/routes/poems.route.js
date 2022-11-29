@@ -13,12 +13,25 @@ const authorize = require('../middleware/authorize')
  * @api {get} poems/private Get a list of private poems.
  * @apiGroup PrivatePoems
  * @apiPermission user
- * @apiHeader  {Cookie}     connect.sid         Users unique session cookie.
- * @apiSuccess {Object[]}   poems               The list of poems.
- * @apiSuccess {Number}     poems.poemID        The id of the poem.
- * @apiSuccess {String}     poems.poemText      The text of the poem.
- * @apiSuccess {Number}     poems.userID        The user id of the user that posted the poem.
- * @apiSuccess {Date}       poems.timestamp     When this poem was posted.
+ * @apiHeader  {Cookie}             connect.sid         Users unique session cookie.
+ * @apiQuery   {Number}             numPoems            The number of poems that should be returned.
+ * @apiQuery   {Number}             offset              The offset from which the poems should be returned.
+ * @apiQuery   {String}             orderBy             The order of the poems.
+ * @apiQuery   {Object[String]}     keywords            The keywords that should be searched.
+ * @apiQuery   {boolean}            filterFavorite      Whether only poems that are favorized should be returned or not.
+ * @apiQuery   {boolean}            filterPersonal      Whether only poems that are your own should be returned or not.
+ * @apiQuery   {boolean}            filterFollowing     Whether only poems by followed poets should be returned or not.
+ * @apiSuccess {Object[]}           poems               The list of poems.
+ * @apiSuccess {Number}             poems.poemID        The id of the poem.
+ * @apiSuccess {String}             poems.poemText      The text of the poem.
+ * @apiSuccess {Date}               poems.timestamp     When this poem was posted.
+ * @apiSuccess {Number}             poems.userID        The user id of the user that posted the poem.
+ * @apiSuccess {String}             poems.username      The username of the user that posted the poem.
+ * @apiSuccess {String}             poems.displayname   The displayname of the user that posted the poem.
+ * @apiSuccess {Number}             poems.rating        The rating of the poem.
+ * @apiSuccess {Number}             poems.rated         The rating that the user made on the poem.
+ * @apiSuccess {boolean}            poems.isFavorite    Whether the user has marked this poem as favorite or not.
+ * @apiSuccess {boolean}            poems.isFollowing   Whether the user is following the poet of this poem or not.
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
  * [

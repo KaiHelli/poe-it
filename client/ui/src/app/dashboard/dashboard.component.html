@@ -25,16 +25,20 @@
   </mat-card-content>
 </mat-card>
 
-
-<app-filter-bar></app-filter-bar>
-
+<app-filter-bar (keywordsChanged)="onKeywordsChange($event)" (sortingChanged)="onSortingChange($event)" (filterChanged)="onFilterChanged($event)"></app-filter-bar>
 
 <app-public-card></app-public-card>
 
-<mat-error *ngIf="!feedValid">
+<mat-error *ngIf="!feedValid" class="al-center">
   <div style="white-space: pre-line">{{errorMessage}}</div>
   <br>
 </mat-error>
 
 <p>&&&& Line to show where poems should start </p>
 <app-poem-card *ngFor="let poem of poemList" [poem]="poem"></app-poem-card>
+
+<div class="al-center">
+  <button mat-icon-button (click)="onLoadPoems()" [disabled]="reachedEnd" matTooltip="Load more poems" class="mb-8">
+    <mat-icon>get_app</mat-icon>
+  </button>
+</div>

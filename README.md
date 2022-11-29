@@ -27,7 +27,8 @@ Installed with `npm install -g <package>`
 
 - **`@poe-it`** - The overall project.
   - `npm-run-all` - Used to run the frontend and backend concurrently during development.
-- **`@poe-it/ui`** - The frontend ui-code of the project. Currently a template Angular application created through `ng new`. No changes have been made.
+- **`@poe-it/ui`** - The frontend ui-code of the project.
+  - `ng-validate-equal` Used to validate that two form inputs are equal.
 - **`@poe-it/api`** - The backend api-code of the project based on `node.js`.
   - `express.js` - Used to ease the development in `node.js`.
   - `express-session` - Used to create sessions and session-cookies.

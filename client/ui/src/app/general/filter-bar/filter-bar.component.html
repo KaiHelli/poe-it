@@ -5,41 +5,53 @@
         <div style="white-space: pre-line">{{keywordErrorMessage}}</div>
         <br>
       </mat-error>
-      <!-- TODO -->
-      <mat-form-field>
-        <input matInput placeholder="Enter a search term or keyword" [(ngModel)]="keyword" name="keyword">
-        <div matSuffix class="input-suffix-button-group-center">
-          <button mat-icon-button matTooltip="Filter" [disabled]="!filterForm.form.valid">
-            <mat-icon>search</mat-icon>
-          </button>
-        </div>
+      <mat-form-field appearance="fill">
+        <mat-label>Enter a search term or keyword</mat-label>
+        <mat-chip-grid #chipGrid aria-label="Enter a search term or keyword">
+          <mat-chip-row *ngFor="let keyword of keywords"
+                        (removed)="onKeywordRemove(keyword)"
+                        [editable]="true"
+                        (edited)="onKeywordEdit(keyword, $event)">
+            {{keyword}}
+            <button matChipRemove [attr.aria-label]="'remove ' + keyword">
+              <mat-icon>cancel</mat-icon>
+            </button>
+          </mat-chip-row>
+          <input placeholder="New keyword..."
+                                 [matChipInputFor]="chipGrid"
+                                 [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                 [matChipInputAddOnBlur]="addOnBlur"
+                                 (matChipInputTokenEnd)="onKeywordAdd($event)"/>
+        </mat-chip-grid>
       </mat-form-field>
-      <mat-chip-listbox>
+      <mat-chip-listbox (change)="onSortingChange($event.value)">
         <mat-label>Sort by:</mat-label>
-        <mat-chip-option color="primary" selected>
+        <mat-chip-option color="primary" selected value="date">
           <mat-icon matChipAvatar>calendar_month</mat-icon>
           Date
         </mat-chip-option>
+        <!--
         <mat-chip-option color="warn">
           <mat-icon matChipAvatar>local_fire_department</mat-icon>
           Hot
         </mat-chip-option>
-        <mat-chip-option color="accent">
+        -->
+        <mat-chip-option color="warn" value="rating">
           <mat-icon matChipAvatar>trending_up</mat-icon>
           Rating
         </mat-chip-option>
       </mat-chip-listbox>
-      <mat-chip-listbox multiple>
+      <mat-chip-listbox multiple (change)="onFilterChanged($event.value)">
         <mat-label>Filter by:</mat-label>
-        <mat-chip-option color="primary">
+        <mat-chip-option color="primary" value="favorite">
           <mat-icon matChipAvatar>favorite</mat-icon>
           Favorite
         </mat-chip-option>
-        <mat-chip-option color="warn">
+        <mat-chip-option color="warn" value="following">
           <mat-icon matChipAvatar>person_alt</mat-icon>
           Followed
         </mat-chip-option>
-        <mat-chip-option color="accent">
+        <mat-chip-option color="accent" value="personal">
           <mat-icon matChipAvatar>edit_note</mat-icon>
           Personal
         </mat-chip-option>

@@ -9,4 +9,9 @@ export class AppConfig {
     responseType: 'json' as const,
     withCredentials: true
   };
+  static readonly APP_DEFAULTS = {
+    cardsOnInit: 10,
+    cardsOnLoad: 5,
+    sorting: 'date'
+  }
 }

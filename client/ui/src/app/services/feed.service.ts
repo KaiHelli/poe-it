@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {AppConfig} from "../config/app.config";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpParams} from "@angular/common/http";
 import {MessageService} from "./message.service";
 import {catchError, Observable, tap} from "rxjs";
 import {ErrorModule} from "../helper/error.module";
@@ -18,8 +18,20 @@ export class FeedService {
   constructor(private http: HttpClient, private messageService: MessageService) {
   }
 
-  public getPoems(): Observable<any> {
-    return this.http.get(POEM_API + "private/", httpOptions).pipe(
+  public getPoems(numPoems: number, offset: number, keywords: string[], sorting: string, filter: string[]): Observable<any> {
+    let params = new HttpParams({
+      fromObject: {
+        numPoems: numPoems,
+        offset: offset,
+        keywords: keywords,
+        orderBy: sorting,
+        filterFollowing: filter.includes('following'),
+        filterPersonal: filter.includes('personal'),
+        filterFavorite: filter.includes('favorite')
+      }
+    });
+
+    return this.http.get(POEM_API + "private/", {...httpOptions, params: params}).pipe(
       catchError(ErrorModule.handleError),
     );
   }

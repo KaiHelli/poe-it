@@ -22,6 +22,9 @@ exports.getUserPoems = [
     query('offset').optional().isInt().custom(async num => {return num >= 0}).withMessage('The offset parameter is not a positive integer value.'),
     query('orderBy').optional().custom(async orderBy => {return orderBy === 'date' || orderBy === 'rating'}).withMessage('The orderBy parameter is not a valid value.'),
     query('keywords.*').optional().isString().withMessage('The keywords parameter is not an array of string values.'),
+    query('filterFavorite').optional().isBoolean().withMessage('The keywords parameter is not an array of string values.'),
+    query('filterFollowing').optional().isBoolean().withMessage('The keywords parameter is not an array of string values.'),
+    query('filterPersonal').optional().isBoolean().withMessage('The keywords parameter is not an array of string values.'),
     async (req, res) => {
     // If some validation failed, return the errors that occurred.
     const errors = msgOnlyValidationResult(req);
@@ -30,6 +33,7 @@ exports.getUserPoems = [
     }
 
     let userID = req.session.userID;
+
     let keywords = req.query.keywords || [];
 
     if (!Array.isArray(keywords)) {
@@ -40,45 +44,69 @@ exports.getUserPoems = [
     let numPoems = parseInt(req.query.numPoems) || 20;
     let offset = parseInt(req.query.offset) || 0;
 
+    let filterFavorite = (req.query.filterFavorite || 'false') === 'true';
+    let filterFollowing = (req.query.filterFollowing || 'false') === 'true';
+    let filterPersonal = (req.query.filterPersonal || 'false') === 'true';
+
     for (let i = 0; i < keywords.length; i++) {
         keywords[i] = '%' + keywords[i] + '%';
     }
 
     let statement = 'SELECT PP.poemID, PP.poemText, PP.timestamp, PP.userID, U.username, U.displayname, ' +
-                   'SUM(IFNULL(TPPR.rating,0)) AS rating, ' +
-                   'PPPR.rating AS rated,  ' +
-                   'IF(PP.poemID IN (SELECT poemID ' +
+                    'SUM(IFNULL(TPPR.rating,0)) AS rating, ' +
+                    'PPPR.rating AS rated,  ' +
+                    'IF(PP.poemID IN (SELECT poemID ' +
                                     'FROM PrivatePoemFavorites ' +
                                     'WHERE userID = ?), 1, 0) AS isFavorite, ' +
-                   'IF(PP.userID IN (SELECT followedUserID ' +
+                    'IF(PP.userID IN (SELECT followedUserID ' +
                                     'FROM UserFollowing ' +
                                     'WHERE userID = ?), 1, 0) AS isFollowing ' +
-            'FROM PrivatePoem PP ' +
-            'NATURAL JOIN User U ' +
-            'LEFT OUTER JOIN PrivatePoemRating TPPR ON TPPR.poemID = PP.poemID ' +
-            'LEFT OUTER JOIN PrivatePoemRating PPPR ON PPPR.poemID = PP.poemID AND PPPR.userID = ? ';
+                    'FROM PrivatePoem PP ' +
+                    'NATURAL JOIN User U ' +
+                    'LEFT OUTER JOIN PrivatePoemRating TPPR ON TPPR.poemID = PP.poemID ' +
+                    'LEFT OUTER JOIN PrivatePoemRating PPPR ON PPPR.poemID = PP.poemID AND PPPR.userID = ? ' +
+                    'WHERE TRUE ';
 
-        for (let i = 0; i < keywords.length; i++) {
-            if (i === 0) {
-                statement += 'WHERE PP.poemText LIKE ? ';
-            } else {
-                statement += 'AND PP.poemText LIKE ? ';
-            }
-        }
+    if (keywords.length > 0) {
+        statement += 'AND (';
+        statement += Array(keywords.length).fill('PP.poemText Like ?').join(' AND ');
+        statement += ') ';
+    }
 
-        statement +=  'GROUP BY PP.poemID, PP.timestamp, PP.userID, U.username, U.displayname, rated, isFavorite, isFollowing ';
+    if (filterPersonal === true) {
+        statement += 'AND PP.userID = ? '
+    }
 
-        switch(orderBy) {
-            case 'date':
-                statement += 'ORDER BY PP.timestamp ';
-                break;
-            case 'rating':
-                statement += 'ORDER BY rating ';
-        }
+    statement +=  'GROUP BY PP.poemID, PP.timestamp, PP.userID, U.username, U.displayname, rated, isFavorite, isFollowing ' +
+                  'HAVING TRUE ';
 
-        statement += 'LIMIT ?, ?;';
+    if (filterFavorite === true) {
+        statement += 'AND isFavorite = 1 '
+    }
 
-    let rows = await sql.query(statement, [userID, userID, userID, ...keywords, offset, numPoems]);
+    if (filterFollowing === true) {
+        statement += 'AND isFollowing = 1 '
+    }
+
+    switch(orderBy) {
+        case 'date':
+            statement += 'ORDER BY PP.timestamp DESC, rating DESC ';
+            break;
+        case 'rating':
+            statement += 'ORDER BY rating DESC, PP.timestamp DESC ';
+    }
+
+    statement += 'LIMIT ?, ?;';
+
+    let params;
+
+    if (filterPersonal === true) {
+        params = [userID, userID, userID, ...keywords, userID, offset, numPoems];
+    } else {
+        params = [userID, userID, userID, ...keywords, offset, numPoems];
+    }
+
+    let rows = await sql.query(statement, params);
 
     return res.status(200).json(rows);
 }];
