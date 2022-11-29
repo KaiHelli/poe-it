@@ -183,7 +183,6 @@ authRouter.get('/ratings', authorize.isSignedIn, poemsController.getRatingsDump)
 
 /**
  * @api {get} poems/follows Dump all follows.
- * @apiParam {Number} id The id of the poem to be retrieved.
  * @apiGroup Debug
  * @apiPermission user
  * @apiHeader  {Cookie}     connect.sid     Users unique session cookie.
@@ -193,8 +192,7 @@ authRouter.get('/ratings', authorize.isSignedIn, poemsController.getRatingsDump)
 authRouter.get('/follows', authorize.isSignedIn, poemsController.getFollowsDump);
 
 /**
- * @api {get} poems/follows Dump all favorites.
- * @apiParam {Number} id The id of the poem to be retrieved.
+ * @api {get} poems/favorites Dump all favorites.
  * @apiGroup Debug
  * @apiPermission user
  * @apiHeader  {Cookie}     connect.sid     Users unique session cookie.
