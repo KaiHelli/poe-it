@@ -59,26 +59,63 @@ authRouter.get('/private', authorize.isSignedIn, poemsController.getUserPoems);
  * @apiParam {Number} id The id of the poem to be retrieved.
  * @apiGroup PrivatePoems
  * @apiPermission user
- * @apiHeader  {Cookie}     connect.sid     Users unique session cookie.
- * @apiSuccess {Number}     poemID          The id of the poem.
- * @apiSuccess {String}     poemText        The text of the poem.
- * @apiSuccess {Number}     userID          The user id of the user that posted the poem.
- * @apiSuccess {Date}       timestamp       When this poem was posted.
+ * @apiHeader  {Cookie}             connect.sid     Users unique session cookie.
+ * @apiSuccess {Object[]}           poems               The list of poems.
+ * @apiSuccess {Number}             poems.poemID        The id of the poem.
+ * @apiSuccess {String}             poems.poemText      The text of the poem.
+ * @apiSuccess {Date}               poems.timestamp     When this poem was posted.
+ * @apiSuccess {Number}             poems.userID        The user id of the user that posted the poem.
+ * @apiSuccess {String}             poems.username      The username of the user that posted the poem.
+ * @apiSuccess {String}             poems.displayname   The displayname of the user that posted the poem.
+ * @apiSuccess {Number}             poems.rating        The rating of the poem.
+ * @apiSuccess {Number}             poems.rated         The rating that the user made on the poem.
+ * @apiSuccess {boolean}            poems.isFavorite    Whether the user has marked this poem as favorite or not.
+ * @apiSuccess {boolean}            poems.isFollowing   Whether the user is following the poet of this poem or not.
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
  * {
  *   "poemID": 1,
- *   "poemText": "I wandered lonely as a cloud\nThat floats on high o’er vales and hills\nWhen all at once I saw a crowd\nA host, of golden daffodils",
- *   "userID": 2,
- *   "timestamp": "2022-10-03T17:25:36.000Z"
+ *   "poemText": "Ay, workman, make me a dream,\nA dream for my love.\nCunningly weave sunlight,\nBreezes, and flowers.\nLet it be of the cloth of meadows.\nAnd -- good workman --\nAnd let there be a man walking thereon.",
+ *   "timestamp": "2022-08-06T10:58:56.000Z",
+ *   "userID": 5,
+ *   "username": "lara",
+ *   "displayname": "Lara",
+ *   "rating": "2",
+ *   "rated": null,
+ *   "isFavorite": 0,
+ *   "isFollowing": 0
  * }
  */
 authRouter.get('/private/:id', authorize.isSignedIn, poemsController.getUserPoemByID);
 
-// authRouter.delete('/private/:id', authorize.isSignedIn, poemsController.deleteUserPoemByID);
+/**
+ * @api {put} /private/:id Update a poem
+ * @apiDescription Update a poem by id
+ * @apiParam {Number} id The id of the poem to be updated.
+ * @apiBody {String} poemText The text that the poem should be updated to.
+ * @apiGroup PrivatePoems
+ * @apiPermission user
+ * @apiHeader  {Cookie}     connect.sid         User's unique session cookie.
+ * @apiSuccess {String}     message             Status that the operation was successful.
+ * @apiSuccessExample {JSON} Success-Response:
+ * HTTP/1.1 200
+ * {message: Poem updated successfully.}
+ */
+authRouter.put('/private/:id', authorize.isSignedIn, poemsController.updateUserPoemByID)
 
-
-
+/**
+ * @api {delete} /private/:id Delete a poem
+ * @apiDescription Delete a poem by id
+ * @apiParam {Number} id The id of the poem to be deleted.
+ * @apiGroup PrivatePoems
+ * @apiPermission user
+ * @apiHeader  {Cookie}     connect.sid         User's unique session cookie.
+ * @apiSuccess {String}     message             Status that the deletion was successful.
+ * @apiSuccessExample {JSON} Success-Response:
+ * HTTP/1.1 200
+ * {message: Poem deleted successfully.}
+ */
+authRouter.delete('/private/:id', authorize.isSignedIn, poemsController.deleteUserPoemByID)
 
 /**
  * @api {get} poems/getUserID View current user id DEBUGGING ONLY
@@ -94,8 +131,6 @@ authRouter.get('/private/:id', authorize.isSignedIn, poemsController.getUserPoem
  */
 
 authRouter.get('/getUserID', authorize.isSignedIn, poemsController.getUserID);
-
-
 
 /**
  * @api {get} poems/public Get one random public poem.
@@ -130,21 +165,6 @@ authRouter.get('/public', poemsController.getPublicPoem);
  * {Message : OK}
 */
 authRouter.post('/vote/:id/:vote', authorize.isSignedIn, poemsController.postUpdateRatings)
-
-/**
- * @api {post} /delete/:id Delete a poem
- * @apiDescription delete poem by id, if requester is auther
- * @apiParam {id} id: The id of the poem to be deleted.
- * @apiGroup PrivatePoems
- * @apiPermission user
- * @apiHeader  {Cookie}     connect.sid     User's unique session cookie.
- * @apiHeader  {Number}     userId          User's id. Only works if same as poem's userID
- * @apiSuccessExample {JSON} Success-Response:
- * HTTP/1.1 200 
- * {Message : OK}
-*/
-authRouter.post('/delete/:id', authorize.isSignedIn, poemsController.postDeletePoem)
-
 
 /**
  * @api {get} poems/ratings Dump all ratings.

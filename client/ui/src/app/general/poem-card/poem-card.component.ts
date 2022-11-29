@@ -1,7 +1,9 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import { AuthService } from "../../services/auth.service";
 import { MessageService } from "../../services/message.service";
 import {filter, Subject, takeUntil} from "rxjs";
+import {FeedService} from "../../services/feed.service";
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Component({
   selector: 'app-poem-card[poem]',
@@ -13,6 +15,8 @@ export class PoemCardComponent implements OnInit, OnDestroy {
 
   @Input() poem!: PrivatePoem;
 
+  @Output() destroyCard = new EventEmitter();
+
   isAdmin: boolean = false;
   editPoemText: string = "";
   isEditing: boolean = false;
@@ -22,7 +26,9 @@ export class PoemCardComponent implements OnInit, OnDestroy {
 
   constructor(
     private authService: AuthService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private feedService: FeedService,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -56,6 +62,49 @@ export class PoemCardComponent implements OnInit, OnDestroy {
   }
 
   onUpdatePost(): void {
+    this.feedService.updatePoem(this.poem.poemID, this.editPoemText).subscribe({
+      next: _ => {
+        this.snackBar.open('Successfully updated poem!', 'Close', {
+          horizontalPosition: 'right',
+          verticalPosition: 'bottom',
+          duration: 3000
+        });
+
+        this.poem.poemText = this.editPoemText;
+        this.isEditing = false;
+      },
+      error: err => {
+        this.snackBar.open(`Failed to update poem! ${err.message}`, 'Close', {
+          horizontalPosition: 'right',
+          verticalPosition: 'bottom',
+          duration: 3000
+        });
+      }
+    });
+  }
+
+  onDeletePost(): void {
+    this.feedService.deletePoem(this.poem.poemID).subscribe({
+      next: _ => {
+        this.snackBar.open('Successfully deleted poem!', 'Close', {
+          horizontalPosition: 'right',
+          verticalPosition: 'bottom',
+          duration: 3000
+        });
+
+        this.destroyCard.emit(this.poem);
+      },
+      error: err => {
+        this.snackBar.open(`Failed to delete poem! ${err.message}`, 'Close', {
+          horizontalPosition: 'right',
+          verticalPosition: 'bottom',
+          duration: 3000
+        });
+      }
+    });
+  }
+
+  onReportPost(): void {
   }
 
   onUpvote(): void {

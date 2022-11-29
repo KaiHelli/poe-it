@@ -25,8 +25,8 @@
       <mat-icon>more_horiz</mat-icon>
     </button>
     <mat-menu #menu="matMenu" xPosition="after">
-      <button mat-menu-item *ngIf="isAdmin || isAuthor">Delete</button>
-      <button mat-menu-item>Report</button>
+      <button mat-menu-item *ngIf="isAdmin || isAuthor" (click)="onDeletePost()">Delete</button>
+      <button mat-menu-item (click)="onReportPost()">Report</button>
     </mat-menu>
   </mat-card-header>
   <mat-card-content>
@@ -36,7 +36,7 @@
         <form #updatePostForm="ngForm" (ngSubmit)="onUpdatePost()" *ngIf="isEditing">
           <mat-form-field class="example-full-width">
             <mat-label>Edit your poem</mat-label>
-            <textarea matInput placeholder="Ex. so much depends..." maxlength="256" cdkTextareaAutosize cdkAutosizeMinRows="7" value="{{editPoemText}}"></textarea>
+            <textarea matInput placeholder="Ex. so much depends..." maxlength="256" cdkTextareaAutosize cdkAutosizeMinRows="7" [(ngModel)]="editPoemText" name="editPoemText"></textarea>
             <div matSuffix class="input-suffix-button-group-stretch">
               <button mat-icon-button matTooltip="Cancel" type="button" [disabled]="!updatePostForm.form.valid" (click)="onToggleEdit()">
                 <mat-icon>close</mat-icon>

@@ -32,7 +32,7 @@
   <br>
 </mat-error>
 
-<app-poem-card *ngFor="let poem of poemList" [poem]="poem"></app-poem-card>
+<app-poem-card *ngFor="let poem of poemList;" [poem]="poem" (destroyCard)="onDestroyCard($event)"></app-poem-card>
 
 <div class="al-center">
   <button mat-icon-button (click)="onLoadPoems()" [disabled]="reachedEnd" matTooltip="Load more poems" class="mb-8">

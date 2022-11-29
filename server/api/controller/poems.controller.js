@@ -5,6 +5,8 @@
 'use strict';
 
 const sql = require('../middleware/database');
+const authorize = require('../middleware/authorize');
+const rolesConfig = require('../configs/roles.config')
 const {body, param, query, validationResult} = require('express-validator');
 
 const msgOnlyValidationResult = validationResult.withDefaults({
@@ -17,9 +19,10 @@ const msgOnlyValidationResult = validationResult.withDefaults({
  * Retrieves all available poems.
  */
 exports.getUserPoems = [
+    // TODO: Validation of URL parameter does not work. Maybe has to do with the optional().
     // Check whether the necessary fields are present.
-    query('numPoems').optional().isInt().custom(async num => {return num > 0}).withMessage('The numPoems parameter is not a positive integer value.'),
-    query('offset').optional().isInt().custom(async num => {return num >= 0}).withMessage('The offset parameter is not a positive integer value.'),
+    query('numPoems').optional().isInt({min: 1}).withMessage('The numPoems parameter is not a positive integer value.'),
+    query('offset').optional().isInt({min: 0}).withMessage('The offset parameter is not a positive integer value.'),
     query('orderBy').optional().custom(async orderBy => {return orderBy === 'date' || orderBy === 'rating'}).withMessage('The orderBy parameter is not a valid value.'),
     query('keywords.*').optional().isString().withMessage('The keywords parameter is not an array of string values.'),
     query('filterFavorite').optional().isBoolean().withMessage('The keywords parameter is not an array of string values.'),
@@ -124,8 +127,26 @@ exports.getUserPoemByID = [
         }
 
         let poemID = req.params.id;
+        let userID = req.session.userID;
 
-        let rows = await sql.query('SELECT * FROM PrivatePoem WHERE poemID = ?', poemID);
+        let statement = 'SELECT PP.poemID, PP.poemText, PP.timestamp, PP.userID, U.username, U.displayname, ' +
+                        'SUM(IFNULL(TPPR.rating,0)) AS rating, ' +
+                        'PPPR.rating AS rated,  ' +
+                        'IF(PP.poemID IN (SELECT poemID ' +
+                                    'FROM PrivatePoemFavorites ' +
+                                    'WHERE userID = ?), 1, 0) AS isFavorite, ' +
+                        'IF(PP.userID IN (SELECT followedUserID ' +
+                                    'FROM UserFollowing ' +
+                                    'WHERE userID = ?), 1, 0) AS isFollowing ' +
+                        'FROM PrivatePoem PP ' +
+                        'NATURAL JOIN User U ' +
+                        'LEFT OUTER JOIN PrivatePoemRating TPPR ON TPPR.poemID = PP.poemID ' +
+                        'LEFT OUTER JOIN PrivatePoemRating PPPR ON PPPR.poemID = PP.poemID AND PPPR.userID = ? ' +
+                        'WHERE PP.poemID = ? ' +
+                        'GROUP BY PP.poemID, PP.timestamp, PP.userID, U.username, U.displayname, rated, isFavorite, isFollowing;';
+        ;
+
+        let rows = await sql.query(statement, [userID, userID, userID, poemID]);
 
         if (rows.length !== 1) {
             return res.status(403).send({errors: [`No poem with id ${poemID} found.`]})
@@ -154,8 +175,8 @@ exports.getUserID = async (req, res) => {
 
 
 exports.postUpdateRatings = [
-    param('id').isInt({min: 1, allow_leading_zeroes: false}).withMessage('Error: invalid Poem ID'),
-    param('vote').isInt({min: -1, max: 1, allow_leading_zeroes: false}).withMessage('Error: forbidden vote'),
+    param('id').isInt({min: 1, allow_leading_zeroes: false}).withMessage('Invalid Poem ID.'),
+    param('vote').isInt({min: -1, max: 1, allow_leading_zeroes: false}).withMessage('Forbidden vote.'),
     async (req, res) => {
         // If some fields were not present, return the corresponding errors.
         const errors = validationResult(req);
@@ -171,30 +192,76 @@ exports.postUpdateRatings = [
             "VALUES (" + poemID +","+ userID + "," + vote + ")  "+
             "ON DUPLICATE KEY UPDATE rating = "+ vote +";");
             return res.status(200).send({message : 'OK'});
-        }else{
+        } else{
             return res.status(418).send({error: 'Im a teapot; also you tried to vote 0'});
         }
 }];
 
-
-exports.postDeletePoem = [
-    param('id').isInt({min: 1, allow_leading_zeroes: false}).withMessage('Error: invalid Poem ID'),
-    async (req, res) => {
+exports.updateUserPoemByID = [
+    param('id').isInt({min: 1, allow_leading_zeroes: false}).withMessage('Invalid Poem ID.'),
+    body('poemText').isLength({min: 1, max: 256}).withMessage('Poem should have 1 to 256 characters.'),
+    async (req, res, next) => {
         // If some fields were not present, return the corresponding errors.
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(422).json({errors: errors.array()});
         }
-        let poemID = req.params.id.toString()
-        let userID = req.session.userID.toString();
-        
-        let toBeDeleted = await sql.query('SELECT * FROM PrivatePoem WHERE poemID = ? AND userID = ?', [poemID, userID]);
 
-        if (toBeDeleted.length !== 1) {
-            return res.status(403).send({ errors: [`ERROR: No poem by user ${userID} with id ${poemID} found. Invalid PoemID or User not Author`], deleteList: JSON.stringify(toBeDeleted) })
+        let poemID = req.params.id;
+        let userID = req.session.userID;
+
+        let rows = await sql.query('SELECT userID FROM PrivatePoem WHERE poemID = ?;', [poemID]);
+
+        if (rows.length !== 1) {
+            return res.status(403).send({errors: [`No poem with id ${poemID} found.`]})
         }
-        await sql.query("DELETE FROM PrivatePoem where poemID = ? AND userID = ?", [poemID, userID])
-        return res.status(200).send({status: "OK" , poem_removed : toBeDeleted})
+
+        if (userID === rows[0].userID) {
+            next();
+        } else {
+            await authorize.hasRole(rolesConfig.administrator)(req, res, next);
+        }
+    },
+    async (req, res) => {
+        let poemID = req.params.id;
+        let poemText = req.body.poemText;
+
+        await sql.query("UPDATE PrivatePoem SET poemText = ? WHERE poemID = ?", [poemText, poemID])
+
+        return res.status(200).send({message: "Poem updated successfully."})
+    }
+];
+
+exports.deleteUserPoemByID = [
+    param('id').isInt({min: 1, allow_leading_zeroes: false}).withMessage('Invalid Poem ID.'),
+    async (req, res, next) => {
+        // If some fields were not present, return the corresponding errors.
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({errors: errors.array()});
+        }
+
+        let poemID = req.params.id;
+        let userID = req.session.userID;
+
+        let rows = await sql.query('SELECT userID FROM PrivatePoem WHERE poemID = ?;', [poemID]);
+
+        if (rows.length !== 1) {
+            return res.status(403).send({errors: [`No poem with id ${poemID} found.`]})
+        }
+
+        if (userID === rows[0].userID) {
+            next();
+        } else {
+            await authorize.hasRole(rolesConfig.administrator)(req, res, next);
+        }
+    },
+    async (req, res) => {
+        let poemID = req.params.id;
+
+        await sql.query("DELETE FROM PrivatePoem WHERE poemID = ?", [poemID])
+
+        return res.status(200).send({message: "Poem deleted successfully."})
     }
 ];
 

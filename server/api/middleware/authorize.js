@@ -26,9 +26,7 @@ exports.notSignedIn = (req, res, next) => {
 };
 
 exports.hasRole = (roleID) => {
-    return [
-        this.isSignedIn(),
-        async (req, res, next) => {
+    return async (req, res, next) => {
             let rows = await sql.query('SELECT roleID FROM User WHERE userID = ?', req.session.userID);
 
             // If no match was found, return an error.
@@ -41,6 +39,6 @@ exports.hasRole = (roleID) => {
             } else {
                 next()
             }
-        }]
+        }
 };
 

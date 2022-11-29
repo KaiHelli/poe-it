@@ -42,11 +42,17 @@ export class FeedService {
   }
 
   public updatePoem(poemID: number, poemText: string): Observable<any> {
-    return new Observable<any>();
+    return this.http.put(POEM_API + "private/" + poemID, {
+      poemText
+    }, httpOptions).pipe(
+      catchError(ErrorModule.handleError),
+    );
   }
 
   public deletePoem(poemID: number): Observable<any> {
-    return new Observable<any>();
+    return this.http.delete(POEM_API + "private/" + poemID, httpOptions).pipe(
+      catchError(ErrorModule.handleError),
+    );
   }
 
   public changeFollowedState(userID: number, state: boolean): Observable<any> {

@@ -42,7 +42,7 @@ exports.signup =
         }
 
         // Normalize the username to lowercase and normalize the unicode characters.
-        let displayname = req.body.username.normalize();
+        let displayname = req.body.username.trim().normalize();
         let username = displayname.toLowerCase();
         let password = req.body.password.normalize();
 
@@ -220,7 +220,7 @@ exports.changeUsername =
             }
 
             // Normalize the unicode characters.
-            let newDisplayname = req.body.newUsername.normalize();
+            let newDisplayname = req.body.newUsername.trim().normalize();
             let newUsername = newDisplayname.toLowerCase();
 
             // Update the username in the database.

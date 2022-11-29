@@ -1,6 +1,5 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {FeedService} from "../services/feed.service";
-import {FilterBarComponent} from "../general/filter-bar/filter-bar.component";
 import {AppConfig} from "../config/app.config";
 
 @Component({
@@ -9,10 +8,6 @@ import {AppConfig} from "../config/app.config";
   styleUrls: ['./dashboard.component.scss', '../app.component.scss']
 })
 export class DashboardComponent implements OnInit {
-  constructor(private feedService: FeedService) { }
-
-  @ViewChild('filterBar', {static: true}) filterBar!: FilterBarComponent;
-
   poemList: PrivatePoemFeed = [];
   errorMessage = "";
   feedValid = true;
@@ -23,6 +18,9 @@ export class DashboardComponent implements OnInit {
   keywords: string[] = [];
   sorting: string = AppConfig.APP_DEFAULTS.sorting;
   filter: string[] = [];
+
+  constructor(private feedService: FeedService) {
+  }
 
   ngOnInit(){
     this.loadPoems(AppConfig.APP_DEFAULTS.cardsOnInit, this.poemsLoaded, this.keywords, this.sorting, this.filter);
@@ -70,5 +68,13 @@ export class DashboardComponent implements OnInit {
   onFilterChanged(value: string[]): void {
     this.filter = value;
     this.loadPoems(AppConfig.APP_DEFAULTS.cardsOnLoad, 0, this.keywords, this.sorting, this.filter, true);
+  }
+
+  onDestroyCard(value: PrivatePoem): void {
+    const index = this.poemList.indexOf(value);
+
+    if (index >= 0) {
+      this.poemList.splice(index, 1);
+    }
   }
 }
