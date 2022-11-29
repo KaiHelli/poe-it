@@ -1,6 +1,6 @@
 /*
- *  This file holds the methods that are used in the authentication context.
- *  They will then be called by the corresponding routes in the auth router.
+ *  This file holds the methods that are used in the poem context.
+ *  They will then be called by the corresponding routes in the poem router.
  */
 'use strict';
 
@@ -63,7 +63,10 @@ exports.getUserPoems = [
                                     'WHERE userID = ?), 1, 0) AS isFavorite, ' +
                     'IF(PP.userID IN (SELECT followedUserID ' +
                                     'FROM UserFollowing ' +
-                                    'WHERE userID = ?), 1, 0) AS isFollowing ' +
+                                    'WHERE userID = ?), 1, 0) AS isFollowing,' +
+                    'IF(PP.poemID IN (SELECT poemID ' +
+                                    'FROM PrivatePoemReports ' +
+                                    'WHERE userID = ?), 1, 0) AS isReported ' +
                     'FROM PrivatePoem PP ' +
                     'NATURAL JOIN User U ' +
                     'LEFT OUTER JOIN PrivatePoemRating TPPR ON TPPR.poemID = PP.poemID ' +
@@ -80,7 +83,7 @@ exports.getUserPoems = [
         statement += 'AND PP.userID = ? '
     }
 
-    statement +=  'GROUP BY PP.poemID, PP.timestamp, PP.userID, U.username, U.displayname, rated, isFavorite, isFollowing ' +
+    statement +=  'GROUP BY PP.poemID, PP.timestamp, PP.userID, U.username, U.displayname, rated, isFavorite, isFollowing, isReported ' +
                   'HAVING TRUE ';
 
     if (filterFavorite === true) {
@@ -104,9 +107,9 @@ exports.getUserPoems = [
     let params;
 
     if (filterPersonal === true) {
-        params = [userID, userID, userID, ...keywords, userID, offset, numPoems];
+        params = [userID, userID, userID, userID, ...keywords, userID, offset, numPoems];
     } else {
-        params = [userID, userID, userID, ...keywords, offset, numPoems];
+        params = [userID, userID, userID, userID, ...keywords, offset, numPoems];
     }
 
     let rows = await sql.query(statement, params);
@@ -137,16 +140,19 @@ exports.getUserPoemByID = [
                                     'WHERE userID = ?), 1, 0) AS isFavorite, ' +
                         'IF(PP.userID IN (SELECT followedUserID ' +
                                     'FROM UserFollowing ' +
-                                    'WHERE userID = ?), 1, 0) AS isFollowing ' +
+                                    'WHERE userID = ?), 1, 0) AS isFollowing, ' +
+                        'IF(PP.poemID IN (SELECT poemID ' +
+                                    'FROM PrivatePoemReports ' +
+                                    'WHERE userID = ?), 1, 0) AS isReported ' +
                         'FROM PrivatePoem PP ' +
                         'NATURAL JOIN User U ' +
                         'LEFT OUTER JOIN PrivatePoemRating TPPR ON TPPR.poemID = PP.poemID ' +
                         'LEFT OUTER JOIN PrivatePoemRating PPPR ON PPPR.poemID = PP.poemID AND PPPR.userID = ? ' +
                         'WHERE PP.poemID = ? ' +
-                        'GROUP BY PP.poemID, PP.timestamp, PP.userID, U.username, U.displayname, rated, isFavorite, isFollowing;';
+                        'GROUP BY PP.poemID, PP.timestamp, PP.userID, U.username, U.displayname, rated, isFavorite, isFollowing, isReported;';
         ;
 
-        let rows = await sql.query(statement, [userID, userID, userID, poemID]);
+        let rows = await sql.query(statement, [userID, userID, userID, userID, poemID]);
 
         if (rows.length !== 1) {
             return res.status(403).send({errors: [`No poem with id ${poemID} found.`]})
@@ -155,48 +161,9 @@ exports.getUserPoemByID = [
         return res.status(200).json(rows[0]);
 }];
 
-/* 
-* Get a random public poem
-*/
-exports.getPublicPoem = async (req, res) => {
-    let rows = await sql.query('SELECT poemID, poemTitle, poemText, poetName ' +
-                                        'FROM PublicPoem NATURAL JOIN PublicPoemTags ' +
-                                        'ORDER BY RAND() ' +
-                                        'LIMIT 1;');
-
-    return res.status(200).json(rows[0]);
-};
-
-
-
-exports.getUserID = async (req, res) => {
-    return res.status(200).json(req.session.userID)
-};
-
-
-exports.postUpdateRatings = [
-    param('id').isInt({min: 1, allow_leading_zeroes: false}).withMessage('Invalid Poem ID.'),
-    param('vote').isInt({min: -1, max: 1, allow_leading_zeroes: false}).withMessage('Forbidden vote.'),
-    async (req, res) => {
-        // If some fields were not present, return the corresponding errors.
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(422).json({errors: errors.array()});
-        }
-        let poemID = req.params.id.toString()
-        let vote = req.params.vote.toString();
-        let userID = req.session.userID.toString();
-        
-        if(req.params.vote != 0){
-            await sql.query("INSERT INTO  PrivatePoemRating (poemID, userID, rating) "+
-            "VALUES (" + poemID +","+ userID + "," + vote + ")  "+
-            "ON DUPLICATE KEY UPDATE rating = "+ vote +";");
-            return res.status(200).send({message : 'OK'});
-        } else{
-            return res.status(418).send({error: 'Im a teapot; also you tried to vote 0'});
-        }
-}];
-
+/*
+ * Update the text of a poem.
+ */
 exports.updateUserPoemByID = [
     param('id').isInt({min: 1, allow_leading_zeroes: false}).withMessage('Invalid Poem ID.'),
     body('poemText').isLength({min: 1, max: 256}).withMessage('Poem should have 1 to 256 characters.'),
@@ -232,6 +199,9 @@ exports.updateUserPoemByID = [
     }
 ];
 
+/*
+ * Delete a poem.
+ */
 exports.deleteUserPoemByID = [
     param('id').isInt({min: 1, allow_leading_zeroes: false}).withMessage('Invalid Poem ID.'),
     async (req, res, next) => {
@@ -264,6 +234,54 @@ exports.deleteUserPoemByID = [
         return res.status(200).send({message: "Poem deleted successfully."})
     }
 ];
+
+/*
+ * Vote for a poem.
+ */
+exports.postUpdateRatings = [
+    param('id').isInt({min: 1, allow_leading_zeroes: false}).withMessage('Invalid Poem ID.'),
+    param('rating').isInt({min: -1, max: 1, allow_leading_zeroes: false}).custom(value => {return value !== 0}).withMessage('Given rating is invalid.'),
+    async (req, res) => {
+        // If some fields were not present, return the corresponding errors.
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({errors: errors.array()});
+        }
+
+        let poemID = req.params.id;
+        let rating = req.params.rating;
+        let userID = req.session.userID;
+
+        let rows = await sql.query("SELECT PPR.rating AS rated " +
+                                            "FROM PrivatePoem PP " +
+                                            "LEFT OUTER JOIN PrivatePoemRating PPR ON PPR.poemID = PP.poemID AND PPR.userID = ? " +
+                                            "WHERE PP.poemID = ?", [userID, poemID]);
+
+        if (rows.length !== 1) {
+            return res.status(403).send({errors: [`No poem with id ${poemID} found.`]});
+        }
+
+        if (rows[0].rated !== null) {
+            return res.status(403).send({errors: [`User has already voted for poem with id ${poemID}`]});
+        }
+
+        await sql.query("INSERT INTO PrivatePoemRating (poemID, userID, rating) "+
+                        "VALUES (?, ?, ?);", [poemID, userID, rating]);
+
+        return res.status(200).send({message : 'Rating was successful.'});
+    }];
+
+/*
+* Get a random public poem
+*/
+exports.getPublicPoem = async (req, res) => {
+    let rows = await sql.query('SELECT poemID, poemTitle, poemText, poetName ' +
+        'FROM PublicPoem NATURAL JOIN PublicPoemTags ' +
+        'ORDER BY RAND() ' +
+        'LIMIT 1;');
+
+    return res.status(200).json(rows[0]);
+};
 
 // DUMPS
 exports.getRatingsDump = async (req, res) => {

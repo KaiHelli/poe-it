@@ -4,6 +4,9 @@ import { MessageService } from "../../services/message.service";
 import {filter, Subject, takeUntil} from "rxjs";
 import {FeedService} from "../../services/feed.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import {MatDialog} from '@angular/material/dialog';
+import {ReportDialogComponent} from "../report-dialog/report-dialog.component";
+import {ConfirmDialogComponent} from "../confirm-dialog/confirm-dialog.component";
 
 @Component({
   selector: 'app-poem-card[poem]',
@@ -28,7 +31,8 @@ export class PoemCardComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private messageService: MessageService,
     private feedService: FeedService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    public dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -84,36 +88,86 @@ export class PoemCardComponent implements OnInit, OnDestroy {
   }
 
   onDeletePost(): void {
-    this.feedService.deletePoem(this.poem.poemID).subscribe({
-      next: _ => {
-        this.snackBar.open('Successfully deleted poem!', 'Close', {
-          horizontalPosition: 'right',
-          verticalPosition: 'bottom',
-          duration: 3000
-        });
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Confirm',
+        content: 'Are you sure you want to delete this poem?',
+        cancelText: 'Cancel',
+        confirmText: 'Confirm'
+      }
+    });
 
-        this.destroyCard.emit(this.poem);
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.feedService.deletePoem(this.poem.poemID).subscribe({
+          next: _ => {
+            this.snackBar.open('Successfully deleted poem!', 'Close', {
+              horizontalPosition: 'right',
+              verticalPosition: 'bottom',
+              duration: 3000
+            });
+
+            this.destroyCard.emit(this.poem);
+          },
+          error: err => {
+            this.snackBar.open(`Failed to delete poem! ${err.message}`, 'Close', {
+              horizontalPosition: 'right',
+              verticalPosition: 'bottom',
+              duration: 3000
+            });
+          }
+        });
+      }
+    })
+
+
+  }
+
+  onReportPost(): void {
+    const dialogRef = this.dialog.open(ReportDialogComponent, {
+      minWidth: '400px'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(result)
+      if (result) {
+        this.poem.isReported = true;
+      }
+    })
+
+
+  }
+
+  // TODO: DELETE ON THRESHOLD. Return current rating on each vote from backend.
+  onUpvote(): void {
+    this.feedService.updateRating(this.poem.poemID, 1).subscribe({
+      next: _ => {
+        this.poem.rated = 1;
+        this.poem.rating = +this.poem.rating + 1;
       },
       error: err => {
-        this.snackBar.open(`Failed to delete poem! ${err.message}`, 'Close', {
+        this.snackBar.open(`Failed to vote for poem! ${err.message}`, 'Close', {
           horizontalPosition: 'right',
           verticalPosition: 'bottom',
           duration: 3000
         });
       }
-    });
-  }
-
-  onReportPost(): void {
-  }
-
-  onUpvote(): void {
-    this.poem.rated = 1;
-    this.poem.rating = +this.poem.rating + 1;
+    })
   }
 
   onDownvote(): void {
-    this.poem.rated = -1;
-    this.poem.rating = +this.poem.rating - 1;
+    this.feedService.updateRating(this.poem.poemID, -1).subscribe({
+      next: _ => {
+        this.poem.rated = -1;
+        this.poem.rating = +this.poem.rating - 1;
+      },
+      error: err => {
+        this.snackBar.open(`Failed to vote for poem! ${err.message}`, 'Close', {
+          horizontalPosition: 'right',
+          verticalPosition: 'bottom',
+          duration: 3000
+        });
+      }
+    })
   }
 }

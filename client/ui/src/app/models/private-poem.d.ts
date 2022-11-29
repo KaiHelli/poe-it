@@ -9,4 +9,5 @@ declare type PrivatePoem = {
   rated: Rating
   isFavorite: boolean
   isFollowing: boolean
+  isReported: boolean
 }

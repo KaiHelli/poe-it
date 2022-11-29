@@ -64,7 +64,9 @@ export class FeedService {
   }
 
   public updateRating(poemID: number, rating: Rating): Observable<any> {
-    return new Observable<any>();
+    return this.http.post(POEM_API + 'private/' + poemID + '/rate/' + rating, {}, httpOptions).pipe(
+      catchError(ErrorModule.handleError),
+    );
   }
 
   public createReport(poemID: number, reportText: string): Observable<any> {

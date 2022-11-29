@@ -32,20 +32,35 @@ const authorize = require('../middleware/authorize')
  * @apiSuccess {Number}             poems.rated         The rating that the user made on the poem.
  * @apiSuccess {boolean}            poems.isFavorite    Whether the user has marked this poem as favorite or not.
  * @apiSuccess {boolean}            poems.isFollowing   Whether the user is following the poet of this poem or not.
+ * @apiSuccess {boolean}            poems.isReported    Whether the user has reported this poem or not.
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
  * [
  *   {
- *     "poemID": 1,
- *     "poemText": "I wandered lonely as a cloud\nThat floats on high o’er vales and hills\nWhen all at once I saw a crowd\nA host, of golden daffodils",
- *     "userID": 2,
- *     "timestamp": "2022-10-03T17:25:36.000Z"
+ *     "poemID": 120,
+ *     "poemText": "Follow to the deep wood's weeds,\nFollow to the wild-briar dingle,\nWhere we seek to intermingle,\nAnd the violet tells her tale\nTo the odour-scented gale,\nFor they two have enough to do\nOf such work as I and you.",
+ *     "timestamp": "2022-10-15T06:56:39.000Z",
+ *     "userID": 39,
+ *     "username": "maire",
+ *     "displayname": "Maire",
+ *     "rating": "2",
+ *     "rated": null,
+ *     "isFavorite": 0,
+ *     "isFollowing": 0,
+ *     "isReported": 0
  *   },
  *   {
- *     "poemID": 2,
- *     "poemText": "Shall I compare thee to a summer’s day?\nThou art more lovely and more temperate:\nRough winds do shake the darling buds of May,\nAnd summer’s lease hath all too short a date;",
- *     "userID": 4,
- *     "timestamp": "2022-10-03T17:26:47.000Z"
+ *     "poemID": 119,
+ *     "poemText": "ÆGLE, beauty and poet, has two little crimes;\nShe makes her own face, and does not make her rhymes.",
+ *     "timestamp": "2022-10-14T19:55:13.000Z",
+ *     "userID": 16,
+ *     "username": "афанасий",
+ *     "displayname": "Афанасий",
+ *     "rating": "0",
+ *     "rated": null,
+ *     "isFavorite": 0,
+ *     "isFollowing": 0,
+ *     "isReported": 0
  *   }
  * ]
  */
@@ -71,19 +86,21 @@ authRouter.get('/private', authorize.isSignedIn, poemsController.getUserPoems);
  * @apiSuccess {Number}             poems.rated         The rating that the user made on the poem.
  * @apiSuccess {boolean}            poems.isFavorite    Whether the user has marked this poem as favorite or not.
  * @apiSuccess {boolean}            poems.isFollowing   Whether the user is following the poet of this poem or not.
+ * @apiSuccess {boolean}            poems.isReported    Whether the user has reported this poem or not.
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
  * {
- *   "poemID": 1,
- *   "poemText": "Ay, workman, make me a dream,\nA dream for my love.\nCunningly weave sunlight,\nBreezes, and flowers.\nLet it be of the cloth of meadows.\nAnd -- good workman --\nAnd let there be a man walking thereon.",
- *   "timestamp": "2022-08-06T10:58:56.000Z",
- *   "userID": 5,
- *   "username": "lara",
- *   "displayname": "Lara",
- *   "rating": "2",
+ *   "poemID": 2,
+ *   "poemText": "Great cities seldom rest; if there be none\nT' invade from far, they'll find worse foes at home.",
+ *   "timestamp": "2022-08-10T04:14:28.000Z",
+ *   "userID": 4,
+ *   "username": "maria",
+ *   "displayname": "Maria",
+ *   "rating": "0",
  *   "rated": null,
  *   "isFavorite": 0,
- *   "isFollowing": 0
+ *   "isFollowing": 0,
+ *   "isReported": 0
  * }
  */
 authRouter.get('/private/:id', authorize.isSignedIn, poemsController.getUserPoemByID);
@@ -118,21 +135,6 @@ authRouter.put('/private/:id', authorize.isSignedIn, poemsController.updateUserP
 authRouter.delete('/private/:id', authorize.isSignedIn, poemsController.deleteUserPoemByID)
 
 /**
- * @api {get} poems/getUserID View current user id DEBUGGING ONLY
- * @apiDescription Get user ID
- * @apiGroup Debug
- * @apiPermission user
- * @apiHeader  {Cookie}     connect.sid     Users unique session cookie.
- * @apiHeader  {Number}     UserId          Users id.
- * @apiSuccess {Number}     userID          The id of the user.
- * @apiSuccessExample {Number} Success-Response:
- * HTTP/1.1 200
- * 1
- */
-
-authRouter.get('/getUserID', authorize.isSignedIn, poemsController.getUserID);
-
-/**
  * @api {get} poems/public Get one random public poem.
  * @apiGroup PublicPoems
  * @apiPermission unrestricted
@@ -152,19 +154,19 @@ authRouter.get('/getUserID', authorize.isSignedIn, poemsController.getUserID);
 authRouter.get('/public', poemsController.getPublicPoem);
 
 /**
- * @api {post} poems/vote/:id/:vote rate a specific poem
- * @apiParam {id} id: The id of the poem to be rated.
- * @apiParam {value} value: value of vote; valid values being: -1, 1
+ * @api {post} poems/private/:id/rate/:rating rate a specific poem
+ * @apiParam {Number}       id              The id of the poem to be rated.
+ * @apiParam {Number}       value           The rating of the vote. Valid values being: -1, 1
  * @apiGroup Ratings
  * @apiPermission user
  * @apiHeader  {Cookie}     connect.sid     User's unique session cookie.
  * @apiHeader  {Number}     userId          User's id.
- * @apiSuccess {Number}     rating          The rating given by the user
+ * @apiSuccess {String}     message         Status that the rating was successful.
  * @apiSuccessExample {JSON} Success-Response:
  * HTTP/1.1 200 
- * {Message : OK}
+ * {message : Rating was successful.}
 */
-authRouter.post('/vote/:id/:vote', authorize.isSignedIn, poemsController.postUpdateRatings)
+authRouter.post('/private/:id/rate/:rating', authorize.isSignedIn, poemsController.postUpdateRatings)
 
 /**
  * @api {get} poems/ratings Dump all ratings.
@@ -208,8 +210,5 @@ authRouter.get('/follows', authorize.isSignedIn, poemsController.getFollowsDump)
  * @apiSuccess {Number}     userID  The id of the user.
  */
 authRouter.get('/favorites', authorize.isSignedIn, poemsController.getFavoritesDump);
-
-
-// authRouter.get('/public/:id', poemsController.getPublicPoemByID);
 
 module.exports = authRouter;

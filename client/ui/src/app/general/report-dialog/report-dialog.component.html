@@ -1,0 +1,25 @@
+<h2 mat-dialog-title>Report Poem</h2>
+<form #reportForm="ngForm" id="reportForm" (ngSubmit)="onSubmit()">
+  <mat-dialog-content class="mat-typography">
+      <mat-error *ngIf="!reportValid">
+        <div style="white-space: pre-line">{{errorMessage}}</div>
+        <br>
+      </mat-error>
+      <mat-form-field class="width-100">
+        <textarea matInput placeholder="Reason for Report" [(ngModel)]="reportText" #reportTextInput="ngModel" name="reportText" required minlength="1" maxLength="256" cdkTextareaAutosize cdkAutosizeMinRows="3"></textarea>
+        <mat-error *ngIf="reportTextInput.errors?.['required']">
+          Please provide a reason for your report
+        </mat-error>
+        <mat-error *ngIf="reportTextInput.errors?.['minLength']">
+          The report reason needs to have at least 1 characters
+        </mat-error>
+        <mat-error *ngIf="reportTextInput.errors?.['maxLength']">
+          The report reason needs to have at most 256 characters
+        </mat-error>
+      </mat-form-field>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-raised-button [mat-dialog-close]="false">Cancel</button>
+    <button mat-raised-button color="primary" type="submit" [mat-dialog-close]="true" cdkFocusInitial [disabled]="!reportForm.valid">Send Report</button>
+  </mat-dialog-actions>
+</form>
