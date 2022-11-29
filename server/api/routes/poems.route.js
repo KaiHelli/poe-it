@@ -193,7 +193,7 @@ authRouter.get('/ratings', authorize.isSignedIn, poemsController.getRatingsDump)
 authRouter.get('/follows', authorize.isSignedIn, poemsController.getFollowsDump);
 
 /**
- * @api {get} poems/follows Dump all follows.
+ * @api {get} poems/follows Dump all favorites.
  * @apiParam {Number} id The id of the poem to be retrieved.
  * @apiGroup Debug
  * @apiPermission user
