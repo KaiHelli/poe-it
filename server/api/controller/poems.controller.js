@@ -135,10 +135,6 @@ exports.getPublicPoem = async (req, res) => {
 };
 
 
-exports.getRatingsDump = async (req, res) => {
-    let rows = await sql.query('SELECT *  FROM PrivatePoemRating;');
-    return res.status(200).json(rows);
-};
 
 exports.getUserID = async (req, res) => {
     return res.status(200).json(req.session.userID)
@@ -189,3 +185,19 @@ exports.postDeletePoem = [
         return res.status(200).send({status: "OK" , poem_removed : toBeDeleted})
     }
 ];
+
+// DUMPS
+exports.getRatingsDump = async (req, res) => {
+    let rows = await sql.query('SELECT *  FROM PrivatePoemRating;');
+    return res.status(200).json(rows);
+};
+
+exports.getFollowsDump = async (req, res) => {
+    let rows = await sql.query('SELECT *  FROM UserFollowing;');
+    return res.status(200).json(rows);
+};
+
+exports.getFavoritesDump = async (req, res) => {
+    let rows = await sql.query('SELECT *  FROM PrivatePoemFavorites;');
+    return res.status(200).json(rows);
+};

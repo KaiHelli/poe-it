@@ -90,34 +90,10 @@ authRouter.get('/private/:id', authorize.isSignedIn, poemsController.getUserPoem
 // authRouter.delete('/private/:id', authorize.isSignedIn, poemsController.deleteUserPoemByID);
 
 
-/**
- * @api {get} poems/ratings Dump all ratings.
- * @apiParam {Number} id The id of the poem to be retrieved.
- * @apiGroup Debug
- * @apiPermission user
- * @apiHeader  {Cookie}     connect.sid     Users unique session cookie.
- * @apiSuccess {Number}     poemID          The id of the poem.
- * @apiSuccess {String}     userID          The id of the user.
- * @apiSuccess {Number}     rating          The rating given by the user
- * @apiSuccessExample {json} Success-Response:
- * HTTP/1.1 200 OK
- * [
- *  {
- *      "poemID":1,
- *      "userID":20,
- *      "rating":1},
- *  {
- *      "poemID":1,
- *      "userID":43,
- *      "rating":1
- *  }
- * ]
- */
 
-authRouter.get('/ratings', authorize.isSignedIn, poemsController.getRatingsDump);
 
 /**
- * @api {get} View current user id DEBUGGING ONLY
+ * @api {get} poems/getUserID View current user id DEBUGGING ONLY
  * @apiDescription Get user ID
  * @apiGroup Debug
  * @apiPermission user
@@ -128,7 +104,7 @@ authRouter.get('/ratings', authorize.isSignedIn, poemsController.getRatingsDump)
  * HTTP/1.1 200
  * 1
  */
- 
+
 authRouter.get('/getUserID', authorize.isSignedIn, poemsController.getUserID);
 
 
@@ -153,12 +129,13 @@ authRouter.get('/getUserID', authorize.isSignedIn, poemsController.getUserID);
 authRouter.get('/public', poemsController.getPublicPoem);
 
 /**
- * @api {post} rate a specific poem with valid values being: -1, 1
+ * @api {post} poems/vote/:id/:vote rate a specific poem
  * @apiParam {id} id: The id of the poem to be rated.
+ * @apiParam {value} value: value of vote; valid values being: -1, 1
  * @apiGroup Ratings
  * @apiPermission user
- * @apiHeader  {Cookie}     connect.sid     Users unique session cookie.
- * @apiHeader  {Number}     UserId     Users id.
+ * @apiHeader  {Cookie}     connect.sid     User's unique session cookie.
+ * @apiHeader  {Number}     userId          User's id.
  * @apiSuccess {Number}     rating          The rating given by the user
  * @apiSuccessExample {JSON} Success-Response:
  * HTTP/1.1 200 
@@ -166,8 +143,65 @@ authRouter.get('/public', poemsController.getPublicPoem);
 */
 authRouter.post('/vote/:id/:vote', authorize.isSignedIn, poemsController.postUpdateRatings)
 
-
+/**
+ * @api {post} /delete/:id Delete a poem
+ * @apiDescription delete poem by id, if requester is auther
+ * @apiParam {id} id: The id of the poem to be deleted.
+ * @apiGroup PrivatePoems
+ * @apiPermission user
+ * @apiHeader  {Cookie}     connect.sid     User's unique session cookie.
+ * @apiHeader  {Number}     userId          User's id. Only works if same as poem's userID
+ * @apiSuccessExample {JSON} Success-Response:
+ * HTTP/1.1 200 
+ * {Message : OK}
+*/
 authRouter.post('/delete/:id', authorize.isSignedIn, poemsController.postDeletePoem)
+
+
+/**
+ * @api {get} poems/ratings Dump all ratings.
+ * @apiGroup Debug
+ * @apiPermission user
+ * @apiHeader  {Cookie}     connect.sid     Users unique session cookie.
+ * @apiSuccess {Number}     poemID          The id of the poem.
+ * @apiSuccess {Number}     userID          The id of the user.
+ * @apiSuccess {Number}     rating          The rating given by the user
+ * @apiSuccessExample {json} Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ *   "0": {
+ *       "poemID": 9,
+ *       "poemText": "A full fed Rose on meals of Tint\nA Dinner for a Bee\nIn process of the Noon became -\nEach bright Mortality\nThe Forfeit is of Creature fair\nItself, adored before\nSubmitting for our unknown sake\nTo be esteemed no more --",
+ *       "userID": 5,
+ *       "timestamp": "2022-08-25T03:07:21.000Z"
+ *   }
+ * }
+ */
+authRouter.get('/ratings', authorize.isSignedIn, poemsController.getRatingsDump);
+
+
+
+/**
+ * @api {get} poems/follows Dump all follows.
+ * @apiParam {Number} id The id of the poem to be retrieved.
+ * @apiGroup Debug
+ * @apiPermission user
+ * @apiHeader  {Cookie}     connect.sid     Users unique session cookie.
+ * @apiSuccess {Number}     userID          The user following the other.
+ * @apiSuccess {Number}     followedUserID  The id of the user.
+ */
+authRouter.get('/follows', authorize.isSignedIn, poemsController.getFollowsDump);
+
+/**
+ * @api {get} poems/follows Dump all follows.
+ * @apiParam {Number} id The id of the poem to be retrieved.
+ * @apiGroup Debug
+ * @apiPermission user
+ * @apiHeader  {Cookie}     connect.sid     Users unique session cookie.
+ * @apiSuccess {Number}     poemID          The id of the poem.
+ * @apiSuccess {Number}     userID  The id of the user.
+ */
+authRouter.get('/favorites', authorize.isSignedIn, poemsController.getFavoritesDump);
 
 
 // authRouter.get('/public/:id', poemsController.getPublicPoemByID);
