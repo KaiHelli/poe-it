@@ -212,7 +212,7 @@ authRouter.get('/follows', authorize.isSignedIn, poemsController.getFollowsDump)
 authRouter.get('/favorites', authorize.isSignedIn, poemsController.getFavoritesDump);
 
 /**
- * @api {post} Publish user poem
+ * @api {post} poems/private/publish/:userID/:poemText Publish user poem
  * @apiParam {Number}        userID      The ID of the user who published.
  * @apiParam {String}       poemText    The text of the poem.
  * @apiGroup PrivatePoems
