@@ -298,3 +298,8 @@ exports.getFavoritesDump = async (req, res) => {
     let rows = await sql.query('SELECT *  FROM PrivatePoemFavorites;');
     return res.status(200).json(rows);
 };
+
+exports.publishPublicPoem = async(req, res) => {
+    await sql.query('INSERT INTO PrivatePoem SET userID = ?, poemText = ?', [req.body.userID, req.body.poemText]);
+    return res.status(200).json({message: 'Poem published successfully.'});
+};

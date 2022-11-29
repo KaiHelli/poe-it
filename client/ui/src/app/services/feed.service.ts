@@ -78,4 +78,10 @@ export class FeedService {
       catchError(ErrorModule.handleError),
     );
   }
+
+  public publish(userID: string, poemText: string): Observable<any> {
+    return this.http.post(POEM_API + 'private/publish/' + userID + '/' + poemText, {}, httpOptions).pipe(
+      catchError(ErrorModule.handleError),
+    );
+  }
 }
