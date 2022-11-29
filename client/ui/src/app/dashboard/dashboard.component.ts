@@ -15,7 +15,7 @@ export class DashboardComponent implements OnInit {
 
   poemList: PrivatePoemFeed = [];
   errorMessage = "";
-  feedValid = false;
+  feedValid = true;
 
   poemsLoaded = 0;
   reachedEnd = false;

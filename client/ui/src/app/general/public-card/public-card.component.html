@@ -1,24 +1,18 @@
-<br>
-<div class="main-div">
-
-<mat-card>
-    <mat-card-header class="center">
-        <mat-toolbar color="accent">
-            Professional Poem for You
-        </mat-toolbar>
-    
+<mat-card class="mat-wide-card">
+  <mat-card-header class="center">
+    <mat-icon mat-card-avatar>
+      auto_awesome
+    </mat-icon>
     <mat-card-title>
-        {{ publicPoem.poemTitle }}
+      {{ publicPoem.poemTitle }}
     </mat-card-title>
-    <br>
     <mat-card-subtitle>
-       Poet:   {{ publicPoem.poetName }}
+      {{ publicPoem.poetName }}
     </mat-card-subtitle>
-    </mat-card-header>
-    <br>
-    <mat-card-content>
-        {{ publicPoem.poemText  }}
-    </mat-card-content>
-       
+    <span class="spacer"></span>
+    <button mat-raised-button disabled>Professional Poem for You</button>
+  </mat-card-header>
+  <mat-card-content>
+        <div style="white-space: pre-line">{{publicPoem.poemText}}</div>
+  </mat-card-content>
 </mat-card>
-</div>

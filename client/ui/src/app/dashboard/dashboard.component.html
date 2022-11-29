@@ -27,14 +27,11 @@
 
 <app-filter-bar (keywordsChanged)="onKeywordsChange($event)" (sortingChanged)="onSortingChange($event)" (filterChanged)="onFilterChanged($event)"></app-filter-bar>
 
-<app-public-card></app-public-card>
-
 <mat-error *ngIf="!feedValid" class="al-center">
   <div style="white-space: pre-line">{{errorMessage}}</div>
   <br>
 </mat-error>
 
-<p>&&&& Line to show where poems should start </p>
 <app-poem-card *ngFor="let poem of poemList" [poem]="poem"></app-poem-card>
 
 <div class="al-center">

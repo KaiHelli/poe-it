@@ -12,6 +12,8 @@ import { FormsModule } from '@angular/forms';
 import { UnicodePatternDirective } from "../validators/unicode-pattern.directive";
 import { AccountComponent } from './account/account.component';
 
+import { GeneralComponentsModule } from "../general/general-components.module";
+
 @NgModule({
   declarations: [
     SigninComponent,
@@ -24,7 +26,8 @@ import { AccountComponent } from './account/account.component';
     AuthRoutingModule,
     MaterialModule,
     FormsModule,
-    ValidateEqualModule
+    ValidateEqualModule,
+    GeneralComponentsModule
   ]
 })
 export class AuthModule { }
