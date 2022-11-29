@@ -10,13 +10,20 @@ import { FeedService } from "../../services/feed.service";
 export class PublicCardComponent  {
   public publicPoem!: PublicPoem;
 
+  title: string = ""
+  name: string = ""
+  text: string = ""
+
   errorMessage: string = "";
   poemValid: boolean = true;
 
   constructor(private feedService: FeedService) {
     feedService.getPublicPoem().subscribe({
       next: (res: PublicPoem) => {
-      this.publicPoem = res
+      this.publicPoem = res;
+      this.title = res.poemTitle;
+      this.name = res.poetName;
+      this.text = res.poemText;
     },
     error: err => {
       this.errorMessage = err.message;
