@@ -3,6 +3,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import { AuthService } from "../../services/auth.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { MessageService } from "../../services/message.service";
+import {Subject, takeUntil} from "rxjs";
 
 @Component({
   selector: 'app-account',
@@ -10,6 +11,7 @@ import { MessageService } from "../../services/message.service";
   styleUrls: ['./account.component.scss', '../../app.component.scss']
 })
 export class AccountComponent implements OnInit {
+  private onDestroy: Subject<boolean> = new Subject<boolean>();
 
   public changeUsernameValid = true;
   public changePasswordValid = true;
@@ -33,15 +35,15 @@ export class AccountComponent implements OnInit {
     this.displayname = this.authService.user!.displayname;
     this.userID = this.authService.user!.userID.toString();
 
-    this.messageService.UserAuthChangedEvent.subscribe((value: User | null) => {
+    this.messageService.UserAuthChangedEvent.pipe(takeUntil(this.onDestroy)).subscribe((value: User | null) => {
       this.displayname = value !== null ? value.displayname : '';
       this.userID = value !== null ? value.userID.toString() : '';
     });
   }
 
-  public ngOnDestroy(): void {
-    // Causes error on logout after clicking on account? Maybe unnecessary?
-    //this.messageService.UserAuthChangedEvent.unsubscribe();
+  ngOnDestroy(): void {
+    this.onDestroy.next(true);
+    this.onDestroy.unsubscribe();
   }
 
   public onChangeUsernameSubmit(): void {

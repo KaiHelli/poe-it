@@ -4,6 +4,7 @@ import { AuthService } from "./services/auth.service";
 import { MessageService } from "./services/message.service";
 import { FormControl } from '@angular/forms';
 import { DOCUMENT } from "@angular/common";
+import {Subject, takeUntil} from "rxjs";
 
 @Component({
   selector: 'app-root',
@@ -12,6 +13,8 @@ import { DOCUMENT } from "@angular/common";
 })
 
 export class AppComponent {
+  onDestroy: Subject<boolean> = new Subject<boolean>();
+
   title = 'Poe-it';
   isSignedIn = false;
   displayname = '';
@@ -37,7 +40,7 @@ export class AppComponent {
 
   public ngOnInit(): void {
     // Update the username and login state on every UserAuthChangedEvent.
-    this.messageService.UserAuthChangedEvent.subscribe((value: User | null) => {
+    this.messageService.UserAuthChangedEvent.pipe(takeUntil(this.onDestroy)).subscribe((value: User | null) => {
       console.log(value);
       this.isSignedIn = value !== null;
       this.displayname = value !== null ? value.displayname : '';
@@ -53,8 +56,9 @@ export class AppComponent {
     });
   }
 
-  public ngOnDestroy(): void {
-    this.messageService.UserAuthChangedEvent.unsubscribe();
+  ngOnDestroy(): void {
+    this.onDestroy.next(true);
+    this.onDestroy.unsubscribe();
   }
 
   onSignOut(): void {

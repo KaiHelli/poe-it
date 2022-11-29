@@ -1,14 +1,16 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import { AuthService } from "../../services/auth.service";
 import { MessageService } from "../../services/message.service";
-import {filter} from "rxjs";
+import {filter, Subject, takeUntil} from "rxjs";
 
 @Component({
   selector: 'app-poem-card[poem]',
   templateUrl: './poem-card.component.html',
   styleUrls: ['./poem-card.component.scss', '../../app.component.scss']
 })
-export class PoemCardComponent implements OnInit {
+export class PoemCardComponent implements OnInit, OnDestroy {
+  onDestroy: Subject<boolean> = new Subject<boolean>();
+
   @Input() poem!: PrivatePoem;
 
   isAdmin: boolean = false;
@@ -23,15 +25,20 @@ export class PoemCardComponent implements OnInit {
     private messageService: MessageService
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.editPoemText = this.poem.poemText;
     this.isAuthor = this.authService.user!.userID === this.poem.userID;
     this.isAdmin = this.authService.isAdmin();
     this.formattedDate = new Date(this.poem.timestamp).toLocaleString("en-US");
 
-    this.messageService.UserFollowChangedEvent.pipe(filter(value => value.userID === this.poem.userID && value.emittedPoemID !== this.poem.poemID)).subscribe(value => {
+    this.messageService.UserFollowChangedEvent.pipe(takeUntil(this.onDestroy),filter(value => value.userID === this.poem.userID && value.emittedPoemID !== this.poem.poemID)).subscribe(value => {
       this.poem.isFollowing = value.followed;
     })
+  }
+
+  ngOnDestroy(): void {
+    this.onDestroy.next(true);
+    this.onDestroy.unsubscribe();
   }
 
   onToggleEdit(): void {
