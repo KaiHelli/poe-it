@@ -157,9 +157,13 @@ exports.postUpdateRatings = [
         let poemID = req.params.id.toString()
         let vote = req.params.vote.toString();
         let userID = req.session.userID.toString();
-        await sql.query("INSERT INTO  PrivatePoemRating (poemID, userID, rating) "+
-        "VALUES (" + poemID +","+ userID + "," + vote + ")  "+
-        "ON DUPLICATE KEY UPDATE rating = "+ vote +";");
         
-        return res.status(200);
+        if(req.params.vote != 0){
+            await sql.query("INSERT INTO  PrivatePoemRating (poemID, userID, rating) "+
+            "VALUES (" + poemID +","+ userID + "," + vote + ")  "+
+            "ON DUPLICATE KEY UPDATE rating = "+ vote +";");
+            return res.status(200).send({message : 'OK'});
+        }else{
+            return res.status(418).send({error: 'Im a teapot; also you tried to vote 0'});
+        }
 }];

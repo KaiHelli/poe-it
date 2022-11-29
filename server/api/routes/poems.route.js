@@ -13,48 +13,26 @@ const authorize = require('../middleware/authorize')
  * @api {get} poems/private Get a list of private poems.
  * @apiGroup PrivatePoems
  * @apiPermission user
- * @apiHeader  {Cookie}         connect.sid         Users unique session cookie.
- * @apiQuery   {Number}         numPoems            The number of poems that should be returned.
- * @apiQuery   {Number}         offset              The offset from which the poems should be returned.
- * @apiQuery   {String}         orderBy             The order of the poems.
- * @apiQuery   {Object[String]} keywords            The keywords that should be searched.
- * @apiSuccess {Object[]}       poems               The list of poems.
- * @apiSuccess {Number}         poems.poemID        The id of the poem.
- * @apiSuccess {String}         poems.poemText      The text of the poem.
- * @apiSuccess {Date}           poems.timestamp     When this poem was posted.
- * @apiSuccess {Number}         poems.userID        The user id of the user that posted the poem.
- * @apiSuccess {String}         poems.username      The username of the user that posted the poem.
- * @apiSuccess {String}         poems.displayname   The displayname of the user that posted the poem.
- * @apiSuccess {Number}         poems.rating        The rating of the poem.
- * @apiSuccess {Number | null}  poems.rated         The rating that the user made on the poem.
- * @apiSuccess {boolean}        poems.isFavorite    Whether the user has marked this poem as favorite or not.
- * @apiSuccess {boolean}        poems.isFollowing   Whether the user is following the poet of this poem or not.
+ * @apiHeader  {Cookie}     connect.sid         Users unique session cookie.
+ * @apiSuccess {Object[]}   poems               The list of poems.
+ * @apiSuccess {Number}     poems.poemID        The id of the poem.
+ * @apiSuccess {String}     poems.poemText      The text of the poem.
+ * @apiSuccess {Number}     poems.userID        The user id of the user that posted the poem.
+ * @apiSuccess {Date}       poems.timestamp     When this poem was posted.
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200 OK
  * [
  *   {
  *     "poemID": 1,
- *     "poemText": "Ay, workman, make me a dream,\nA dream for my love.\nCunningly weave sunlight,\nBreezes, and flowers.\nLet it be of the cloth of meadows.\nAnd -- good workman --\nAnd let there be a man walking thereon.",
- *     "timestamp": "2022-08-06T10:58:56.000Z",
- *     "userID": 5,
- *     "username": "lara",
- *     "displayname": "Lara",
- *     "rating": "2",
- *     "rated": null,
- *     "isFavorite": 0,
- *     "isFollowing": 0
+ *     "poemText": "I wandered lonely as a cloud\nThat floats on high o’er vales and hills\nWhen all at once I saw a crowd\nA host, of golden daffodils",
+ *     "userID": 2,
+ *     "timestamp": "2022-10-03T17:25:36.000Z"
  *   },
  *   {
  *     "poemID": 2,
- *     "poemText": "Great cities seldom rest; if there be none\nT' invade from far, they'll find worse foes at home.",
- *     "timestamp": "2022-08-10T04:14:28.000Z",
+ *     "poemText": "Shall I compare thee to a summer’s day?\nThou art more lovely and more temperate:\nRough winds do shake the darling buds of May,\nAnd summer’s lease hath all too short a date;",
  *     "userID": 4,
- *     "username": "maria",
- *     "displayname": "Maria",
- *     "rating": "0",
- *     "rated": null,
- *     "isFavorite": 0,
- *     "isFollowing": 0
+ *     "timestamp": "2022-10-03T17:26:47.000Z"
  *   }
  * ]
  */
@@ -115,7 +93,7 @@ authRouter.get('/private/:id', authorize.isSignedIn, poemsController.getUserPoem
 /**
  * @api {get} poems/ratings Dump all ratings.
  * @apiParam {Number} id The id of the poem to be retrieved.
- * @apiGroup Ratings
+ * @apiGroup Debug
  * @apiPermission user
  * @apiHeader  {Cookie}     connect.sid     Users unique session cookie.
  * @apiSuccess {Number}     poemID          The id of the poem.
@@ -135,9 +113,22 @@ authRouter.get('/private/:id', authorize.isSignedIn, poemsController.getUserPoem
  *  }
  * ]
  */
+
 authRouter.get('/ratings', authorize.isSignedIn, poemsController.getRatingsDump);
 
-//Debug only
+/**
+ * @api {get} view current user id
+ * @apiDescription For confirming your backend/login works
+ * @apiGroup Debug
+ * @apiPermission user
+ * @apiHeader  {Cookie}     connect.sid     Users unique session cookie.
+ * @apiHeader  {Number}     UserId          Users id.
+ * @apiSuccess {Number}     userID          The id of the user.
+ * @apiSuccessExample {Number} Success-Response:
+ * HTTP/1.1 200
+ * 1
+ */
+ 
 authRouter.get('/getUserID', authorize.isSignedIn, poemsController.getUserID);
 
 
@@ -160,6 +151,20 @@ authRouter.get('/getUserID', authorize.isSignedIn, poemsController.getUserID);
  *   }
  */
 authRouter.get('/public', poemsController.getPublicPoem);
+
+/**
+ * @api {post} rate a specific poem with valid values being: -1, 0, 1
+ * @apiParam {id} id: The id of the poem to be rated.
+ * @apiGroup Ratings
+ * @apiPermission user
+ * @apiHeader  {Cookie}     connect.sid     Users unique session cookie.
+ * @apiHeader  {Number}     UserId     Users id.
+ * @apiSuccess {Number}     rating          The rating given by the user
+ * @apiSuccessExample {JSON} Success-Response:
+ * HTTP/1.1 200 
+ * {Message : OK}
+*/
+
 authRouter.post('/vote/:id/:vote', authorize.isSignedIn, poemsController.postUpdateRatings)
 // authRouter.get('/public/:id', poemsController.getPublicPoemByID);
 
