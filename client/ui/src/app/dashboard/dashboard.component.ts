@@ -14,6 +14,7 @@ export class DashboardComponent implements OnInit {
   public userID = '';
   public publishValidPoem = true;
   public publishPoemErrorMessage = '';
+  public poemText = '';
 
   constructor(
     private authService: AuthService,

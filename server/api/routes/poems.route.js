@@ -88,16 +88,15 @@ authRouter.get('/public', poemsController.getPublicPoem);
 
 /**
  * @api {post} Publish user poem
- * @apiParam {Number}       poemID      The ID of the poem.
+ * @apiParam {Number}        userID      The ID of the user who published.
  * @apiParam {String}       poemText    The text of the poem.
- * @apiParam {Number}       userID      The ID of the user who published.
  * @apiGroup PrivatePoems
  * @apiPermission user
  * @apiSuccessExample {json} Success-Response:
  * HTTP/1.1 200
  *   {Message : OK}
  */
- authRouter.post('/private/publish', poemsController.getPublicPoem);
+ authRouter.post('/private/publish/:userID/:poemText', authorize.isSignedIn, poemsController.getPublicPoem);
  
 
 module.exports = authRouter;

@@ -16,7 +16,7 @@
     <form #createPoemForm="ngForm" (ngSubmit)="onPublishPoem()">
       <mat-form-field class="example-full-width">
         <mat-label>Write your poem</mat-label>
-        <textarea matInput placeholder="Ex. so much depends..." maxlength="256" cdkTextareaAutosize></textarea>
+        <textarea matInput placeholder="Ex. so much depends..." maxlength="256" [(ngModel)]="poemText" name="poemText" cdkTextareaAutosize></textarea>
         <div matSuffix class="input-suffix-button-group-bottom">
           <button mat-icon-button matSuffix matTooltip="Publish" type="submit" [disabled]="!createPoemForm.form.valid">
             <mat-icon>send</mat-icon>

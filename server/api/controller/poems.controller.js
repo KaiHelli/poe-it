@@ -5,6 +5,7 @@
 'use strict';
 
 const sql = require('../middleware/database');
+const aauthorize = require('..middleware/authorize');
 const {body, param, validationResult} = require('express-validator');
 
 /*
@@ -62,6 +63,6 @@ exports.getPublicPoem = async (req, res) => {
 };
 
 exports.publishPublicPoem = async(req, res) => {
-    await sql.query('INSERT INTO PrivatePoem SET poemID = ?, poemText = ? WHERE userID = ?', [req.body.poemID, req.body.poemText, req.session.userID]);
+    await sql.query('INSERT INTO PrivatePoem SET userID = ?, poemText = ?', [req.body.userID, req.body.poemText]);
     return res.status(200).json({message: 'Poem published successfully.'});
 };
