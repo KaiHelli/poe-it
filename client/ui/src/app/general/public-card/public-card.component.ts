@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import { FeedService } from "../../services/feed.service";
 
 @Component({
   selector: 'app-public-card',
@@ -8,15 +8,21 @@ import {HttpClient} from "@angular/common/http";
 })
 
 export class PublicCardComponent  {
-  public publicPoem: any = {};
-  constructor(private http:HttpClient) { }
+  public publicPoem!: PublicPoem;
 
-  ngOnInit(){
-    this.http.get("http://localhost:8080/v1/poems/public").subscribe((res)=>{
+  errorMessage: string = "";
+  poemValid: boolean = true;
+
+  constructor(private feedService: FeedService) {
+    feedService.getPublicPoem().subscribe({
+      next: (res: PublicPoem) => {
       this.publicPoem = res
-      //console.log(this.publicPoem)
-      //this.keys = JSON.stringify(Object.keys(this.publicPoem));
-    });
+    },
+    error: err => {
+      this.errorMessage = err.message;
+      this.poemValid = false;
+    }
+  });
   }
 }
 

@@ -51,31 +51,6 @@ const authorize = require('../middleware/authorize')
  */
 authRouter.get('/private', authorize.isSignedIn, poemsController.getUserPoems);
 
-/**
- * @api {get} poems/private_top Get a list of top 20 private poems by date.
- * @apiGroup PrivatePoems
- * @apiPermission user
- * @apiHeader  {Cookie}     connect.sid         Users unique session cookie.
- * @apiSuccess {Object[]}   poems               The list of poems.
- * @apiSuccess {Number}     poems.poemID        The id of the poem.
- * @apiSuccess {String}     poems.poemText      The text of the poem.
- * @apiSuccess {Number}     poems.userID        The user id of the user that posted the poem.
- * @apiSuccess {Date}       poems.timestamp     When this poem was posted.
- * @apiSuccess {Number}     poems.rating       Username of author
- * @apiSuccess {string}     poems.username    
- * @apiSuccessExample {json} Success-Response:
- * HTTP/1.1 200 OK
- * [
- * {"poemID":1,
- *  "poemText":"Ay, workman, make me a dream,\nA dream for my love.\nCunningly weave sunlight,\nBreezes, and flowers.\nLet it be of the cloth of meadows.\nAnd -- good workman --\nAnd let there be a man walking thereon.",
- *  "userID":5,
- *  "timestamp":"2022-08-06T10:58:56.000Z",
- *  "rating":"2",
- *  "username":"lara"},
- * ]
- */
-authRouter.get('/private_top', authorize.isSignedIn, poemsController.getTopUserPoems);
-
 // TODO: Add additional features.
 // authRouter.post('/private/', authorize.isSignedIn, poemsController.insertUserPoem);
 
