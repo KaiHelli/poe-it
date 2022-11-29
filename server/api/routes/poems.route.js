@@ -137,6 +137,9 @@ authRouter.get('/private/:id', authorize.isSignedIn, poemsController.getUserPoem
  */
 authRouter.get('/ratings', authorize.isSignedIn, poemsController.getRatingsDump);
 
+//Debug only
+authRouter.get('/getUserID', authorize.isSignedIn, poemsController.getUserID);
+
 
 
 /**
@@ -157,7 +160,7 @@ authRouter.get('/ratings', authorize.isSignedIn, poemsController.getRatingsDump)
  *   }
  */
 authRouter.get('/public', poemsController.getPublicPoem);
-
+authRouter.post('/vote/:id/:vote', authorize.isSignedIn, poemsController.postUpdateRatings)
 // authRouter.get('/public/:id', poemsController.getPublicPoemByID);
 
 module.exports = authRouter;

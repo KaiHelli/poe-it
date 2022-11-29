@@ -139,3 +139,27 @@ exports.getRatingsDump = async (req, res) => {
     let rows = await sql.query('SELECT *  FROM PrivatePoemRating;');
     return res.status(200).json(rows);
 };
+
+exports.getUserID = async (req, res) => {
+    return res.status(200).json(req.session.userID)
+};
+
+
+exports.postUpdateRatings = [
+    param('id').isInt({min: 1, allow_leading_zeroes: false}).withMessage('Error: invalid Poem ID'),
+    param('vote').isInt({min: -1, max: 1, allow_leading_zeroes: false}).withMessage('Error: forbidden vote'),
+    async (req, res) => {
+        // If some fields were not present, return the corresponding errors.
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({errors: errors.array()});
+        }
+        let poemID = req.params.id.toString()
+        let vote = req.params.vote.toString();
+        let userID = req.session.userID.toString();
+        await sql.query("INSERT INTO  PrivatePoemRating (poemID, userID, rating) "+
+        "VALUES (" + poemID +","+ userID + "," + vote + ")  "+
+        "ON DUPLICATE KEY UPDATE rating = "+ vote +";");
+        
+        return res.status(200);
+}];
