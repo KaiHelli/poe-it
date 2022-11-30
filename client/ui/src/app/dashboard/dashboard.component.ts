@@ -63,7 +63,7 @@ export class DashboardComponent implements OnInit {
   }
 
   onPublishPoem(): void {
-    this.feedService.publish(this.userID,this.poemText).subscribe({
+    this.feedService.createPoem(this.poemText).subscribe({
       next: _ => {
         this.publishValidPoem = true;
 
@@ -79,8 +79,6 @@ export class DashboardComponent implements OnInit {
         this.publishValidPoem = false;
       }
     })
-
-
   }
 
   onLoadPoems(): void {

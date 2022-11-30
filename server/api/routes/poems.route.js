@@ -106,6 +106,20 @@ poemsRouter.get('/private', authorize.isSignedIn, poemsController.getUserPoems);
 poemsRouter.get('/private/:id', authorize.isSignedIn, poemsController.getUserPoemByID);
 
 /**
+ * @api {post} /private Publish a poem
+ * @apiDescription Publish a poem
+ * @apiBody {String} poemText The text of the poem.
+ * @apiGroup PrivatePoems
+ * @apiPermission user
+ * @apiHeader  {Cookie}     connect.sid         User's unique session cookie.
+ * @apiSuccess {String}     message             Status that the operation was successful.
+ * @apiSuccessExample {JSON} Success-Response:
+ * HTTP/1.1 200
+ * {"message": "Poem published successfully."}
+ */
+poemsRouter.post('/private/', authorize.isSignedIn, poemsController.postUserPoem);
+
+/**
  * @api {put} /private/:id Update a poem
  * @apiDescription Update a poem by id
  * @apiParam {Number} id The id of the poem to be updated.
@@ -116,7 +130,7 @@ poemsRouter.get('/private/:id', authorize.isSignedIn, poemsController.getUserPoe
  * @apiSuccess {String}     message             Status that the operation was successful.
  * @apiSuccessExample {JSON} Success-Response:
  * HTTP/1.1 200
- * {message: Poem updated successfully.}
+ * {"message": "Poem updated successfully."}
  */
 poemsRouter.put('/private/:id', authorize.isSignedIn, poemsController.updateUserPoemByID)
 
@@ -130,7 +144,7 @@ poemsRouter.put('/private/:id', authorize.isSignedIn, poemsController.updateUser
  * @apiSuccess {String}     message             Status that the deletion was successful.
  * @apiSuccessExample {JSON} Success-Response:
  * HTTP/1.1 200
- * {message: Poem deleted successfully.}
+ * {"message": "Poem deleted successfully."}
  */
 poemsRouter.delete('/private/:id', authorize.isSignedIn, poemsController.deleteUserPoemByID)
 
@@ -156,7 +170,7 @@ poemsRouter.get('/public', poemsController.getPublicPoem);
 /**
  * @api {post} poems/private/:id/rate/:rating rate a specific poem
  * @apiParam {Number}       id              The id of the poem to be rated.
- * @apiParam {Number}       value           The rating of the vote. Valid values being: -1, 1
+ * @apiParam {Number}       rating          The rating of the vote. Valid values being: -1, 1
  * @apiGroup PublicPoems
  * @apiPermission user
  * @apiHeader  {Cookie}     connect.sid     User's unique session cookie.
@@ -165,7 +179,7 @@ poemsRouter.get('/public', poemsController.getPublicPoem);
  * @apiSuccess {Boolean}    deleted         Whether the poem was deleted due to reaching the threshold or not.
  * @apiSuccessExample {JSON} Success-Response:
  * HTTP/1.1 200
- * {message : Rating was successful., deleted : true}
+ * {"message" : "Rating was successful.", "deleted" : true}
  */
 poemsRouter.post('/private/:id/rate/:rating', authorize.isSignedIn, poemsController.rateUserPoemByID)
 
@@ -180,7 +194,7 @@ poemsRouter.post('/private/:id/rate/:rating', authorize.isSignedIn, poemsControl
  * @apiSuccess {String}     message         Status that the rating was successful.
  * @apiSuccessExample {JSON} Success-Response:
  * HTTP/1.1 200
- * {message : Report was successful.}
+ * {"message": "Report was successful."}
  */
 poemsRouter.post('/private/:id/report/', authorize.isSignedIn, poemsController.reportUserPoemByID)
 
@@ -195,63 +209,8 @@ poemsRouter.post('/private/:id/report/', authorize.isSignedIn, poemsController.r
  * @apiSuccess {String}     message         Status that the rating was successful.
  * @apiSuccessExample {JSON} Success-Response:
  * HTTP/1.1 200
- * {message : Favorite operation was successful.}
+ * {"message": "Favorite operation was successful."}
  */
 poemsRouter.post('/private/:id/favorite/', authorize.isSignedIn, poemsController.favoriteUserPoemByID)
-
-/**
- * @api {get} poems/ratings Dump all ratings.
- * @apiGroup Debug
- * @apiPermission user
- * @apiHeader  {Cookie}     connect.sid     Users unique session cookie.
- * @apiSuccess {Number}     poemID          The id of the poem.
- * @apiSuccess {Number}     userID          The id of the user.
- * @apiSuccess {Number}     rating          The rating given by the user
- * @apiSuccessExample {json} Success-Response:
- * HTTP/1.1 200 OK
- * {
- *   "0": {
- *       "poemID": 9,
- *       "poemText": "A full fed Rose on meals of Tint\nA Dinner for a Bee\nIn process of the Noon became -\nEach bright Mortality\nThe Forfeit is of Creature fair\nItself, adored before\nSubmitting for our unknown sake\nTo be esteemed no more --",
- *       "userID": 5,
- *       "timestamp": "2022-08-25T03:07:21.000Z"
- *   }
- * }
- */
-poemsRouter.get('/ratings', authorize.isSignedIn, poemsController.getRatingsDump);
-
-
-
-/**
- * @api {get} poems/follows Dump all follows.
- * @apiGroup Debug
- * @apiPermission user
- * @apiHeader  {Cookie}     connect.sid     Users unique session cookie.
- * @apiSuccess {Number}     userID          The user following the other.
- * @apiSuccess {Number}     followedUserID  The id of the user.
- */
-poemsRouter.get('/follows', authorize.isSignedIn, poemsController.getFollowsDump);
-
-/**
- * @api {get} poems/favorites Dump all favorites.
- * @apiGroup Debug
- * @apiPermission user
- * @apiHeader  {Cookie}     connect.sid     Users unique session cookie.
- * @apiSuccess {Number}     poemID          The id of the poem.
- * @apiSuccess {Number}     userID  The id of the user.
- */
-poemsRouter.get('/favorites', authorize.isSignedIn, poemsController.getFavoritesDump);
-
-/**
- * @api {post} poems/private/publish/:userID/:poemText Publish user poem
- * @apiParam {Number}        userID      The ID of the user who published.
- * @apiParam {String}       poemText    The text of the poem.
- * @apiGroup PrivatePoems
- * @apiPermission user
- * @apiSuccessExample {json} Success-Response:
- * HTTP/1.1 200
- *   {Message : OK}
- */
-poemsRouter.post('/private/publish/:userID/:poemText', authorize.isSignedIn, poemsController.postPrivatePoem);
 
 module.exports = poemsRouter;

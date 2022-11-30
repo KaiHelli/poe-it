@@ -162,6 +162,29 @@ exports.getUserPoemByID = [
 }];
 
 /*
+ * Post a new poem.
+ */
+exports.postUserPoem =
+    [
+        body('poemText').isLength({min: 1, max: 256}).withMessage('Poem should have 1 to 256 characters.'),
+        async(req, res) => {
+            // If some fields were not present, return the corresponding errors.
+            const errors = msgOnlyValidationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(422).json({errors: errors.array()});
+            }
+
+            let userID = req.session.userID;
+            let poemText = req.body.poemText;
+
+            await sql.query("INSERT INTO PrivatePoem (userID, poemText) " +
+                            "VALUES (?, ?);", [userID, poemText]);
+
+            return res.status(200).json({message: 'Poem published successfully.'});
+        }
+    ]
+
+/*
  * Update the text of a poem.
  */
 exports.updateUserPoemByID = [
@@ -378,28 +401,4 @@ exports.getPublicPoem = async (req, res) => {
         'LIMIT 1;');
 
     return res.status(200).json(rows[0]);
-};
-
-// DUMPS
-exports.getRatingsDump = async (req, res) => {
-    let rows = await sql.query('SELECT *  FROM PrivatePoemRating;');
-    return res.status(200).json(rows);
-};
-
-exports.getFollowsDump = async (req, res) => {
-    let rows = await sql.query('SELECT *  FROM UserFollowing;');
-    return res.status(200).json(rows);
-};
-
-exports.getFavoritesDump = async (req, res) => {
-    let rows = await sql.query('SELECT *  FROM PrivatePoemFavorites;');
-    return res.status(200).json(rows);
-};
-
-exports.postPrivatePoem = async(req, res) => {
-    let userID = req.params.userID;
-    let poemText = req.params.poemText;
-    await sql.query("INSERT INTO PrivatePoem (userID, poemText) "+
-                        "VALUES (?, ?);", [userID, poemText]);
-    return res.status(200).json({message: 'Poem published successfully.'});
 };

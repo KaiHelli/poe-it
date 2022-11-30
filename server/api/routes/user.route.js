@@ -20,7 +20,7 @@ const authorize = require('../middleware/authorize')
  * @apiSuccess {String}     message         Status that the rating was successful.
  * @apiSuccessExample {JSON} Success-Response:
  * HTTP/1.1 200
- * {message : Follow operation was successful.}
+ * {"message": "Follow operation was successful."}
  */
 userRouter.post('/:id/follow', authorize.isSignedIn, userController.followUserByID);
 

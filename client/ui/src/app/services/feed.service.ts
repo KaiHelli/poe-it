@@ -37,7 +37,9 @@ export class FeedService {
   }
 
   public createPoem(poemText: string): Observable<any> {
-    return new Observable<any>();
+    return this.http.post(POEM_API + 'private/', {poemText: poemText}, httpOptions).pipe(
+      catchError(ErrorModule.handleError),
+    );
   }
 
   public updatePoem(poemID: number, poemText: string): Observable<any> {
@@ -74,12 +76,6 @@ export class FeedService {
 
   public getPublicPoem(): Observable<any> {
     return this.http.get(POEM_API + 'public/', httpOptions).pipe(
-      catchError(ErrorModule.handleError),
-    );
-  }
-
-  public publish(userID: string, poemText: string): Observable<any> {
-    return this.http.post(POEM_API + 'private/publish/' + userID + '/' + poemText, {}, httpOptions).pipe(
       catchError(ErrorModule.handleError),
     );
   }
