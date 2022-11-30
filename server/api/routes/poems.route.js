@@ -105,6 +105,22 @@ poemsRouter.get('/private', authorize.isSignedIn, poemsController.getUserPoems);
  */
 poemsRouter.get('/private/:id', authorize.isSignedIn, poemsController.getUserPoemByID);
 
+
+/**
+ * @api {get} /poems/public/tags/:id Get String of Tags of Poem
+ * @apiDescription Get String of Tags of Public Poem
+ * @apiParam {Number} id The id of the poem 
+ * @apiGroup PublicPoems
+ * @apiSuccess {String}     tags   string containg all tags seperated by commas
+ * @apiSuccessExample {String} Success-Response:
+ * HTTP/1.1 200
+ * {"tags":"Family & Ancestors, History & Politics, Landscapes & Pastorals"}
+ */
+poemsRouter.get('/public/tags/:id', poemsController.getPublicPoemTags);
+
+
+
+
 /**
  * @api {post} /private Publish a poem
  * @apiDescription Publish a poem

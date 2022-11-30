@@ -402,3 +402,29 @@ exports.getPublicPoem = async (req, res) => {
 
     return res.status(200).json(rows[0]);
 };
+
+
+exports.getPublicPoemTags = [
+    param('id').isInt({min: 1, allow_leading_zeroes: false}).withMessage('Invalid Poem ID.'),
+    async (req, res,) => {
+        // If some fields were not present, return the corresponding errors.
+        const errors = msgOnlyValidationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({errors: errors.array()});
+        }
+        let tagString = ""
+        let poemID = req.params.id;
+        let rows = await sql.query({ sql : 'SELECT tag FROM PublicPoemTags WHERE poemID = ' + poemID + '  LIMIT 10;',   rowsAsArray: true });
+        for (let tag in rows){
+           tagString += ' ' + rows[tag][0] + ',';
+        }
+        return res.status(200).send({tags : tagString.slice(1,tagString.length - 1)})
+    }
+];
+
+
+exports.getAllPublicPoemTags = async (req, res) => {
+    let rows = await sql.query('SELECT poemID, tag FROM PublicPoemTags;');
+
+    return res.status(200).json(rows);
+};

@@ -79,4 +79,9 @@ export class FeedService {
       catchError(ErrorModule.handleError),
     );
   }
+  public getPublicPoemTags(poemID: number): Observable<any> {
+    return this.http.get(POEM_API + 'public/tags/' + poemID, httpOptions).pipe(
+      catchError(ErrorModule.handleError),
+    );
+  }
 }
