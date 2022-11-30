@@ -321,7 +321,7 @@ exports.getUserPoemReports = [
             return res.status(422).json({errors: errors.array()});
         }
 
-        let numPoems = parseInt(req.query.numPoems) || 20;
+        let numReports = parseInt(req.query.numReports) || 20;
         let offset = parseInt(req.query.offset) || 0;
 
         let statement = 'SELECT PP.poemID, PP.poemText, PP.timestamp, PP.userID as poetUserID, U.username as poetUsername, U.displayname as poetDisplayname, ' +
@@ -335,7 +335,7 @@ exports.getUserPoemReports = [
                         'ORDER BY PP.timestamp DESC ' +
                         'LIMIT ?, ?;';
 
-        let rows = await sql.query(statement, [offset, numPoems]);
+        let rows = await sql.query(statement, [offset, numReports]);
 
         return res.status(200).json(rows);
     }];
