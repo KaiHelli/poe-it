@@ -12,28 +12,27 @@ There are two options to run the frontend and the backend concurrently in a Dock
 - `docker-compose --profile cloud up -V --build`
   - For this instead of a local MySQL container, the Google Cloud SQL Auth Proxy will be started in a Docker container alongside the Poe-it Application.
 
-
-    A file named `secrets.env` is required in the project
-    root directory with the format:
+Both options require a file named `secrets.env` in the project root directory with the format:
 ````
-        DB_HOST='db_hostname'
-        DB_PORT='db_portnumber'
-        DB_USER='api'
-        DB_PASS='PASSWORD_FOR_DB' # same as MYSQL_API_PASSWORD
-        DB_NAME='PoeItDB'
-        PASSWORD_PEPPER='PEPPER_VALUE'
-        SESSION_SECRET='express_session_key'
-        MYSQL_ROOT_PASSWORD='a_password'
-        MYSQL_API_PASSWORD='PASSWORD_FOR_DB'
-        APP_ADMIN_PASSWORD='yet_another_password'
-        APP_ADMIN_HASH='argon2_hash_of_APP_ADMIN_PASSWORD'
-        # Note hash must be with PASSWORD_PEPPER
-        # Set NODE_ENV to either 'development' or 'production'
-        NODE_ENV='development' # or 'production'
-  ````      
-
+DB_HOST='db_hostname'
+DB_PORT='db_portnumber'
+DB_USER='api'
+DB_PASS='PASSWORD_FOR_DB' # same as MYSQL_API_PASSWORD
+DB_NAME='PoeItDB'
+PASSWORD_PEPPER='PEPPER_VALUE'
+SESSION_SECRET='express_session_key'
+MYSQL_ROOT_PASSWORD='a_password'
+MYSQL_API_PASSWORD='PASSWORD_FOR_DB'
+APP_ADMIN_PASSWORD='yet_another_password'
+APP_ADMIN_HASH='argon2_hash_of_APP_ADMIN_PASSWORD'
+# Note hash must be with PASSWORD_PEPPER
+# Set NODE_ENV to either 'development' or 'production'
+NODE_ENV='development' # or 'production'
+````
 
 The frontend will currently be served at [http://localhost:4200/](http://localhost:4200/) while the backend is available at [http://localhost:8080/](http://localhost:8080/).
+
+The local files are mapped as volumes into the Docker container, so changes to the backend and frontend take effect immediately. Note, however, that the container must be rebuilt when packages are added or removed.
 
 ## Dependencies
 
@@ -48,7 +47,8 @@ Installed with `npm install -g <package>`
 - **`@poe-it`** - The overall project.
   - `npm-run-all` - Used to run the frontend and backend concurrently during development.
 - **`@poe-it/ui`** - The frontend ui-code of the project.
-  - `ng-validate-equal` Used to validate that two form inputs are equal.
+  - `ng-validate-equal` - Used to validate that two form inputs are equal.
+  - `async-mutex` - A generic mutex/semaphore library that we use to prevent race conditions in parts of our code.
 - **`@poe-it/api`** - The backend api-code of the project based on `node.js`.
   - `express.js` - Used to ease the development in `node.js`.
   - `express-session` - Used to create sessions and session-cookies.
