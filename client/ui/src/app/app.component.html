@@ -11,6 +11,9 @@
     <mat-icon>account_circle</mat-icon>
     {{displayname}}
   </button>
+  <button mat-icon-button *ngIf="isAdmin" [routerLink]="'/admin'" matTooltip="Admin Dashboard">
+    <mat-icon>settings</mat-icon>
+  </button>
   <button mat-icon-button *ngIf="isSignedIn" (click)="onSignOut()" matTooltip="Logout">
     <mat-icon>logout</mat-icon>
   </button>

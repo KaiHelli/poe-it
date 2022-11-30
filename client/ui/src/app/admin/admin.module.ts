@@ -1,8 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-import { DashboardRoutingModule } from './dashboard-routing.module';
-import { DashboardComponent } from './dashboard.component';
+import { AdminRoutingModule } from "./admin-routing.module";
+import { ReportsComponent } from './reports/reports.component';
 
 import { MaterialModule } from '../helper/material.module';
 import { FormsModule } from "@angular/forms";
@@ -10,14 +9,14 @@ import { GeneralComponentsModule } from "../general/general-components.module";
 
 @NgModule({
   declarations: [
-    DashboardComponent
+    ReportsComponent
   ],
   imports: [
     CommonModule,
-    DashboardRoutingModule,
+    AdminRoutingModule,
     MaterialModule,
     FormsModule,
     GeneralComponentsModule
   ]
 })
-export class DashboardModule { }
+export class AdminModule { }

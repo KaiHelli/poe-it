@@ -3,7 +3,6 @@ import {FeedService} from "../services/feed.service";
 import {AppConfig} from "../config/app.config";
 import { AuthService } from "../services/auth.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
-import {HttpClient} from "@angular/common/http";
 
 @Component({
   selector: 'app-dashboard',
@@ -30,8 +29,7 @@ export class DashboardComponent implements OnInit {
   constructor(
     private feedService: FeedService,
     private authService: AuthService,
-    private snackBar: MatSnackBar,
-    private http:HttpClient) {
+    private snackBar: MatSnackBar) {
   }
 
   ngOnInit(){

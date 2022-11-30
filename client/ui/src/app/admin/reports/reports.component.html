@@ -1,0 +1,12 @@
+<mat-error *ngIf="!feedValid" class="al-center">
+  <div style="white-space: pre-line">{{errorMessage}}</div>
+  <br>
+</mat-error>
+
+<app-report-card *ngFor="let report of reportList;" [report]="report" (destroyCard)="onDestroyCard($event)"></app-report-card>
+
+<div class="al-center">
+  <button mat-icon-button (click)="onLoadReports()" [disabled]="reachedEnd" matTooltip="Load more poems" class="mb-8">
+    <mat-icon>get_app</mat-icon>
+  </button>
+</div>

@@ -36,6 +36,25 @@ export class FeedService {
     );
   }
 
+  public deleteReport(poemID: number, userID: number): Observable<any> {
+    return this.http.delete(POEM_API + "private/" + poemID + "/report/" + userID, httpOptions).pipe(
+      catchError(ErrorModule.handleError),
+    );
+  }
+
+  public getReports(numReports: number, offset: number): Observable<any> {
+    let params = new HttpParams({
+      fromObject: {
+        numReports: numReports,
+        offset: offset
+      }
+    });
+
+    return this.http.get(POEM_API + "reports/", {...httpOptions, params: params}).pipe(
+      catchError(ErrorModule.handleError),
+    );
+  }
+
   public createPoem(poemText: string): Observable<any> {
     return this.http.post(POEM_API + 'private/', {poemText: poemText}, httpOptions).pipe(
       catchError(ErrorModule.handleError),

@@ -8,6 +8,7 @@
 const poemsRouter = require('express').Router();
 const poemsController = require('../controller/poems.controller');
 const authorize = require('../middleware/authorize')
+const rolesConfig = require("../configs/roles.config");
 
 /**
  * @api {get} poems/private Get a list of private poems.
@@ -37,26 +38,26 @@ const authorize = require('../middleware/authorize')
  * HTTP/1.1 200 OK
  * [
  *   {
- *     "poemID": 120,
- *     "poemText": "Follow to the deep wood's weeds,\nFollow to the wild-briar dingle,\nWhere we seek to intermingle,\nAnd the violet tells her tale\nTo the odour-scented gale,\nFor they two have enough to do\nOf such work as I and you.",
- *     "timestamp": "2022-10-15T06:56:39.000Z",
- *     "userID": 39,
- *     "username": "maire",
- *     "displayname": "Maire",
- *     "rating": "2",
+ *     "poemID": 124,
+ *     "poemText": "His face was like a snake's--wrinkled and loose\nAnd withered--",
+ *     "timestamp": "2022-10-16T08:06:20.000Z",
+ *     "userID": 31,
+ *     "username": "ida",
+ *     "displayname": "Ida",
+ *     "rating": 18446744073709552000,
  *     "rated": null,
  *     "isFavorite": 0,
  *     "isFollowing": 0,
  *     "isReported": 0
  *   },
  *   {
- *     "poemID": 119,
- *     "poemText": "ÆGLE, beauty and poet, has two little crimes;\nShe makes her own face, and does not make her rhymes.",
- *     "timestamp": "2022-10-14T19:55:13.000Z",
- *     "userID": 16,
- *     "username": "афанасий",
- *     "displayname": "Афанасий",
- *     "rating": "0",
+ *     "poemID": 123,
+ *     "poemText": "No, Music, thou art not the 'food of Love.'\nUnless Love feeds upon its own sweet self,\nTill it becomes all Music murmurs of.",
+ *     "timestamp": "2022-10-16T01:56:25.000Z",
+ *     "userID": 12,
+ *     "username": "micheletto",
+ *     "displayname": "Micheletto",
+ *     "rating": 1,
  *     "rated": null,
  *     "isFavorite": 0,
  *     "isFollowing": 0,
@@ -96,7 +97,7 @@ poemsRouter.get('/private', authorize.isSignedIn, poemsController.getUserPoems);
  *   "userID": 4,
  *   "username": "maria",
  *   "displayname": "Maria",
- *   "rating": "0",
+ *   "rating": 0,
  *   "rated": null,
  *   "isFavorite": 0,
  *   "isFollowing": 0,
@@ -165,6 +166,115 @@ poemsRouter.put('/private/:id', authorize.isSignedIn, poemsController.updateUser
 poemsRouter.delete('/private/:id', authorize.isSignedIn, poemsController.deleteUserPoemByID)
 
 /**
+ * @api {post} poems/private/:id/rate/:rating rate a specific poem
+ * @apiParam {Number}       id              The id of the poem to be rated.
+ * @apiParam {Number}       rating          The rating of the vote. Valid values being: -1, 1
+ * @apiGroup PrivatePoems
+ * @apiPermission user
+ * @apiHeader  {Cookie}     connect.sid     User's unique session cookie.
+ * @apiSuccess {String}     message         Status that the rating was successful.
+ * @apiSuccess {Boolean}    deleted         Whether the poem was deleted due to reaching the threshold or not.
+ * @apiSuccessExample {JSON} Success-Response:
+ * HTTP/1.1 200
+ * {"message" : "Rating was successful.", "deleted" : true}
+ */
+poemsRouter.post('/private/:id/rate/:rating', authorize.isSignedIn, poemsController.rateUserPoemByID)
+
+/**
+ * @api {get} poems/reports         Get reports along with the corresponding poems.
+ * @apiGroup PrivatePoems
+ * @apiPermission admin
+ * @apiHeader  {Cookie}             connect.sid                 Users unique session cookie.
+ * @apiQuery   {Number}             numReports                  The number of reports that should be returned.
+ * @apiQuery   {Number}             offset                      The offset from which the reports should be returned.
+ * @apiSuccess {Object[]}           reports                     The list of reports.
+ * @apiSuccess {String}             reports.reportText          The reason for the report.
+ * @apiSuccess {Number}             reports.reportingUserID     The user id of the user that reported the poem.
+ * @apiSuccess {String}             reports.reportingUsername   The username of the user that reported the poem.
+ * @apiSuccess {String}             reports.reportingUserName   The displayname of the user that reported the poem.
+ * @apiSuccess {Number}             reports.poemID              The id of the poem.
+ * @apiSuccess {String}             reports.poemText            The text of the poem.
+ * @apiSuccess {Date}               reports.timestamp           When this poem was posted.
+ * @apiSuccess {Number}             reports.poetUserID          The user id of the user that posted the poem.
+ * @apiSuccess {String}             reports.poetUsername        The username of the user that posted the poem.
+ * @apiSuccess {String}             reports.poetDisplayname     The displayname of the user that posted the poem.
+ * @apiSuccess {Number}             reports.rating              The rating of the poem.
+ * @apiSuccessExample {JSON} Success-Response:
+ * HTTP/1.1 200
+ * [
+ *   {
+ *     "poemID": 81,
+ *     "poemText": "I was in the darkness;\nI could not see my words\nNor the wishes of my heart.\nThen suddenly there was a great light --\n\n\"Let me into the darkness again.\"",
+ *     "timestamp": "2022-09-30T14:32:25.000Z",
+ *     "poetUserID": 16,
+ *     "poetUsername": "афанасий",
+ *     "poetDisplayname": "Афанасий",
+ *     "reportText": "Способ забирать рабочий. Что потом направо а выразить хотеть мусор. Инфекция тревога изучить роскошный невыносимый задрать.",
+ *     "reportingUserID": 32,
+ *     "reportingUsername": "пелагея",
+ *     "reportingDisplayname": "Пелагея",
+ *     "rating": 18446744073709552000
+ *   },
+ *   {
+ *     "poemID": 74,
+ *     "poemText": "Dying at my music!\nBubble!  Bubble!\nHold me till the Octave's run!\nQuick!  Burst the Windows!\nRitardando!\nPhials left, and the Sun!",
+ *     "timestamp": "2022-09-29T12:14:30.000Z",
+ *     "poetUserID": 7,
+ *     "poetUsername": "conny",
+ *     "poetDisplayname": "Conny",
+ *     "reportText": "Consectetur autem eos. Maxime ut nihil laborum. Quae dolorum ipsa quas provident.\nInventore corrupti officiis nostrum ad iusto at a. Odio ad exercitationem quis excepturi quibusdam.",
+ *     "reportingUserID": 32,
+ *     "reportingUsername": "пелагея",
+ *     "reportingDisplayname": "Пелагея",
+ *     "rating": 6
+ *   }
+ * ]
+ */
+poemsRouter.get('/reports/', authorize.isSignedIn, authorize.hasRole(rolesConfig.administrator), poemsController.getUserPoemReports)
+
+/**
+ * @api {post} poems/private/:id/report     Rate a specific poem
+ * @apiParam {Number}       id              The id of the poem to be reported.
+ * @apiBody  {String}       reportText      The reason of the report.
+ * @apiGroup PrivatePoems
+ * @apiPermission user
+ * @apiHeader  {Cookie}     connect.sid     User's unique session cookie.
+ * @apiSuccess {String}     message         Status that the rating was successful.
+ * @apiSuccessExample {JSON} Success-Response:
+ * HTTP/1.1 200
+ * {"message": "Report was successful."}
+ */
+poemsRouter.post('/private/:id/report/', authorize.isSignedIn, poemsController.reportUserPoemByID)
+
+/**
+ * @api {delete} poems/private/:id/report/:userID     Rate a specific poem
+ * @apiParam {Number}       id                        The id of the poem of the report to be deleted.
+ * @apiParam {Number}       userID                    The userID of the author of the report to be deleted.
+ * @apiGroup PrivatePoems
+ * @apiPermission admin
+ * @apiHeader  {Cookie}     connect.sid     User's unique session cookie.
+ * @apiSuccess {String}     message         Status that the rating was successful.
+ * @apiSuccessExample {JSON} Success-Response:
+ * HTTP/1.1 200
+ * {"message": "Report deleted successfully."}
+ */
+poemsRouter.delete('/private/:id/report/:userID', authorize.isSignedIn, authorize.hasRole(rolesConfig.administrator), poemsController.deleteUserPoemReport)
+
+/**
+ * @api {post} poems/private/:id/favorite   Mark a specific poem as favorite
+ * @apiParam {Number}       id              The id of the poem to be marked.
+ * @apiBody  {Boolean}      favorite        Whether the favorite mark should be added or removed.
+ * @apiGroup PrivatePoems
+ * @apiPermission user
+ * @apiHeader  {Cookie}     connect.sid     User's unique session cookie.
+ * @apiSuccess {String}     message         Status that the deletion was successful.
+ * @apiSuccessExample {JSON} Success-Response:
+ * HTTP/1.1 200
+ * {"message": "Report was successful."}
+ */
+poemsRouter.post('/private/:id/favorite/', authorize.isSignedIn, poemsController.favoriteUserPoemByID)
+
+/**
  * @api {get} poems/public Get one random public poem.
  * @apiGroup PublicPoems
  * @apiPermission unrestricted
@@ -182,51 +292,5 @@ poemsRouter.delete('/private/:id', authorize.isSignedIn, poemsController.deleteU
  *   }
  */
 poemsRouter.get('/public', poemsController.getPublicPoem);
-
-/**
- * @api {post} poems/private/:id/rate/:rating rate a specific poem
- * @apiParam {Number}       id              The id of the poem to be rated.
- * @apiParam {Number}       rating          The rating of the vote. Valid values being: -1, 1
- * @apiGroup PublicPoems
- * @apiPermission user
- * @apiHeader  {Cookie}     connect.sid     User's unique session cookie.
- * @apiHeader  {Number}     userId          User's id.
- * @apiSuccess {String}     message         Status that the rating was successful.
- * @apiSuccess {Boolean}    deleted         Whether the poem was deleted due to reaching the threshold or not.
- * @apiSuccessExample {JSON} Success-Response:
- * HTTP/1.1 200
- * {"message" : "Rating was successful.", "deleted" : true}
- */
-poemsRouter.post('/private/:id/rate/:rating', authorize.isSignedIn, poemsController.rateUserPoemByID)
-
-/**
- * @api {post} poems/private/:id/report     Rate a specific poem
- * @apiParam {Number}       id              The id of the poem to be reported.
- * @apiBody  {String}       reportText      The reason of the report.
- * @apiGroup PublicPoems
- * @apiPermission user
- * @apiHeader  {Cookie}     connect.sid     User's unique session cookie.
- * @apiHeader  {Number}     userId          User's id.
- * @apiSuccess {String}     message         Status that the rating was successful.
- * @apiSuccessExample {JSON} Success-Response:
- * HTTP/1.1 200
- * {"message": "Report was successful."}
- */
-poemsRouter.post('/private/:id/report/', authorize.isSignedIn, poemsController.reportUserPoemByID)
-
-/**
- * @api {post} poems/private/:id/favorite   Mark a specific poem as favorite
- * @apiParam {Number}       id              The id of the poem to be marked.
- * @apiBody  {Boolean}      favorite        Whether the favorite mark should be added or removed.
- * @apiGroup PublicPoems
- * @apiPermission user
- * @apiHeader  {Cookie}     connect.sid     User's unique session cookie.
- * @apiHeader  {Number}     userId          User's id.
- * @apiSuccess {String}     message         Status that the rating was successful.
- * @apiSuccessExample {JSON} Success-Response:
- * HTTP/1.1 200
- * {"message": "Favorite operation was successful."}
- */
-poemsRouter.post('/private/:id/favorite/', authorize.isSignedIn, poemsController.favoriteUserPoemByID)
 
 module.exports = poemsRouter;

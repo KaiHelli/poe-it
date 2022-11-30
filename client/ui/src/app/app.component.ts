@@ -5,6 +5,7 @@ import { MessageService } from "./services/message.service";
 import { FormControl } from '@angular/forms';
 import { DOCUMENT } from "@angular/common";
 import {Subject, takeUntil} from "rxjs";
+import {AppConfig} from "./config/app.config";
 
 @Component({
   selector: 'app-root',
@@ -17,6 +18,7 @@ export class AppComponent {
 
   title = 'Poe-it';
   isSignedIn = false;
+  isAdmin = false;
   displayname = '';
 
   toggleControl: FormControl;
@@ -41,8 +43,8 @@ export class AppComponent {
   public ngOnInit(): void {
     // Update the username and login state on every UserAuthChangedEvent.
     this.messageService.UserAuthChangedEvent.pipe(takeUntil(this.onDestroy)).subscribe((value: User | null) => {
-      console.log(value);
       this.isSignedIn = value !== null;
+      this.isAdmin = value !== null && value.role.roleID === AppConfig.ADMIN_ROLE_ID;
       this.displayname = value !== null ? value.displayname : '';
     });
 

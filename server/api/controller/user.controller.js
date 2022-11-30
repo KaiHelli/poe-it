@@ -59,3 +59,25 @@ exports.followUserByID = [
 
         return res.status(200).send({message : 'Follow operation was successful.'});
     }];
+
+exports.getUserStatsByID = async (req, res) => {
+        let userID = req.session.userID;
+
+        let rows = await sql.query('WITH num AS ' +
+                                    '  (SELECT COUNT(*) AS numPoems ' +
+                                    '  FROM PrivatePoem ' +
+                                    '  WHERE userID = ?), ' +
+                                    'sum AS ' +
+                                    '  (SELECT CAST(IFNULL(SUM(IFNULL(PPR.rating,0)),0) AS SIGNED) AS totalScore ' +
+                                    '  FROM PrivatePoem PP ' +
+                                    '  LEFT OUTER JOIN PrivatePoemRating PPR ON PPR.poemID = PP.poemID ' +
+                                    '  WHERE PP.userID = ?) ' +
+                                    'SELECT num.numPoems, sum.totalScore ' +
+                                    'FROM num, sum;', [userID, userID]);
+
+        if (rows.length !== 1) {
+            return res.status(403).send({errors: [`No statistics for user with id ${userID} found.`]});
+        }
+
+        return res.status(200).send(rows[0]);
+    };

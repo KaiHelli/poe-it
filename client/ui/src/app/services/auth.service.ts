@@ -13,7 +13,7 @@ const httpOptions = AppConfig.HTTP_OPTIONS;
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService implements CanActivate {
+export class AuthService {
   constructor(private http: HttpClient, private router: Router, private messageService: MessageService) {
     // Create an initial UserAuthChangedEvent once the AuthService is started.
     // This makes sure that all services are initialized with the correct state ones the website is opened up.
@@ -24,9 +24,21 @@ export class AuthService implements CanActivate {
 
   public user: User | null = null;
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+  public forceAdmin(): Observable<boolean> {
     return this.isSignedIn().pipe(map(value => {
-        if (value === true) {
+        if (value && this.user!.role.roleID === AppConfig.ADMIN_ROLE_ID) {
+          return true;
+        } else {
+          this.router.navigateByUrl('dashboard');
+          return false;
+        }
+      }
+    ))
+  }
+
+  public forceSignedIn(): Observable<boolean> {
+    return this.isSignedIn().pipe(map(value => {
+        if (value) {
           return true;
         } else {
           this.router.navigateByUrl('auth/signin');

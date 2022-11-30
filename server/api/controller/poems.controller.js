@@ -57,7 +57,7 @@ exports.getUserPoems = [
     }
 
     let statement = 'SELECT PP.poemID, PP.poemText, PP.timestamp, PP.userID, U.username, U.displayname, ' +
-                    'SUM(IFNULL(TPPR.rating,0)) AS rating, ' +
+                    'CAST(SUM(IFNULL(TPPR.rating,0)) AS SIGNED) AS rating, ' +
                     'PPPR.rating AS rated,  ' +
                     'IF(PP.poemID IN (SELECT poemID ' +
                                     'FROM PrivatePoemFavorites ' +
@@ -134,7 +134,7 @@ exports.getUserPoemByID = [
         let userID = req.session.userID;
 
         let statement = 'SELECT PP.poemID, PP.poemText, PP.timestamp, PP.userID, U.username, U.displayname, ' +
-                        'SUM(IFNULL(TPPR.rating,0)) AS rating, ' +
+                        'CAST(SUM(IFNULL(TPPR.rating,0)) AS SIGNED) AS rating, ' +
                         'PPPR.rating AS rated,  ' +
                         'IF(PP.poemID IN (SELECT poemID ' +
                                     'FROM PrivatePoemFavorites ' +
@@ -305,6 +305,70 @@ exports.rateUserPoemByID = [
         }
 
         return res.status(200).send({message: 'Rating was successful.', deleted: deleted});
+    }];
+
+/*
+ * Get poem reports.
+ */
+exports.getUserPoemReports = [
+    // TODO: Validation of URL parameter does not work. Maybe has to do with the optional().
+    // Check whether the necessary fields are present.
+    query('numReports').optional().isInt({min: 1}).withMessage('The numPoems parameter is not a positive integer value.'),
+    query('offset').optional().isInt({min: 0}).withMessage('The offset parameter is not a positive integer value.'),
+    async (req, res) => {
+        // If some validation failed, return the errors that occurred.
+        const errors = msgOnlyValidationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({errors: errors.array()});
+        }
+
+        let numPoems = parseInt(req.query.numPoems) || 20;
+        let offset = parseInt(req.query.offset) || 0;
+
+        let statement = 'SELECT PP.poemID, PP.poemText, PP.timestamp, PP.userID as poetUserID, U.username as poetUsername, U.displayname as poetDisplayname, ' +
+                        'PPR.reportText, PPR.userID as reportingUserID, UR.username as reportingUsername, UR.displayname as reportingDisplayname, CAST(SUM(IFNULL(PPR2.rating,0)) AS SIGNED) AS rating ' +
+                        'FROM PrivatePoem PP ' +
+                        'NATURAL JOIN User U ' +
+                        'JOIN PrivatePoemReports PPR ON PPR.poemID = PP.poemID ' +
+                        'JOIN User UR ON UR.userID = PPR.userID ' +
+                        'LEFT OUTER JOIN PrivatePoemRating PPR2 ON PPR2.poemID = PP.poemID ' +
+                        'GROUP BY PP.poemID, PP.poemText, PP.timestamp, poetUserID, poetUserName, PPR.reportText, reportingUserID, reportingUserName ' +
+                        'ORDER BY PP.timestamp DESC ' +
+                        'LIMIT ?, ?;';
+
+        let rows = await sql.query(statement, [offset, numPoems]);
+
+        return res.status(200).json(rows);
+    }];
+
+/*
+ * Delete a report of a poem.
+ */
+exports.deleteUserPoemReport = [
+    param('id').isInt({min: 1, allow_leading_zeroes: false}).withMessage('Invalid Poem ID.'),
+    param('userID').isInt({min: 1, allow_leading_zeroes: false}).withMessage('Invalid User ID.'),
+    async (req, res) => {
+        // If some fields were not present, return the corresponding errors.
+        const errors = msgOnlyValidationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({errors: errors.array()});
+        }
+
+        let poemID = req.params.id;
+        let userID = req.params.userID;
+
+        let rows = await sql.query("SELECT reportText " +
+                                    "FROM PrivatePoemReports " +
+                                    "WHERE poemID = ? AND userID = ?;", [poemID, userID]);
+
+        if (rows.length !== 1) {
+            return res.status(403).send({errors: [`No report with poemID ${poemID} and userID ${userID} found.`]});
+        }
+
+        await sql.query("DELETE FROM PrivatePoemReports "+
+                        "WHERE poemID = ? AND userID = ?;", [poemID, userID]);
+
+        return res.status(200).send({message : 'Report was successful.'});
     }];
 
 /*

@@ -23,5 +23,10 @@ export class UserService {
     );
   }
 
+  public getUserStatistics(): Observable<any> {
+    return this.http.get(USER_API + '/statistics/', httpOptions).pipe(
+      catchError(ErrorModule.handleError),
+    );
+  }
 
 }

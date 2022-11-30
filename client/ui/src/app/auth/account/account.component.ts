@@ -4,6 +4,7 @@ import { AuthService } from "../../services/auth.service";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { MessageService } from "../../services/message.service";
 import {Subject, takeUntil} from "rxjs";
+import {UserService} from "../../services/user.service";
 
 @Component({
   selector: 'app-account',
@@ -25,15 +26,32 @@ export class AccountComponent implements OnInit {
   public displayname = '';
   public userID = '';
 
+  public userStatistics!: UserStatistics;
+
   constructor(
     private authService: AuthService,
     private snackBar: MatSnackBar,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private userService: UserService
   ) {}
 
   public ngOnInit(): void {
     this.displayname = this.authService.user!.displayname;
     this.userID = this.authService.user!.userID.toString();
+
+    this.userService.getUserStatistics().subscribe({
+      next: res => {
+        this.userStatistics = res;
+      },
+      error: err => {
+        this.userStatistics = {totalScore: 0, numPoems: 0};
+        this.snackBar.open(`Failed to retrieve user statistics! ${err.message}`, 'Close', {
+          horizontalPosition: 'right',
+          verticalPosition: 'bottom',
+          duration: 3000
+        });
+      }
+    })
 
     this.messageService.UserAuthChangedEvent.pipe(takeUntil(this.onDestroy)).subscribe((value: User | null) => {
       this.displayname = value !== null ? value.displayname : '';

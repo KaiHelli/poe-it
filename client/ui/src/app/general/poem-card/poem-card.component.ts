@@ -191,7 +191,7 @@ export class PoemCardComponent implements OnInit, OnDestroy {
     this.feedService.updateRating(this.poem.poemID, 1).subscribe({
       next: _ => {
         this.poem.rated = 1;
-        this.poem.rating = +this.poem.rating + 1;
+        this.poem.rating += 1;
       },
       error: err => {
         this.snackBar.open(`Failed to vote for poem! ${err.message}`, 'Close', {
@@ -207,7 +207,7 @@ export class PoemCardComponent implements OnInit, OnDestroy {
     this.feedService.updateRating(this.poem.poemID, -1).subscribe({
       next: res => {
         this.poem.rated = -1;
-        this.poem.rating = +this.poem.rating - 1;
+        this.poem.rating -= 1;
 
         if (res.deleted) {
           this.destroyCard.emit(this.poem);

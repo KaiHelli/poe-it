@@ -1,0 +1,25 @@
+.button-container {
+  display: flex;
+
+  .button-text {
+    flex-grow: 1;
+  }
+
+  .button-group {
+    margin-left: 8px;
+    display: flex;
+    flex-direction: column;
+    align-content: space-between;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+}
+
+.selected {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.inner-card {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+}

@@ -74,7 +74,7 @@ export class FilterBarComponent implements OnInit {
 
     // Edit existing keyword
     const index = this.keywords.indexOf(keyword);
-    if (index > 0) {
+    if (index >= 0) {
       this.keywords[index] = value;
     }
 

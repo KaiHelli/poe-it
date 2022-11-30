@@ -8,6 +8,7 @@ import { FilterBarComponent } from './filter-bar/filter-bar.component';
 import { FormsModule } from "@angular/forms";
 import { ReportDialogComponent } from './report-dialog/report-dialog.component';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
+import { ReportCardComponent } from './report-card/report-card.component';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.componen
     PoemCardComponent,
     FilterBarComponent,
     ReportDialogComponent,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    ReportCardComponent
   ],
   imports: [
     CommonModule,
@@ -25,7 +27,8 @@ import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.componen
   exports: [
     PublicCardComponent,
     PoemCardComponent,
-    FilterBarComponent
+    FilterBarComponent,
+    ReportCardComponent
   ]
 })
 export class GeneralComponentsModule { }
