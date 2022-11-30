@@ -99,7 +99,7 @@ export class FeedService {
     );
   }
   public getPublicPoemTags(poemID: number): Observable<any> {
-    return this.http.get(POEM_API + 'public/tags/' + poemID, httpOptions).pipe(
+    return this.http.get(POEM_API + 'public/' + poemID + '/tags', httpOptions).pipe(
       catchError(ErrorModule.handleError),
     );
   }

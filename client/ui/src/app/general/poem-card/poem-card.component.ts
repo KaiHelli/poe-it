@@ -178,7 +178,6 @@ export class PoemCardComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log(result)
       if (result) {
         this.poem.isReported = true;
       }

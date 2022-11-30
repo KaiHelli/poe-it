@@ -476,7 +476,7 @@ exports.getPublicPoemTags = [
         if (!errors.isEmpty()) {
             return res.status(422).json({errors: errors.array()});
         }
-        let tagString = ""
+        let tagString = "";
         let poemID = req.params.id;
         let rows = await sql.query({ sql : 'SELECT tag FROM PublicPoemTags WHERE poemID = ' + poemID + '  LIMIT 10;',   rowsAsArray: true });
         for (let tag in rows){
@@ -485,10 +485,3 @@ exports.getPublicPoemTags = [
         return res.status(200).send({tags : tagString.slice(1,tagString.length - 1)})
     }
 ];
-
-
-exports.getAllPublicPoemTags = async (req, res) => {
-    let rows = await sql.query('SELECT poemID, tag FROM PublicPoemTags;');
-
-    return res.status(200).json(rows);
-};

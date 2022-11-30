@@ -9,7 +9,6 @@ import { FeedService } from "../../services/feed.service";
 
 export class PublicCardComponent  {
   public publicPoem!: PublicPoem;
-  poemID: number = 7  
   title: string = ""
   name: string = ""
   text: string = ""
@@ -37,8 +36,8 @@ export class PublicCardComponent  {
         this.poemValid = false;
       }
     });
-    
-    
+
+
   }
 }
 

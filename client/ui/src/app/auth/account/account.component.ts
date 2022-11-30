@@ -26,7 +26,7 @@ export class AccountComponent implements OnInit {
   public displayname = '';
   public userID = '';
 
-  public userStatistics!: UserStatistics;
+  public userStatistics: UserStatistics = {totalScore: 0, numPoems: 0};
 
   constructor(
     private authService: AuthService,
@@ -44,7 +44,6 @@ export class AccountComponent implements OnInit {
         this.userStatistics = res;
       },
       error: err => {
-        this.userStatistics = {totalScore: 0, numPoems: 0};
         this.snackBar.open(`Failed to retrieve user statistics! ${err.message}`, 'Close', {
           horizontalPosition: 'right',
           verticalPosition: 'bottom',
