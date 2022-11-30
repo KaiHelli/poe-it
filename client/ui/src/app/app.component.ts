@@ -6,6 +6,7 @@ import { FormControl } from '@angular/forms';
 import { DOCUMENT } from "@angular/common";
 import {Subject, takeUntil} from "rxjs";
 import {AppConfig} from "./config/app.config";
+import {Title} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-root',
@@ -26,7 +27,11 @@ export class AppComponent {
   constructor(private router: Router,
               private authService: AuthService,
               private messageService: MessageService,
+              private pageTitle: Title,
               @Inject(DOCUMENT) private document: Document) {
+
+    // Change page title
+    pageTitle.setTitle(this.title)
 
     // Check for preferred theme (dark mode / light mode) of the system.
     const prefersDarkMode = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -37,7 +42,6 @@ export class AppComponent {
     if (prefersDarkMode) {
       this.document.body.classList.add('dark');
     }
-
   }
 
   public ngOnInit(): void {
