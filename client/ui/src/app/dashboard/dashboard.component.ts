@@ -72,6 +72,7 @@ export class DashboardComponent implements OnInit {
           verticalPosition: 'bottom',
           duration: 3000
         })
+        this.loadPoems(AppConfig.APP_DEFAULTS.cardsOnLoad, 0, this.keywords, this.sorting, this.filter, true);
       },
       error: err => {
         this.publishPoemErrorMessage = err.message;
