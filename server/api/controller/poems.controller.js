@@ -6,7 +6,8 @@
 
 const sql = require('../middleware/database');
 const authorize = require('../middleware/authorize');
-const rolesConfig = require('../configs/roles.config')
+const rolesConfig = require('../configs/roles.config');
+const appConfig = require('../configs/app.config')
 const {body, param, query, validationResult} = require('express-validator');
 
 const msgOnlyValidationResult = validationResult.withDefaults({
@@ -124,7 +125,7 @@ exports.getUserPoemByID = [
     param('id').isInt({min: 1}).withMessage('Invalid id.'),
     async (req, res) => {
         // If some fields were not present, return the corresponding errors.
-        const errors = validationResult(req);
+        const errors = msgOnlyValidationResult(req);
         if (!errors.isEmpty()) {
             return res.status(422).json({errors: errors.array()});
         }
@@ -150,7 +151,6 @@ exports.getUserPoemByID = [
                         'LEFT OUTER JOIN PrivatePoemRating PPPR ON PPPR.poemID = PP.poemID AND PPPR.userID = ? ' +
                         'WHERE PP.poemID = ? ' +
                         'GROUP BY PP.poemID, PP.timestamp, PP.userID, U.username, U.displayname, rated, isFavorite, isFollowing, isReported;';
-        ;
 
         let rows = await sql.query(statement, [userID, userID, userID, userID, poemID]);
 
@@ -169,7 +169,7 @@ exports.updateUserPoemByID = [
     body('poemText').isLength({min: 1, max: 256}).withMessage('Poem should have 1 to 256 characters.'),
     async (req, res, next) => {
         // If some fields were not present, return the corresponding errors.
-        const errors = validationResult(req);
+        const errors = msgOnlyValidationResult(req);
         if (!errors.isEmpty()) {
             return res.status(422).json({errors: errors.array()});
         }
@@ -206,7 +206,7 @@ exports.deleteUserPoemByID = [
     param('id').isInt({min: 1, allow_leading_zeroes: false}).withMessage('Invalid Poem ID.'),
     async (req, res, next) => {
         // If some fields were not present, return the corresponding errors.
-        const errors = validationResult(req);
+        const errors = msgOnlyValidationResult(req);
         if (!errors.isEmpty()) {
             return res.status(422).json({errors: errors.array()});
         }
@@ -238,12 +238,12 @@ exports.deleteUserPoemByID = [
 /*
  * Vote for a poem.
  */
-exports.postUpdateRatings = [
+exports.rateUserPoemByID = [
     param('id').isInt({min: 1, allow_leading_zeroes: false}).withMessage('Invalid Poem ID.'),
     param('rating').isInt({min: -1, max: 1, allow_leading_zeroes: false}).custom(value => {return value !== 0}).withMessage('Given rating is invalid.'),
     async (req, res) => {
         // If some fields were not present, return the corresponding errors.
-        const errors = validationResult(req);
+        const errors = msgOnlyValidationResult(req);
         if (!errors.isEmpty()) {
             return res.status(422).json({errors: errors.array()});
         }
@@ -253,9 +253,9 @@ exports.postUpdateRatings = [
         let userID = req.session.userID;
 
         let rows = await sql.query("SELECT PPR.rating AS rated " +
-                                            "FROM PrivatePoem PP " +
-                                            "LEFT OUTER JOIN PrivatePoemRating PPR ON PPR.poemID = PP.poemID AND PPR.userID = ? " +
-                                            "WHERE PP.poemID = ?", [userID, poemID]);
+            "FROM PrivatePoem PP " +
+            "LEFT OUTER JOIN PrivatePoemRating PPR ON PPR.poemID = PP.poemID AND PPR.userID = ? " +
+            "WHERE PP.poemID = ?", [userID, poemID]);
 
         if (rows.length !== 1) {
             return res.status(403).send({errors: [`No poem with id ${poemID} found.`]});
@@ -266,9 +266,106 @@ exports.postUpdateRatings = [
         }
 
         await sql.query("INSERT INTO PrivatePoemRating (poemID, userID, rating) "+
-                        "VALUES (?, ?, ?);", [poemID, userID, rating]);
+            "VALUES (?, ?, ?);", [poemID, userID, rating]);
 
-        return res.status(200).send({message : 'Rating was successful.'});
+        rows = await sql.query("SELECT SUM(IFNULL(PPR.rating,0)) AS rating " +
+                        "FROM PrivatePoem PP " +
+                        "LEFT OUTER JOIN PrivatePoemRating PPR ON PPR.poemID = PP.PoemID " +
+                        "WHERE PP.poemID = ?;", [poemID]);
+
+        let deleted = false;
+
+        if (rows[0].rating <= appConfig.poemDeleteThreshold) {
+            await sql.query("DELETE FROM PrivatePoem WHERE poemID = ?", [poemID])
+
+            deleted = true;
+        }
+
+        return res.status(200).send({message: 'Rating was successful.', deleted: deleted});
+    }];
+
+/*
+ * Report a poem.
+ */
+exports.reportUserPoemByID = [
+    param('id').isInt({min: 1, allow_leading_zeroes: false}).withMessage('Invalid Poem ID.'),
+    body('reportText').isLength({min: 1, max: 256}).withMessage('Reason must be between 1 and 256 characters.'),
+    async (req, res) => {
+        // If some fields were not present, return the corresponding errors.
+        const errors = msgOnlyValidationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({errors: errors.array()});
+        }
+
+        let poemID = req.params.id;
+        let reportText = req.body.reportText;
+        let userID = req.session.userID;
+
+        let rows = await sql.query("SELECT PP.userID, PPR.reportText AS reason " +
+            "FROM PrivatePoem PP " +
+            "LEFT OUTER JOIN PrivatePoemReports PPR ON PPR.poemID = PP.poemID AND PPR.userID = ? " +
+            "WHERE PP.poemID = ?", [userID, poemID]);
+
+        if (rows.length !== 1) {
+            return res.status(403).send({errors: [`No poem with id ${poemID} found.`]});
+        }
+
+        if (rows[0].userID === userID) {
+            return res.status(403).send({errors: ['It is not allowed to report your own poem.']});
+        }
+
+        if (rows[0].reason !== null) {
+            return res.status(403).send({errors: [`User has already reported poem with id ${poemID}`]});
+        }
+
+        await sql.query("INSERT INTO PrivatePoemReports (poemID, userID, reportText) "+
+            "VALUES (?, ?, ?);", [poemID, userID, reportText]);
+
+        return res.status(200).send({message : 'Report was successful.'});
+    }];
+
+/*
+ * Favorite a poem.
+ */
+exports.favoriteUserPoemByID = [
+    param('id').isInt({min: 1, allow_leading_zeroes: false}).withMessage('Invalid Poem ID.'),
+    body('favorite').isBoolean().withMessage('Invalid favorite bool.'),
+    async (req, res) => {
+        // If some fields were not present, return the corresponding errors.
+        const errors = msgOnlyValidationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({errors: errors.array()});
+        }
+
+        let poemID = req.params.id;
+        let userID = req.session.userID;
+        let favorite = req.body.favorite;
+
+        let rows = await sql.query("SELECT PP.poemID, PPF.userID " +
+                                    "FROM PrivatePoem PP " +
+                                    "LEFT OUTER JOIN PrivatePoemFavorites PPF ON PPF.poemID = PP.poemID AND PPF.userID = ? " +
+                                    "WHERE PP.poemID = ?;", [userID, poemID]);
+
+        if (rows.length !== 1) {
+            return res.status(403).send({errors: [`No poem with id ${poemID} found.`]});
+        }
+
+        let favoriteExists = rows[0].userID !== null;
+
+        if ((favoriteExists && favorite) || (!favoriteExists && !favorite)) {
+            return res.status(403).send({errors: [`The state you try to achieve is already met.`]});
+        }
+
+        if (favorite) {
+            await sql.query("INSERT INTO PrivatePoemFavorites (poemID, userID) "+
+                "VALUES (?, ?);", [poemID, userID]);
+        } else {
+            await sql.query("DELETE FROM PrivatePoemFavorites "+
+                "WHERE poemID = ? AND userID = ?;", [poemID, userID]);
+        }
+
+
+        return res.status(200).send({message : 'Favorite operation was successful.'});
     }];
 
 /*

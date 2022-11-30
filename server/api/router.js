@@ -26,8 +26,10 @@
 const generalRouter = require('express').Router();
 const authRouter = require('./routes/auth.route');
 const poemsRouter = require('./routes/poems.route');
+const userRouter = require('./routes/user.route');
 
 generalRouter.use('/auth', authRouter);
 generalRouter.use('/poems', poemsRouter);
+generalRouter.use('/user', userRouter);
 
 module.exports = generalRouter;

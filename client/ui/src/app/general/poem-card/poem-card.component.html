@@ -10,14 +10,14 @@
       {{formattedDate}}
     </mat-card-subtitle>
     <span class="spacer"></span>
-    <button mat-icon-button *ngIf="isAdmin || isAuthor" [matTooltip]="isEditing ? 'End editing' : 'Edit your poem'" (click)="onToggleEdit()">
+    <button mat-icon-button [disabled]="inputsDisabled" *ngIf="isAdmin || isAuthor" [matTooltip]="isEditing ? 'End editing' : 'Edit your poem'" (click)="onToggleEdit()">
       <mat-icon>edit</mat-icon>
     </button>
-    <button mat-icon-button *ngIf="!isAuthor" [matTooltip]="poem.isFollowing ? 'Unfollow poet' : 'Follow poet'" (click)="onToggleFollow()">
+    <button mat-icon-button [disabled]="inputsDisabled" *ngIf="!isAuthor" [matTooltip]="poem.isFollowing ? 'Unfollow poet' : 'Follow poet'" (click)="onToggleFollow()">
       <mat-icon *ngIf="!poem.isFollowing">person_add_alt</mat-icon>
       <mat-icon *ngIf="!!poem.isFollowing" color="primary">person_alt</mat-icon>
     </button>
-    <button mat-icon-button [matTooltip]="poem.isFavorite ? 'Remove from favorites' : 'Add to favorites'" (click)="onToggleFavorite()">
+    <button mat-icon-button [disabled]="inputsDisabled" [matTooltip]="poem.isFavorite ? 'Remove from favorites' : 'Add to favorites'" (click)="onToggleFavorite()">
       <mat-icon *ngIf="!poem.isFavorite">favorite_border</mat-icon>
       <mat-icon *ngIf="!!poem.isFavorite" color="warn">favorite</mat-icon>
     </button>
@@ -25,8 +25,8 @@
       <mat-icon>more_horiz</mat-icon>
     </button>
     <mat-menu #menu="matMenu" xPosition="after">
-      <button mat-menu-item *ngIf="isAdmin || isAuthor" (click)="onDeletePost()">Delete</button>
-      <button mat-menu-item [disabled]="!!poem.isReported" (click)="onReportPost()">Report</button>
+      <button mat-menu-item *ngIf="isAdmin || isAuthor" (click)="onDeletePost()" [disabled]="inputsDisabled">Delete</button>
+      <button mat-menu-item *ngIf="!isAuthor" [disabled]="!!poem.isReported || inputsDisabled" (click)="onReportPost()">Report</button>
     </mat-menu>
   </mat-card-header>
   <mat-card-content>
@@ -38,10 +38,10 @@
             <mat-label>Edit your poem</mat-label>
             <textarea matInput placeholder="Ex. so much depends..." maxlength="256" cdkTextareaAutosize cdkAutosizeMinRows="7" [(ngModel)]="editPoemText" name="editPoemText"></textarea>
             <div matSuffix class="input-suffix-button-group-stretch">
-              <button mat-icon-button matTooltip="Cancel" type="button" [disabled]="!updatePostForm.form.valid" (click)="onToggleEdit()">
+              <button mat-icon-button matTooltip="Cancel" type="button" [disabled]="inputsDisabled" (click)="onToggleEdit()">
                 <mat-icon>close</mat-icon>
               </button>
-              <button mat-icon-button matSuffix matTooltip="Save" type="submit" [disabled]="!updatePostForm.form.valid">
+              <button mat-icon-button matSuffix matTooltip="Save" type="submit" [disabled]="!updatePostForm.form.valid || inputsDisabled">
                 <mat-icon>send</mat-icon>
               </button>
             </div>
@@ -49,13 +49,13 @@
         </form>
       </div>
       <div class="button-group">
-        <button mat-icon-button [class]="poem.rated == 1 ? 'selected' : null" [disabled]="poem.rated !== null" (click)=onUpvote()>
+        <button mat-icon-button [class]="poem.rated == 1 ? 'selected' : null" [disabled]="poem.rated !== null || inputsDisabled" (click)=onUpvote()>
           <mat-icon>arrow_drop_up</mat-icon>
         </button>
         <div class="al-center">
           {{poem.rating}}
         </div>
-        <button mat-icon-button [class]="poem.rated == -1 ? 'selected' : null" [disabled]="poem.rated !== null" (click)=onDownvote()>
+        <button mat-icon-button [class]="poem.rated == -1 ? 'selected' : null" [disabled]="poem.rated !== null || inputsDisabled" (click)=onDownvote()>
           <mat-icon>arrow_drop_down</mat-icon>
         </button>
       </div>

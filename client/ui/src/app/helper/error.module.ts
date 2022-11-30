@@ -13,6 +13,8 @@ export class ErrorModule {
       // handle server-side error
       msg = `Error ${error.status}:\n ${error.error["errors"].join("\n")}`;
     }
+    console.log(error);
+    console.log(msg);
     return throwError(() => new Error(msg));
   }
 }

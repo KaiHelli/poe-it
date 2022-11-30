@@ -1,12 +1,14 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import { AuthService } from "../../services/auth.service";
 import { MessageService } from "../../services/message.service";
-import {filter, Subject, takeUntil} from "rxjs";
+import {filter, finalize, Subject, takeUntil} from "rxjs";
 import {FeedService} from "../../services/feed.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {MatDialog} from '@angular/material/dialog';
 import {ReportDialogComponent} from "../report-dialog/report-dialog.component";
 import {ConfirmDialogComponent} from "../confirm-dialog/confirm-dialog.component";
+import {Mutex} from "async-mutex";
+import {UserService} from "../../services/user.service";
 
 @Component({
   selector: 'app-poem-card[poem]',
@@ -18,6 +20,8 @@ export class PoemCardComponent implements OnInit, OnDestroy {
 
   @Input() poem!: PrivatePoem;
 
+  @Input() inputsDisabled: boolean = false;
+
   @Output() destroyCard = new EventEmitter();
 
   isAdmin: boolean = false;
@@ -25,12 +29,16 @@ export class PoemCardComponent implements OnInit, OnDestroy {
   isEditing: boolean = false;
   isAuthor: boolean = false;
 
+  favoriteLock: Mutex = new Mutex();
+  followLock: Mutex = new Mutex();
+
   formattedDate: string = "";
 
   constructor(
     private authService: AuthService,
     private messageService: MessageService,
     private feedService: FeedService,
+    private userService: UserService,
     private snackBar: MatSnackBar,
     public dialog: MatDialog
   ) {}
@@ -56,13 +64,55 @@ export class PoemCardComponent implements OnInit, OnDestroy {
     this.editPoemText = this.poem.poemText;
   }
 
-  onToggleFavorite(): void {
-    this.poem.isFavorite = !this.poem.isFavorite;
+  async onToggleFavorite(): Promise<void> {
+    if (this.favoriteLock.isLocked()) {
+      return;
+    }
+
+    let release = await this.favoriteLock.acquire();
+
+    let newState = !this.poem.isFavorite;
+
+    this.feedService.changeFavoriteState(this.poem.poemID, newState)
+      .pipe(finalize(() => release()))
+      .subscribe({
+      next: _ => {
+        this.poem.isFavorite = newState;
+      },
+      error: err => {
+        this.snackBar.open(`Failed to favorite poem! ${err.message}`, 'Close', {
+          horizontalPosition: 'right',
+          verticalPosition: 'bottom',
+          duration: 3000
+        });
+      }
+    })
   }
 
-  onToggleFollow(): void {
-    this.poem.isFollowing = !this.poem.isFollowing;
-    this.messageService.UserFollowChangedEvent.next({userID: this.poem.userID, emittedPoemID: this.poem.poemID, followed: this.poem.isFollowing});
+  async onToggleFollow(): Promise<void> {
+    if (this.favoriteLock.isLocked()) {
+      return;
+    }
+
+    let release = await this.followLock.acquire()
+
+    let newState = !this.poem.isFollowing;
+
+    this.userService.changeFollowedState(this.poem.userID, newState)
+      .pipe(finalize(() => release()))
+      .subscribe({
+        next: _ => {
+          this.poem.isFollowing = newState;
+          this.messageService.UserFollowChangedEvent.next({userID: this.poem.userID, emittedPoemID: this.poem.poemID, followed: this.poem.isFollowing});
+        },
+        error: err => {
+          this.snackBar.open(`Failed to favorite poem! ${err.message}`, 'Close', {
+            horizontalPosition: 'right',
+            verticalPosition: 'bottom',
+            duration: 3000
+          });
+        }
+      })
   }
 
   onUpdatePost(): void {
@@ -119,13 +169,12 @@ export class PoemCardComponent implements OnInit, OnDestroy {
         });
       }
     })
-
-
   }
 
   onReportPost(): void {
     const dialogRef = this.dialog.open(ReportDialogComponent, {
-      minWidth: '400px'
+      minWidth: '400px',
+      data: this.poem.poemID
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -138,7 +187,6 @@ export class PoemCardComponent implements OnInit, OnDestroy {
 
   }
 
-  // TODO: DELETE ON THRESHOLD. Return current rating on each vote from backend.
   onUpvote(): void {
     this.feedService.updateRating(this.poem.poemID, 1).subscribe({
       next: _ => {
@@ -157,9 +205,13 @@ export class PoemCardComponent implements OnInit, OnDestroy {
 
   onDownvote(): void {
     this.feedService.updateRating(this.poem.poemID, -1).subscribe({
-      next: _ => {
+      next: res => {
         this.poem.rated = -1;
         this.poem.rating = +this.poem.rating - 1;
+
+        if (res.deleted) {
+          this.destroyCard.emit(this.poem);
+        }
       },
       error: err => {
         this.snackBar.open(`Failed to vote for poem! ${err.message}`, 'Close', {

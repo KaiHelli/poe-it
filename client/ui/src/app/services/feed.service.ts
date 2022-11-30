@@ -4,7 +4,6 @@ import {HttpClient, HttpParams} from "@angular/common/http";
 import {MessageService} from "./message.service";
 import {catchError, Observable, tap} from "rxjs";
 import {ErrorModule} from "../helper/error.module";
-import * as http from "http";
 
 const POEM_API = AppConfig.API_URL + 'poems/';
 
@@ -55,12 +54,10 @@ export class FeedService {
     );
   }
 
-  public changeFollowedState(userID: number, state: boolean): Observable<any> {
-    return new Observable<any>();
-  }
-
   public changeFavoriteState(poemID: number, state: boolean): Observable<any> {
-    return new Observable<any>();
+    return this.http.post(POEM_API + 'private/' + poemID + '/favorite/', {favorite: state}, httpOptions).pipe(
+      catchError(ErrorModule.handleError),
+    );
   }
 
   public updateRating(poemID: number, rating: Rating): Observable<any> {
@@ -70,7 +67,9 @@ export class FeedService {
   }
 
   public createReport(poemID: number, reportText: string): Observable<any> {
-    return new Observable<any>();
+    return this.http.post(POEM_API + 'private/' + poemID + '/report/', {reportText: reportText}, httpOptions).pipe(
+      catchError(ErrorModule.handleError),
+    );
   }
 
   public getPublicPoem(): Observable<any> {

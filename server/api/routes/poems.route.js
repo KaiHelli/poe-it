@@ -5,7 +5,7 @@
  */
 'use strict';
 
-const authRouter = require('express').Router();
+const poemsRouter = require('express').Router();
 const poemsController = require('../controller/poems.controller');
 const authorize = require('../middleware/authorize')
 
@@ -64,10 +64,10 @@ const authorize = require('../middleware/authorize')
  *   }
  * ]
  */
-authRouter.get('/private', authorize.isSignedIn, poemsController.getUserPoems);
+poemsRouter.get('/private', authorize.isSignedIn, poemsController.getUserPoems);
 
 // TODO: Add additional features.
-// authRouter.post('/private/', authorize.isSignedIn, poemsController.insertUserPoem);
+// poemsRouter.post('/private/', authorize.isSignedIn, poemsController.insertUserPoem);
 
 /**
  * @api {get} poems/private/:id Get a specific private poem.
@@ -103,7 +103,7 @@ authRouter.get('/private', authorize.isSignedIn, poemsController.getUserPoems);
  *   "isReported": 0
  * }
  */
-authRouter.get('/private/:id', authorize.isSignedIn, poemsController.getUserPoemByID);
+poemsRouter.get('/private/:id', authorize.isSignedIn, poemsController.getUserPoemByID);
 
 /**
  * @api {put} /private/:id Update a poem
@@ -118,7 +118,7 @@ authRouter.get('/private/:id', authorize.isSignedIn, poemsController.getUserPoem
  * HTTP/1.1 200
  * {message: Poem updated successfully.}
  */
-authRouter.put('/private/:id', authorize.isSignedIn, poemsController.updateUserPoemByID)
+poemsRouter.put('/private/:id', authorize.isSignedIn, poemsController.updateUserPoemByID)
 
 /**
  * @api {delete} /private/:id Delete a poem
@@ -132,7 +132,7 @@ authRouter.put('/private/:id', authorize.isSignedIn, poemsController.updateUserP
  * HTTP/1.1 200
  * {message: Poem deleted successfully.}
  */
-authRouter.delete('/private/:id', authorize.isSignedIn, poemsController.deleteUserPoemByID)
+poemsRouter.delete('/private/:id', authorize.isSignedIn, poemsController.deleteUserPoemByID)
 
 /**
  * @api {get} poems/public Get one random public poem.
@@ -151,22 +151,53 @@ authRouter.delete('/private/:id', authorize.isSignedIn, poemsController.deleteUs
  *   "poetName": "George Bilgere"
  *   }
  */
-authRouter.get('/public', poemsController.getPublicPoem);
+poemsRouter.get('/public', poemsController.getPublicPoem);
 
 /**
  * @api {post} poems/private/:id/rate/:rating rate a specific poem
  * @apiParam {Number}       id              The id of the poem to be rated.
  * @apiParam {Number}       value           The rating of the vote. Valid values being: -1, 1
- * @apiGroup Ratings
+ * @apiGroup PublicPoems
+ * @apiPermission user
+ * @apiHeader  {Cookie}     connect.sid     User's unique session cookie.
+ * @apiHeader  {Number}     userId          User's id.
+ * @apiSuccess {String}     message         Status that the rating was successful.
+ * @apiSuccess {Boolean}    deleted         Whether the poem was deleted due to reaching the threshold or not.
+ * @apiSuccessExample {JSON} Success-Response:
+ * HTTP/1.1 200
+ * {message : Rating was successful., deleted : true}
+ */
+poemsRouter.post('/private/:id/rate/:rating', authorize.isSignedIn, poemsController.rateUserPoemByID)
+
+/**
+ * @api {post} poems/private/:id/report     Rate a specific poem
+ * @apiParam {Number}       id              The id of the poem to be reported.
+ * @apiBody  {String}       reportText      The reason of the report.
+ * @apiGroup PublicPoems
  * @apiPermission user
  * @apiHeader  {Cookie}     connect.sid     User's unique session cookie.
  * @apiHeader  {Number}     userId          User's id.
  * @apiSuccess {String}     message         Status that the rating was successful.
  * @apiSuccessExample {JSON} Success-Response:
- * HTTP/1.1 200 
- * {message : Rating was successful.}
-*/
-authRouter.post('/private/:id/rate/:rating', authorize.isSignedIn, poemsController.postUpdateRatings)
+ * HTTP/1.1 200
+ * {message : Report was successful.}
+ */
+poemsRouter.post('/private/:id/report/', authorize.isSignedIn, poemsController.reportUserPoemByID)
+
+/**
+ * @api {post} poems/private/:id/favorite   Mark a specific poem as favorite
+ * @apiParam {Number}       id              The id of the poem to be marked.
+ * @apiBody  {Boolean}      favorite        Whether the favorite mark should be added or removed.
+ * @apiGroup PublicPoems
+ * @apiPermission user
+ * @apiHeader  {Cookie}     connect.sid     User's unique session cookie.
+ * @apiHeader  {Number}     userId          User's id.
+ * @apiSuccess {String}     message         Status that the rating was successful.
+ * @apiSuccessExample {JSON} Success-Response:
+ * HTTP/1.1 200
+ * {message : Favorite operation was successful.}
+ */
+poemsRouter.post('/private/:id/favorite/', authorize.isSignedIn, poemsController.favoriteUserPoemByID)
 
 /**
  * @api {get} poems/ratings Dump all ratings.
@@ -187,7 +218,7 @@ authRouter.post('/private/:id/rate/:rating', authorize.isSignedIn, poemsControll
  *   }
  * }
  */
-authRouter.get('/ratings', authorize.isSignedIn, poemsController.getRatingsDump);
+poemsRouter.get('/ratings', authorize.isSignedIn, poemsController.getRatingsDump);
 
 
 
@@ -199,7 +230,7 @@ authRouter.get('/ratings', authorize.isSignedIn, poemsController.getRatingsDump)
  * @apiSuccess {Number}     userID          The user following the other.
  * @apiSuccess {Number}     followedUserID  The id of the user.
  */
-authRouter.get('/follows', authorize.isSignedIn, poemsController.getFollowsDump);
+poemsRouter.get('/follows', authorize.isSignedIn, poemsController.getFollowsDump);
 
 /**
  * @api {get} poems/favorites Dump all favorites.
@@ -209,7 +240,7 @@ authRouter.get('/follows', authorize.isSignedIn, poemsController.getFollowsDump)
  * @apiSuccess {Number}     poemID          The id of the poem.
  * @apiSuccess {Number}     userID  The id of the user.
  */
-authRouter.get('/favorites', authorize.isSignedIn, poemsController.getFavoritesDump);
+poemsRouter.get('/favorites', authorize.isSignedIn, poemsController.getFavoritesDump);
 
 /**
  * @api {post} poems/private/publish/:userID/:poemText Publish user poem
@@ -221,6 +252,6 @@ authRouter.get('/favorites', authorize.isSignedIn, poemsController.getFavoritesD
  * HTTP/1.1 200
  *   {Message : OK}
  */
- authRouter.post('/private/publish/:userID/:poemText', authorize.isSignedIn, poemsController.postPrivatePoem);
+poemsRouter.post('/private/publish/:userID/:poemText', authorize.isSignedIn, poemsController.postPrivatePoem);
 
-module.exports = authRouter;
+module.exports = poemsRouter;
