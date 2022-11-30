@@ -47,7 +47,7 @@ export class PoemCardComponent implements OnInit, OnDestroy {
     this.editPoemText = this.poem.poemText;
     this.isAuthor = this.authService.user!.userID === this.poem.userID;
     this.isAdmin = this.authService.isAdmin();
-    this.formattedDate = new Date(this.poem.timestamp).toLocaleString("en-US");
+    this.formattedDate = new Date(this.poem.timestamp).toLocaleString("en-US", {timeZoneName: 'short'});
 
     this.messageService.UserFollowChangedEvent.pipe(takeUntil(this.onDestroy),filter(value => value.userID === this.poem.userID && value.emittedPoemID !== this.poem.poemID)).subscribe(value => {
       this.poem.isFollowing = value.followed;

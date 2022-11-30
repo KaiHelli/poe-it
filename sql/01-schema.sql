@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS User(
   displayname VARCHAR(20) NOT NULL UNIQUE,
   username VARCHAR(20) NOT NULL UNIQUE,                         -- 20 characters sufficient?
   password CHAR(96) NOT NULL,                                   -- argon2di produces 96 char output
-  registrationDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- automatically adds the current datetime on insert
+  registrationDate DATETIME NOT NULL DEFAULT (UTC_TIMESTAMP), -- automatically adds the current datetime on insert
   roleID BIGINT UNSIGNED NOT NULL,                              -- was missing in our schema statements, but is necessary
   PRIMARY KEY(userID),
   FOREIGN KEY(roleID) REFERENCES Role(roleID)                   -- don't delete the user if the role is deleted, needs to be migrated before
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS PrivatePoem(
   poemID SERIAL,
   poemText VARCHAR(256) NOT NULL,                         -- 256 characters sufficient?
   userID BIGINT UNSIGNED NOT NULL,                        -- userID is of type SERIAL
-  timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,  -- automatically adds the current datetime on insert
+  timestamp DATETIME NOT NULL DEFAULT (UTC_TIMESTAMP),  -- automatically adds the current datetime on insert
   PRIMARY KEY(poemID),
   FOREIGN KEY(userID) REFERENCES User(userID)
       ON DELETE CASCADE                                   -- delete the tags if the corresponding user is deleted
@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS Session(
   sessionID VARCHAR(128) NOT NULL UNIQUE,
   sessionData JSON NOT NULL,
   expires INT(11) UNSIGNED NOT NULL,
-  startTime DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  startTime DATETIME NOT NULL DEFAULT (UTC_TIMESTAMP),
   userID BIGINT UNSIGNED NOT NULL,                         -- userID is of type SERIAL
   PRIMARY KEY(sessionID),
   FOREIGN KEY(userID) REFERENCES User(userID)

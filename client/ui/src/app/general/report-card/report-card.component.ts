@@ -34,7 +34,7 @@ export class ReportCardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.formattedDate = new Date(this.report.timestamp).toLocaleString("en-US");
+    this.formattedDate = new Date(this.report.timestamp).toLocaleString("en-US", {timeZoneName: 'short'});
   }
 
   ngOnDestroy(): void {
