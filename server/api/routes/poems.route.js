@@ -221,6 +221,6 @@ authRouter.get('/favorites', authorize.isSignedIn, poemsController.getFavoritesD
  * HTTP/1.1 200
  *   {Message : OK}
  */
- authRouter.post('/private/publish/:userID/:poemText', authorize.isSignedIn, poemsController.getPublicPoem);
+ authRouter.post('/private/publish/:userID/:poemText', authorize.isSignedIn, poemsController.postPrivatePoem);
 
 module.exports = authRouter;
