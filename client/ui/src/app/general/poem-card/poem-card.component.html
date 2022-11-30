@@ -32,7 +32,7 @@
   <mat-card-content>
     <div class="button-container">
       <div class="button-text">
-        <div style="white-space: pre-line" *ngIf="!isEditing">{{poem.poemText}}</div>
+        <div style="white-space: pre-line; word-wrap: anywhere" *ngIf="!isEditing">{{poem.poemText}}</div>
         <form #updatePostForm="ngForm" (ngSubmit)="onUpdatePost()" *ngIf="isEditing">
           <mat-form-field>
             <mat-label>Edit your poem</mat-label>
