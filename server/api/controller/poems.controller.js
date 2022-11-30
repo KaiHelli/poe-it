@@ -20,7 +20,6 @@ const msgOnlyValidationResult = validationResult.withDefaults({
  * Retrieves all available poems.
  */
 exports.getUserPoems = [
-    // TODO: Validation of URL parameter does not work. Maybe has to do with the optional().
     // Check whether the necessary fields are present.
     query('numPoems').optional().isInt({min: 1}).withMessage('The numPoems parameter is not a positive integer value.'),
     query('offset').optional().isInt({min: 0}).withMessage('The offset parameter is not a positive integer value.'),

@@ -10,7 +10,7 @@ const userController = require('../controller/user.controller');
 const authorize = require('../middleware/authorize')
 
 /**
- * @api {post} user/:id/follow   Follow a specific user
+ * @api {post} user/:id/follow   Follow a specific user.
  * @apiParam {Number}       id              The id of the user to be followed.
  * @apiBody  {Boolean}      follow          Whether the follow should be added or removed.
  * @apiGroup User

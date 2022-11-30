@@ -15,13 +15,13 @@ const rolesConfig = require("../configs/roles.config");
  * @apiGroup PrivatePoems
  * @apiPermission user
  * @apiHeader  {Cookie}             connect.sid         Users unique session cookie.
- * @apiQuery   {Number}             numPoems            The number of poems that should be returned.
- * @apiQuery   {Number}             offset              The offset from which the poems should be returned.
- * @apiQuery   {String}             orderBy             The order of the poems.
- * @apiQuery   {Object[String]}     keywords            The keywords that should be searched.
- * @apiQuery   {boolean}            filterFavorite      Whether only poems that are favorized should be returned or not.
- * @apiQuery   {boolean}            filterPersonal      Whether only poems that are your own should be returned or not.
- * @apiQuery   {boolean}            filterFollowing     Whether only poems by followed poets should be returned or not.
+ * @apiQuery   {Number}             [numPoems]            The number of poems that should be returned.
+ * @apiQuery   {Number}             [offset]              The offset from which the poems should be returned.
+ * @apiQuery   {String}             [orderBy]             The order of the poems.
+ * @apiQuery   {Object[String]}     [keywords]            The keywords that should be searched.
+ * @apiQuery   {boolean}            [filterFavorite]      Whether only poems that are favorized should be returned or not.
+ * @apiQuery   {boolean}            [filterPersonal]      Whether only poems that are your own should be returned or not.
+ * @apiQuery   {boolean}            [filterFollowing]     Whether only poems by followed poets should be returned or not.
  * @apiSuccess {Object[]}           poems               The list of poems.
  * @apiSuccess {Number}             poems.poemID        The id of the poem.
  * @apiSuccess {String}             poems.poemText      The text of the poem.
@@ -107,7 +107,7 @@ poemsRouter.get('/private', authorize.isSignedIn, poemsController.getUserPoems);
 poemsRouter.get('/private/:id', authorize.isSignedIn, poemsController.getUserPoemByID);
 
 /**
- * @api {post} /private Publish a poem
+ * @api {post} /private Publish a poem.
  * @apiDescription Publish a poem
  * @apiBody {String} poemText The text of the poem.
  * @apiGroup PrivatePoems
@@ -121,7 +121,7 @@ poemsRouter.get('/private/:id', authorize.isSignedIn, poemsController.getUserPoe
 poemsRouter.post('/private/', authorize.isSignedIn, poemsController.postUserPoem);
 
 /**
- * @api {put} /private/:id Update a poem
+ * @api {put} /private/:id Update a poem.
  * @apiDescription Update a poem by id
  * @apiParam {Number} id The id of the poem to be updated.
  * @apiBody {String} poemText The text that the poem should be updated to.
@@ -136,7 +136,7 @@ poemsRouter.post('/private/', authorize.isSignedIn, poemsController.postUserPoem
 poemsRouter.put('/private/:id', authorize.isSignedIn, poemsController.updateUserPoemByID)
 
 /**
- * @api {delete} /private/:id Delete a poem
+ * @api {delete} /private/:id Delete a poem.
  * @apiDescription Delete a poem by id
  * @apiParam {Number} id The id of the poem to be deleted.
  * @apiGroup PrivatePoems
@@ -150,7 +150,7 @@ poemsRouter.put('/private/:id', authorize.isSignedIn, poemsController.updateUser
 poemsRouter.delete('/private/:id', authorize.isSignedIn, poemsController.deleteUserPoemByID)
 
 /**
- * @api {post} poems/private/:id/rate/:rating rate a specific poem
+ * @api {post} poems/private/:id/rate/:rating Rate a specific poem.
  * @apiParam {Number}       id              The id of the poem to be rated.
  * @apiParam {Number}       rating          The rating of the vote. Valid values being: -1, 1
  * @apiGroup PrivatePoems
@@ -169,8 +169,8 @@ poemsRouter.post('/private/:id/rate/:rating', authorize.isSignedIn, poemsControl
  * @apiGroup PrivatePoems
  * @apiPermission admin
  * @apiHeader  {Cookie}             connect.sid                 Users unique session cookie.
- * @apiQuery   {Number}             numReports                  The number of reports that should be returned.
- * @apiQuery   {Number}             offset                      The offset from which the reports should be returned.
+ * @apiQuery   {Number}             [numReports]                  The number of reports that should be returned.
+ * @apiQuery   {Number}             [offset]                      The offset from which the reports should be returned.
  * @apiSuccess {Object[]}           reports                     The list of reports.
  * @apiSuccess {String}             reports.reportText          The reason for the report.
  * @apiSuccess {Number}             reports.reportingUserID     The user id of the user that reported the poem.
@@ -217,7 +217,7 @@ poemsRouter.post('/private/:id/rate/:rating', authorize.isSignedIn, poemsControl
 poemsRouter.get('/reports/', authorize.isSignedIn, authorize.hasRole(rolesConfig.administrator), poemsController.getUserPoemReports)
 
 /**
- * @api {post} poems/private/:id/report     Rate a specific poem
+ * @api {post} poems/private/:id/report     Report a specific poem.
  * @apiParam {Number}       id              The id of the poem to be reported.
  * @apiBody  {String}       reportText      The reason of the report.
  * @apiGroup PrivatePoems
@@ -231,7 +231,7 @@ poemsRouter.get('/reports/', authorize.isSignedIn, authorize.hasRole(rolesConfig
 poemsRouter.post('/private/:id/report/', authorize.isSignedIn, poemsController.reportUserPoemByID)
 
 /**
- * @api {delete} poems/private/:id/report/:userID     Rate a specific poem
+ * @api {delete} poems/private/:id/report/:userID     Delete the report of a poem.
  * @apiParam {Number}       id                        The id of the poem of the report to be deleted.
  * @apiParam {Number}       userID                    The userID of the author of the report to be deleted.
  * @apiGroup PrivatePoems
@@ -245,7 +245,7 @@ poemsRouter.post('/private/:id/report/', authorize.isSignedIn, poemsController.r
 poemsRouter.delete('/private/:id/report/:userID', authorize.isSignedIn, authorize.hasRole(rolesConfig.administrator), poemsController.deleteUserPoemReport)
 
 /**
- * @api {post} poems/private/:id/favorite   Mark a specific poem as favorite
+ * @api {post} poems/private/:id/favorite   Mark a specific poem as favorite.
  * @apiParam {Number}       id              The id of the poem to be marked.
  * @apiBody  {Boolean}      favorite        Whether the favorite mark should be added or removed.
  * @apiGroup PrivatePoems
